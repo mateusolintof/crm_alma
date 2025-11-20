@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getTenantByDomain } from "@/services/tenant.service";
 import BrandingProvider from "@/components/providers/BrandingProvider";
+import Sidebar from "@/components/layout/Sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,7 +42,12 @@ export default async function RootLayout({
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <BrandingProvider branding={tenant} />
-        {children}
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+          <Sidebar />
+          <main style={{ flex: 1, overflow: 'auto' }}>
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );
