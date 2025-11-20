@@ -1,0 +1,557 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Tenant & Branding ---
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Branding
+  logoDarkHorizontalUrl  String?
+  logoDarkVerticalUrl    String?
+  logoLightHorizontalUrl String?
+  logoLightVerticalUrl   String?
+  primaryColor           String  @default("#000000")
+  backgroundDark         String  @default("#000000")
+  backgroundLight        String  @default("#FFFFFF")
+  accentColor            String  @default("#FFFFFF")
+  textOnDark             String  @default("#FFFFFF")
+  textOnLight            String  @default("#111111")
+
+  // Relations
+  users            User[]
+  teams            Team[]
+  companies        Company[]
+  contacts         Contact[]
+  leads            Lead[]
+  deals            Deal[]
+  clientAccounts   ClientAccount[]
+  contracts        Contract[]
+  pipelines        Pipeline[]
+  activities       Activity[]
+  messages         Message[]
+  conversations    Conversation[]
+  channelAccounts  ChannelAccount[]
+  leadSources      LeadSource[]
+  auditLogs        AuditLog[]
+  serviceSubscriptions ServiceSubscription[]
+  mrrRecords       MRRRecord[]
+  briefings        Briefing[]
+}
+
+// --- User Management ---
+
+enum UserRole {
+  ADMIN
+  SALES_MANAGER
+  SALES_REP
+  CS_MANAGER
+  CS_REP
+  VIEW_ONLY
+}
+
+model User {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  email     String   @unique
+  role      UserRole @default(SALES_REP)
+  createdAt DateTime @default(now())
+
+  // Relations
+  teams              TeamMember[]
+  ownedLeads         Lead[]
+  ownedDeals         Deal[]
+  managedAccounts    ClientAccount[]
+  activities         Activity[]
+  sentMessages       Message[]
+  assignedConversations Conversation[]
+  auditLogs          AuditLog[]
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  type      TeamType
+
+  members   TeamMember[]
+}
+
+enum TeamType {
+  SALES
+  CS
+  SDR
+  OTHER
+}
+
+model TeamMember {
+  id     String @id @default(uuid())
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([teamId, userId])
+}
+
+// --- CRM Core ---
+
+model Company {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  segment   String?
+  size      String?
+  website   String?
+  origin    String?
+  tags      String[]
+  createdAt DateTime @default(now())
+
+  contacts       Contact[]
+  leads          Lead[]
+  deals          Deal[]
+  clientAccounts ClientAccount[]
+  conversations  Conversation[]
+}
+
+model Contact {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+  name        String
+  jobTitle    String?
+  mainChannel String?
+  phones      String[]
+  emails      String[]
+  socialProfiles String[] // JSON or array of URLs
+
+  leads         Lead[]
+  deals         Deal[]
+  conversations Conversation[]
+  messages      Message[] // Recipient or sender linkage
+}
+
+// --- Sales Pipeline ---
+
+enum LeadStatus {
+  OPEN
+  QUALIFIED
+  DISQUALIFIED
+  CONVERTED
+}
+
+enum LeadSourceType {
+  SITE_FORM
+  WHATSAPP
+  INSTAGRAM_DM
+  INDICATION
+  EVENT
+  COLD_OUTREACH
+  OTHER
+}
+
+model Lead {
+  id               String         @id @default(uuid())
+  tenantId         String
+  tenant           Tenant         @relation(fields: [tenantId], references: [id])
+  companyId        String?
+  company          Company?       @relation(fields: [companyId], references: [id])
+  primaryContactId String?
+  primaryContact   Contact?       @relation(fields: [primaryContactId], references: [id])
+  ownerId          String?
+  owner            User?          @relation(fields: [ownerId], references: [id])
+  
+  status           LeadStatus     @default(OPEN)
+  sourceType       LeadSourceType
+  campaignId       String?
+  campaign         LeadSource?    @relation(fields: [campaignId], references: [id])
+  
+  // Qualification
+  budgetRange      String?
+  urgency          String?
+  serviceType      String?
+  fitScore         Int?
+  leadScore        Int            @default(0)
+
+  createdAt        DateTime       @default(now())
+
+  deals            Deal[]
+  activities       Activity[]
+  briefings        Briefing[]
+  messages         Message[] // Linked messages
+}
+
+model Deal {
+  id               String   @id @default(uuid())
+  tenantId         String
+  tenant           Tenant   @relation(fields: [tenantId], references: [id])
+  
+  leadId           String?
+  lead             Lead?    @relation(fields: [leadId], references: [id])
+  companyId        String?
+  company          Company? @relation(fields: [companyId], references: [id])
+  primaryContactId String?
+  primaryContact   Contact? @relation(fields: [primaryContactId], references: [id])
+  ownerId          String?
+  owner            User?    @relation(fields: [ownerId], references: [id])
+
+  pipelineId       String
+  pipeline         Pipeline @relation(fields: [pipelineId], references: [id])
+  stageId          String
+  stage            Stage    @relation(fields: [stageId], references: [id])
+
+  title            String
+  expectedMRR      Decimal? @db.Decimal(10, 2)
+  expectedOneOff   Decimal? @db.Decimal(10, 2)
+  probability      Int?     // 0-100
+  expectedCloseDate DateTime?
+  
+  status           DealStatus @default(OPEN)
+  lostReason       String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  contract         Contract?
+  briefing         Briefing?
+  activities       Activity[]
+  messages         Message[] // Linked messages
+  conversations    Conversation[]
+}
+
+enum DealStatus {
+  OPEN
+  WON
+  LOST
+}
+
+model Pipeline {
+  id       String   @id @default(uuid())
+  tenantId String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  name     String
+  type     PipelineType
+  stages   Stage[]
+  deals    Deal[]
+}
+
+enum PipelineType {
+  NEW_BUSINESS
+  RENEWAL
+  UPSELL
+  CS_FOLLOWUP
+}
+
+model Stage {
+  id                 String   @id @default(uuid())
+  pipelineId         String
+  pipeline           Pipeline @relation(fields: [pipelineId], references: [id])
+  name               String
+  orderIndex         Int
+  defaultProbability Int?
+  deals              Deal[]
+}
+
+// --- Post-Sales & Finance ---
+
+model ClientAccount {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  companyId     String
+  company       Company  @relation(fields: [companyId], references: [id])
+  csOwnerId     String?
+  csOwner       User?    @relation(fields: [csOwnerId], references: [id])
+
+  status        ClientStatus @default(ACTIVE)
+  healthScore   Int          @default(100)
+  healthBand    HealthBand   @default(GREEN)
+  currentMRR    Decimal      @default(0) @db.Decimal(10, 2)
+
+  services      ServiceSubscription[]
+  contracts     Contract[]
+  mrrRecords    MRRRecord[]
+  activities    Activity[]
+  messages      Message[]
+}
+
+enum ClientStatus {
+  ACTIVE
+  AT_RISK
+  CHURNED
+}
+
+enum HealthBand {
+  GREEN
+  YELLOW
+  RED
+}
+
+model Contract {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  clientAccountId String
+  clientAccount   ClientAccount @relation(fields: [clientAccountId], references: [id])
+  dealId          String?  @unique
+  deal            Deal?    @relation(fields: [dealId], references: [id])
+
+  type            ContractType
+  startDate       DateTime
+  endDate         DateTime?
+  renewalType     RenewalType
+  renewalNoticeDays Int?
+  
+  baseMRR         Decimal  @db.Decimal(10, 2)
+  setupFee        Decimal? @db.Decimal(10, 2)
+  
+  status          ContractStatus @default(ACTIVE)
+  externalId      String?
+}
+
+enum ContractType {
+  RETAINER
+  PROJECT
+  MIXED
+}
+
+enum RenewalType {
+  AUTOMATIC
+  MANUAL
+  NONE
+}
+
+enum ContractStatus {
+  ACTIVE
+  PENDING_RENEWAL
+  TERMINATED
+}
+
+model ServiceSubscription {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  clientAccountId String
+  clientAccount   ClientAccount @relation(fields: [clientAccountId], references: [id])
+  
+  serviceType     String // TRAFEGO_PAGO, SEO, etc.
+  monthlyFee      Decimal @db.Decimal(10, 2)
+  adSpendResponsibility AdSpendResponsibility
+  status          ServiceStatus @default(ACTIVE)
+}
+
+enum AdSpendResponsibility {
+  AGENCY_MANAGED
+  CLIENT_OWN_SPEND
+}
+
+enum ServiceStatus {
+  ACTIVE
+  PAUSED
+  TERMINATED
+}
+
+model MRRRecord {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  clientAccountId String
+  clientAccount   ClientAccount @relation(fields: [clientAccountId], references: [id])
+  
+  month           DateTime // First day of month
+  amount          Decimal  @db.Decimal(10, 2)
+  deltaType       MRRDeltaType
+}
+
+enum MRRDeltaType {
+  NEW
+  EXPANSION
+  CONTRACTION
+  CHURN
+}
+
+// --- Inbox & Communication ---
+
+model Conversation {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  
+  contactId       String?
+  contact         Contact? @relation(fields: [contactId], references: [id])
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+  
+  channelType     ChannelType
+  status          ConversationStatus @default(OPEN)
+  unreadCount     Int      @default(0)
+  lastMessageAt   DateTime @default(now())
+  
+  assignedToId    String?
+  assignedTo      User?    @relation(fields: [assignedToId], references: [id])
+  
+  linkedDealId    String?
+  linkedDeal      Deal?    @relation(fields: [linkedDealId], references: [id])
+
+  messages        Message[]
+}
+
+enum ChannelType {
+  WHATSAPP
+  EMAIL
+  INSTAGRAM_DM
+  SMS
+  OTHER
+}
+
+enum ConversationStatus {
+  OPEN
+  PENDING
+  RESOLVED
+}
+
+model Message {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id])
+  
+  channelType     ChannelType
+  direction       MessageDirection
+  
+  senderId        String? // If outbound, User ID
+  sender          User?   @relation(fields: [senderId], references: [id])
+  
+  contactId       String? // If inbound, Contact ID
+  contact         Contact? @relation(fields: [contactId], references: [id])
+  
+  content         String   @db.Text
+  mediaUrl        String?
+  mediaType       String?
+  
+  timestamp       DateTime @default(now())
+  
+  // Linking
+  leadId          String?
+  lead            Lead?    @relation(fields: [leadId], references: [id])
+  dealId          String?
+  deal            Deal?    @relation(fields: [dealId], references: [id])
+  clientAccountId String?
+  clientAccount   ClientAccount? @relation(fields: [clientAccountId], references: [id])
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+model ChannelAccount {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  type        ChannelType
+  displayName String
+  status      String
+  credentials Json? // Encrypted tokens
+}
+
+// --- Activities & Misc ---
+
+model Activity {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  
+  type            ActivityType
+  description     String
+  status          ActivityStatus @default(OPEN)
+  dueDate         DateTime?
+  
+  ownerId         String
+  owner           User     @relation(fields: [ownerId], references: [id])
+  
+  // Polymorphic-ish relations
+  leadId          String?
+  lead            Lead?    @relation(fields: [leadId], references: [id])
+  dealId          String?
+  deal            Deal?    @relation(fields: [dealId], references: [id])
+  clientAccountId String?
+  clientAccount   ClientAccount? @relation(fields: [clientAccountId], references: [id])
+  
+  createdAt       DateTime @default(now())
+}
+
+enum ActivityType {
+  CALL
+  MEETING
+  TASK
+  EMAIL
+  NOTE
+}
+
+enum ActivityStatus {
+  OPEN
+  DONE
+}
+
+model Briefing {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  
+  leadId    String?
+  lead      Lead?    @relation(fields: [leadId], references: [id])
+  dealId    String?  @unique
+  deal      Deal?    @relation(fields: [dealId], references: [id])
+  
+  status    BriefingStatus @default(DRAFT)
+  answers   Json
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BriefingStatus {
+  DRAFT
+  COMPLETED
+}
+
+model LeadSource {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  name       String
+  type       String
+  platform   String?
+  leads      Lead[]
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  actorId    String
+  actor      User     @relation(fields: [actorId], references: [id])
+  action     String
+  entityType String
+  entityId   String
+  details    Json?
+  timestamp  DateTime @default(now())
+}
