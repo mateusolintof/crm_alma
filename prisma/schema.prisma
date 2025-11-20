@@ -50,22 +50,13 @@ model Tenant {
 
 // --- User Management ---
 
-enum UserRole {
-  ADMIN
-  SALES_MANAGER
-  SALES_REP
-  CS_MANAGER
-  CS_REP
-  VIEW_ONLY
-}
-
 model User {
   id        String   @id @default(uuid())
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
   name      String
   email     String   @unique
-  role      UserRole @default(SALES_REP)
+  role      String   @default("SALES_REP") // Enum handled in app logic or simple string for SQLite
   createdAt DateTime @default(now())
 
   // Relations
@@ -84,16 +75,9 @@ model Team {
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
   name      String
-  type      TeamType
+  type      String   // Enum handled in app
 
   members   TeamMember[]
-}
-
-enum TeamType {
-  SALES
-  CS
-  SDR
-  OTHER
 }
 
 model TeamMember {
@@ -117,7 +101,7 @@ model Company {
   size      String?
   website   String?
   origin    String?
-  tags      String[]
+  tags      String // Stored as JSON string or comma-separated
   createdAt DateTime @default(now())
 
   contacts       Contact[]
@@ -136,34 +120,17 @@ model Contact {
   name        String
   jobTitle    String?
   mainChannel String?
-  phones      String[]
-  emails      String[]
-  socialProfiles String[] // JSON or array of URLs
+  phones      String // JSON string
+  emails      String // JSON string
+  socialProfiles String // JSON string
 
   leads         Lead[]
   deals         Deal[]
   conversations Conversation[]
-  messages      Message[] // Recipient or sender linkage
+  messages      Message[]
 }
 
 // --- Sales Pipeline ---
-
-enum LeadStatus {
-  OPEN
-  QUALIFIED
-  DISQUALIFIED
-  CONVERTED
-}
-
-enum LeadSourceType {
-  SITE_FORM
-  WHATSAPP
-  INSTAGRAM_DM
-  INDICATION
-  EVENT
-  COLD_OUTREACH
-  OTHER
-}
 
 model Lead {
   id               String         @id @default(uuid())
@@ -176,8 +143,8 @@ model Lead {
   ownerId          String?
   owner            User?          @relation(fields: [ownerId], references: [id])
   
-  status           LeadStatus     @default(OPEN)
-  sourceType       LeadSourceType
+  status           String     @default("OPEN")
+  sourceType       String
   campaignId       String?
   campaign         LeadSource?    @relation(fields: [campaignId], references: [id])
   
@@ -193,7 +160,7 @@ model Lead {
   deals            Deal[]
   activities       Activity[]
   briefings        Briefing[]
-  messages         Message[] // Linked messages
+  messages         Message[]
 }
 
 model Deal {
@@ -216,12 +183,12 @@ model Deal {
   stage            Stage    @relation(fields: [stageId], references: [id])
 
   title            String
-  expectedMRR      Decimal? @db.Decimal(10, 2)
-  expectedOneOff   Decimal? @db.Decimal(10, 2)
-  probability      Int?     // 0-100
+  expectedMRR      Decimal?
+  expectedOneOff   Decimal?
+  probability      Int?
   expectedCloseDate DateTime?
   
-  status           DealStatus @default(OPEN)
+  status           String @default("OPEN")
   lostReason       String?
 
   createdAt        DateTime @default(now())
@@ -230,14 +197,8 @@ model Deal {
   contract         Contract?
   briefing         Briefing?
   activities       Activity[]
-  messages         Message[] // Linked messages
+  messages         Message[]
   conversations    Conversation[]
-}
-
-enum DealStatus {
-  OPEN
-  WON
-  LOST
 }
 
 model Pipeline {
@@ -245,16 +206,9 @@ model Pipeline {
   tenantId String
   tenant   Tenant   @relation(fields: [tenantId], references: [id])
   name     String
-  type     PipelineType
+  type     String
   stages   Stage[]
   deals    Deal[]
-}
-
-enum PipelineType {
-  NEW_BUSINESS
-  RENEWAL
-  UPSELL
-  CS_FOLLOWUP
 }
 
 model Stage {
@@ -278,28 +232,16 @@ model ClientAccount {
   csOwnerId     String?
   csOwner       User?    @relation(fields: [csOwnerId], references: [id])
 
-  status        ClientStatus @default(ACTIVE)
+  status        String   @default("ACTIVE")
   healthScore   Int          @default(100)
-  healthBand    HealthBand   @default(GREEN)
-  currentMRR    Decimal      @default(0) @db.Decimal(10, 2)
+  healthBand    String   @default("GREEN")
+  currentMRR    Decimal      @default(0)
 
   services      ServiceSubscription[]
   contracts     Contract[]
   mrrRecords    MRRRecord[]
   activities    Activity[]
   messages      Message[]
-}
-
-enum ClientStatus {
-  ACTIVE
-  AT_RISK
-  CHURNED
-}
-
-enum HealthBand {
-  GREEN
-  YELLOW
-  RED
 }
 
 model Contract {
@@ -311,35 +253,17 @@ model Contract {
   dealId          String?  @unique
   deal            Deal?    @relation(fields: [dealId], references: [id])
 
-  type            ContractType
+  type            String
   startDate       DateTime
   endDate         DateTime?
-  renewalType     RenewalType
+  renewalType     String
   renewalNoticeDays Int?
   
-  baseMRR         Decimal  @db.Decimal(10, 2)
-  setupFee        Decimal? @db.Decimal(10, 2)
+  baseMRR         Decimal
+  setupFee        Decimal?
   
-  status          ContractStatus @default(ACTIVE)
+  status          String @default("ACTIVE")
   externalId      String?
-}
-
-enum ContractType {
-  RETAINER
-  PROJECT
-  MIXED
-}
-
-enum RenewalType {
-  AUTOMATIC
-  MANUAL
-  NONE
-}
-
-enum ContractStatus {
-  ACTIVE
-  PENDING_RENEWAL
-  TERMINATED
 }
 
 model ServiceSubscription {
@@ -349,21 +273,10 @@ model ServiceSubscription {
   clientAccountId String
   clientAccount   ClientAccount @relation(fields: [clientAccountId], references: [id])
   
-  serviceType     String // TRAFEGO_PAGO, SEO, etc.
-  monthlyFee      Decimal @db.Decimal(10, 2)
-  adSpendResponsibility AdSpendResponsibility
-  status          ServiceStatus @default(ACTIVE)
-}
-
-enum AdSpendResponsibility {
-  AGENCY_MANAGED
-  CLIENT_OWN_SPEND
-}
-
-enum ServiceStatus {
-  ACTIVE
-  PAUSED
-  TERMINATED
+  serviceType     String
+  monthlyFee      Decimal
+  adSpendResponsibility String
+  status          String @default("ACTIVE")
 }
 
 model MRRRecord {
@@ -373,16 +286,9 @@ model MRRRecord {
   clientAccountId String
   clientAccount   ClientAccount @relation(fields: [clientAccountId], references: [id])
   
-  month           DateTime // First day of month
-  amount          Decimal  @db.Decimal(10, 2)
-  deltaType       MRRDeltaType
-}
-
-enum MRRDeltaType {
-  NEW
-  EXPANSION
-  CONTRACTION
-  CHURN
+  month           DateTime
+  amount          Decimal
+  deltaType       String
 }
 
 // --- Inbox & Communication ---
@@ -397,8 +303,8 @@ model Conversation {
   companyId       String?
   company         Company? @relation(fields: [companyId], references: [id])
   
-  channelType     ChannelType
-  status          ConversationStatus @default(OPEN)
+  channelType     String
+  status          String @default("OPEN")
   unreadCount     Int      @default(0)
   lastMessageAt   DateTime @default(now())
   
@@ -411,20 +317,6 @@ model Conversation {
   messages        Message[]
 }
 
-enum ChannelType {
-  WHATSAPP
-  EMAIL
-  INSTAGRAM_DM
-  SMS
-  OTHER
-}
-
-enum ConversationStatus {
-  OPEN
-  PENDING
-  RESOLVED
-}
-
 model Message {
   id              String   @id @default(uuid())
   tenantId        String
@@ -433,16 +325,16 @@ model Message {
   conversationId  String
   conversation    Conversation @relation(fields: [conversationId], references: [id])
   
-  channelType     ChannelType
-  direction       MessageDirection
+  channelType     String
+  direction       String
   
-  senderId        String? // If outbound, User ID
+  senderId        String?
   sender          User?   @relation(fields: [senderId], references: [id])
   
-  contactId       String? // If inbound, Contact ID
+  contactId       String?
   contact         Contact? @relation(fields: [contactId], references: [id])
   
-  content         String   @db.Text
+  content         String
   mediaUrl        String?
   mediaType       String?
   
@@ -457,19 +349,14 @@ model Message {
   clientAccount   ClientAccount? @relation(fields: [clientAccountId], references: [id])
 }
 
-enum MessageDirection {
-  INBOUND
-  OUTBOUND
-}
-
 model ChannelAccount {
   id          String   @id @default(uuid())
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  type        ChannelType
+  type        String
   displayName String
   status      String
-  credentials Json? // Encrypted tokens
+  credentials String? // JSON string
 }
 
 // --- Activities & Misc ---
@@ -479,9 +366,9 @@ model Activity {
   tenantId        String
   tenant          Tenant   @relation(fields: [tenantId], references: [id])
   
-  type            ActivityType
+  type            String
   description     String
-  status          ActivityStatus @default(OPEN)
+  status          String @default("OPEN")
   dueDate         DateTime?
   
   ownerId         String
@@ -498,19 +385,6 @@ model Activity {
   createdAt       DateTime @default(now())
 }
 
-enum ActivityType {
-  CALL
-  MEETING
-  TASK
-  EMAIL
-  NOTE
-}
-
-enum ActivityStatus {
-  OPEN
-  DONE
-}
-
 model Briefing {
   id        String   @id @default(uuid())
   tenantId  String
@@ -521,16 +395,11 @@ model Briefing {
   dealId    String?  @unique
   deal      Deal?    @relation(fields: [dealId], references: [id])
   
-  status    BriefingStatus @default(DRAFT)
-  answers   Json
+  status    String @default("DRAFT")
+  answers   String // JSON string
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-enum BriefingStatus {
-  DRAFT
-  COMPLETED
 }
 
 model LeadSource {
@@ -552,6 +421,6 @@ model AuditLog {
   action     String
   entityType String
   entityId   String
-  details    Json?
+  details    String? // JSON string
   timestamp  DateTime @default(now())
 }

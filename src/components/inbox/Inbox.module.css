@@ -1,0 +1,128 @@
+.container {
+    display: grid;
+    grid-template-columns: 350px 1fr 350px;
+    height: 100vh;
+    background-color: var(--background-light);
+    color: var(--text-on-light);
+    overflow: hidden;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e5e5e5;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.panel:last-child {
+    border-right: none;
+}
+
+/* Dark mode adjustments if needed, handled by vars */
+@media (prefers-color-scheme: dark) {
+    .panel {
+        border-color: #333;
+    }
+}
+
+/* Conversation List Items */
+.conversationItem {
+    padding: var(--spacing-4);
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.conversationItem:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.conversationItem.active {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-left: 3px solid var(--primary-color);
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Message Thread */
+.threadHeader {
+    padding: var(--spacing-4);
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.messageList {
+    flex: 1;
+    padding: var(--spacing-4);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.messageBubble {
+    max-width: 70%;
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    position: relative;
+}
+
+.messageInbound {
+    align-self: flex-start;
+    background-color: #f0f0f0;
+    color: #111;
+    border-bottom-left-radius: 2px;
+}
+
+.messageOutbound {
+    align-self: flex-end;
+    background-color: var(--primary-color);
+    color: var(--text-on-dark);
+    border-bottom-right-radius: 2px;
+}
+
+.composer {
+    padding: var(--spacing-4);
+    border-top: 1px solid #e5e5e5;
+    background: #fff;
+}
+
+.input {
+    width: 100%;
+    padding: var(--spacing-3);
+    border: 1px solid #ddd;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    resize: none;
+}
+
+/* Context Panel */
+.contextSection {
+    padding: var(--spacing-4);
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sectionTitle {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: var(--spacing-2);
+}
