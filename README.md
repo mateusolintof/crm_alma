@@ -32,7 +32,7 @@ Um sistema moderno e abrangente de Customer Relationship Management (CRM) constr
 
 -   **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 -   **Linguagem**: [TypeScript](https://www.typescriptlang.org/)
--   **Database**: [SQLite](https://www.sqlite.org/) (Development) via [Prisma ORM](https://www.prisma.io/)
+-   **Database**: [Supabase Postgres](https://supabase.com/) via [Prisma ORM](https://www.prisma.io/)
 -   **Styling**: CSS Modules com Native CSS Variables para temas
 -   **Ícones**: [Lucide React](https://lucide.dev/)
 -   **Gráficos**: [Recharts](https://recharts.org/)
@@ -59,14 +59,17 @@ Antes de começar, certifique-se de ter os seguintes itens instalados:
     ```
 
 3.  **Configuração do Environment**
-    Crie um arquivo `.env` no diretório raiz (copie de `.env.example` se disponível) e configure a URL do database e o secret JWT.
+    Copie `.env.example` para `.env` e preencha com as strings do seu projeto Supabase (Settings > Database > Connection string > Prisma):
     ```env
-    DATABASE_URL="file:./dev.db"
+    DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:6543/postgres?pgbouncer=true&connection_limit=1"
+    DIRECT_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:5432/postgres"
     JWT_SECRET="your-super-secret-key"
     ```
+    - `DATABASE_URL`: usa o pool (porta 6543) recomendado para a aplicação.
+    - `DIRECT_URL`: usa a conexão direta (porta 5432) para migrations/seeds do Prisma.
 
 4.  **Configuração do Database**
-    Execute o push do schema Prisma para o database:
+    Execute o push do schema Prisma apontando para o banco Supabase:
     ```bash
     npx prisma db push
     ```
