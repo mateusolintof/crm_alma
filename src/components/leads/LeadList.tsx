@@ -16,6 +16,7 @@ export default function LeadList() {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -42,12 +43,24 @@ export default function LeadList() {
         }
     }
 
+    const getCsrfToken = () => {
+        if (typeof document === 'undefined') return null;
+        const match = document.cookie.split('; ').find(row => row.startsWith('csrf-token='));
+        return match ? decodeURIComponent(match.split('=')[1]) : null;
+    };
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        setSubmitError(null);
+        const csrf = getCsrfToken();
+        if (!csrf) {
+            setSubmitError('Token de segurança ausente. Refaça o login.');
+            return;
+        }
         try {
             await fetch('/api/leads', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrf },
                 body: JSON.stringify(formData),
             });
             setShowForm(false);
@@ -55,6 +68,7 @@ export default function LeadList() {
             fetchLeads();
         } catch (error) {
             console.error('Failed to create lead', error);
+            setSubmitError('Erro ao salvar lead.');
         }
     }
 
@@ -74,6 +88,9 @@ export default function LeadList() {
 
             {showForm && (
                 <div style={{ background: '#f5f5f5', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                    {submitError && (
+                        <div style={{ marginBottom: '12px', color: '#c00' }}>{submitError}</div>
+                    )}
                     <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '12px', maxWidth: '400px' }}>
                         <input
                             placeholder="Nome do Contato"
