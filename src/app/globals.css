@@ -1,65 +1,74 @@
 :root {
-  /* Professional Palette - Light Mode Only */
+  /* --- Professional SaaS Palette (Flat & Serious) --- */
+
+  /* Primary Brand (Royal Blue - Trust & Tech) */
   --primary-color: #2563EB;
-  /* Royal Blue */
+  /* Blue 600 */
   --primary-hover: #1D4ED8;
-  --primary-light: #EFF6FF;
+  /* Blue 700 */
+  --primary-active: #1E40AF;
+  /* Blue 800 */
+  --primary-subtle: #EFF6FF;
   /* Blue 50 */
+  --primary-border: #BFDBFE;
+  /* Blue 200 */
 
-  --accent-color: #0F172A;
-  /* Slate 900 */
-
-  /* Backgrounds */
+  /* Neutrals (Slate - Clean & Modern) */
   --bg-app: #F8FAFC;
   /* Slate 50 */
   --bg-surface: #FFFFFF;
+  /* White */
   --bg-surface-hover: #F1F5F9;
   /* Slate 100 */
   --bg-border: #E2E8F0;
   /* Slate 200 */
+  --bg-border-hover: #CBD5E1;
+  /* Slate 300 */
 
   /* Text */
   --text-primary: #0F172A;
   /* Slate 900 */
-  --text-secondary: #64748B;
-  /* Slate 500 */
+  --text-secondary: #475569;
+  /* Slate 600 */
   --text-tertiary: #94A3B8;
   /* Slate 400 */
   --text-on-primary: #FFFFFF;
 
-  /* Status Colors */
+  /* Semantic Colors */
   --success: #10B981;
+  /* Emerald 500 */
+  --success-bg: #ECFDF5;
   --warning: #F59E0B;
+  /* Amber 500 */
+  --warning-bg: #FFFBEB;
   --danger: #EF4444;
+  /* Red 500 */
+  --danger-bg: #FEF2F2;
   --info: #3B82F6;
+  /* Blue 500 */
+  --info-bg: #EFF6FF;
 
   /* Typography */
-  --font-sans: var(--font-geist-sans, "Inter", system-ui, -apple-system, sans-serif);
-  --font-mono: var(--font-geist-mono, "IBM Plex Mono", monospace);
+  --font-sans: var(--font-geist-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), "IBM Plex Mono", monospace;
 
-  /* Spacing & Radius */
+  /* Spacing & Layout */
   --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
+  --radius-md: 6px;
+  /* Tighter radius for "Pro" feel */
+  --radius-lg: 8px;
+  --header-height: 64px;
+  --sidebar-width: 240px;
 
-  --spacing-1: 4px;
-  --spacing-2: 8px;
-  --spacing-3: 12px;
-  --spacing-4: 16px;
-  --spacing-5: 20px;
-  --spacing-6: 24px;
-  --spacing-8: 32px;
-  --spacing-10: 40px;
-
-  /* Shadows */
+  /* Shadows (Subtle & Refined) */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-focus: 0 0 0 2px #fff, 0 0 0 4px var(--primary-border);
 
   /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
 }
 
 * {
@@ -75,6 +84,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
+  font-size: 14px;
+  /* Dense information density for SaaS */
 }
 
 a {
@@ -89,30 +100,157 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-sans);
   font-weight: 600;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
 }
 
-button {
-  font-family: var(--font-sans);
+/* --- Utility Classes (Bootstrap/Tailwind style but CSS Modules friendly) --- */
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
   font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  gap: 8px;
+  white-space: nowrap;
 }
 
-/* Utility classes */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--bg-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--bg-border-hover);
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: white;
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+/* Inputs */
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--bg-border);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-focus);
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+}
+
+/* Layout */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--spacing-4);
+  padding: 0 24px;
 }
 
-/* Motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-blue {
+  background: var(--primary-subtle);
+  color: var(--primary-color);
+}
+
+.badge-green {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.badge-yellow {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.badge-red {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.badge-gray {
+  background: var(--bg-surface-hover);
+  color: var(--text-secondary);
 }

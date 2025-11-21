@@ -28,6 +28,7 @@ export default function Sidebar() {
         <div className={styles.sidebar}>
             <div className={styles.logo}>
                 <div className={styles.logoIcon}>A</div>
+                <span className={styles.logoText}>Alma CRM</span>
             </div>
             <nav className={styles.nav}>
                 {NAV_ITEMS.map(item => {
@@ -40,20 +41,19 @@ export default function Sidebar() {
                         >
                             <item.icon size={20} />
                             <span className={styles.label}>{item.label}</span>
-                            <span className={styles.tooltip}>{item.label}</span>
                         </Link>
                     );
                 })}
             </nav>
 
-            <div style={{ marginTop: 'auto', paddingBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+            <div className={styles.footer}>
                 <button
                     onClick={handleLogout}
                     className={styles.navItem}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)' }}
+                    style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--danger)' }}
                 >
                     <LogOut size={20} />
-                    <span className={styles.tooltip}>Sair</span>
+                    <span className={styles.label}>Sair</span>
                 </button>
             </div>
         </div>

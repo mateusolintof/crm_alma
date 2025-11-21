@@ -1,20 +1,13 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter_Tight, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getCachedTenantByDomain } from "@/services/tenant.service";
 import BrandingProvider from "@/components/providers/BrandingProvider";
 import Sidebar from "@/components/layout/Sidebar";
 
-const headingFont = Space_Grotesk({
-  variable: "--font-heading",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const bodyFont = Inter_Tight({
-  variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -51,7 +44,7 @@ export default async function RootLayout({
 
   return (
     <html lang="pt-BR">
-      <body className={`${headingFont.variable} ${bodyFont.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <BrandingProvider branding={tenant}>
           <div style={{ display: 'flex', minHeight: '100vh', background: "var(--bg-app)" }}>
             <Sidebar />

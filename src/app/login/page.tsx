@@ -43,8 +43,8 @@ export default function LoginPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'radial-gradient(circle at 20% 20%, rgba(15,157,146,0.08), transparent 26%), radial-gradient(circle at 80% 0%, rgba(245,158,11,0.12), transparent 32%), #f5f7fb',
-            color: 'var(--text-on-light)'
+            background: 'var(--bg-app)',
+            fontFamily: 'var(--font-sans)'
         }}>
             <div style={{
                 width: '100%',
@@ -123,21 +123,10 @@ export default function LoginPage() {
 
                     <button
                         type="submit"
-                        disabled={loading}
-                        style={{
-                            marginTop: '16px',
-                            padding: '12px',
-                            background: 'linear-gradient(135deg, #14b8a6, #0ea5e9)',
-                            color: '#0b1220',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontWeight: '700',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            opacity: loading ? 0.7 : 1,
-                            boxShadow: '0 12px 30px rgba(20, 184, 166, 0.35)'
-                        }}
+                        className="btn btn-primary"
+                        style={{ width: '100%', padding: '12px' }}
                     >
-                        {loading ? 'Entrando...' : 'Entrar'}
+                        {loading ? 'Entrando...' : 'Acessar Sistema'}
                     </button>
                 </form>
             </div>
