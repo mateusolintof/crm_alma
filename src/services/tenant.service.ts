@@ -7,9 +7,10 @@ export async function getTenant(tenantId: string) {
 }
 
 export async function getTenantByDomain(domain: string) {
-    // TODO: Implement domain lookup logic
-    // For now, return the first tenant (Alma)
-    return await prisma.tenant.findFirst()
+    const normalizedDomain = domain.toLowerCase();
+    return await prisma.tenant.findFirst({
+        where: { domain: normalizedDomain },
+    });
 }
 
 export type TenantWithBranding = Awaited<ReturnType<typeof getTenant>>

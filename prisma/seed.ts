@@ -27,7 +27,7 @@ async function main() {
     console.log('Created Tenant:', alma.name)
 
     // 2. Create Users
-    const admin = await prisma.user.create({
+    await prisma.user.create({
         data: {
             tenantId: alma.id,
             name: 'Admin Alma',
@@ -37,7 +37,7 @@ async function main() {
         },
     });
 
-    const salesUser = await prisma.user.upsert({
+    await prisma.user.upsert({
         where: { email: 'vendas@alma.agency' },
         update: {},
         create: {

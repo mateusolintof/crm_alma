@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     // Check if password looks like a bcrypt hash (starts with $2)
     if (user.password.startsWith('$2')) {
         isValid = await verifyPassword(password, user.password);
-    } else {
+    } else if (process.env.NODE_ENV !== 'production') {
         // Fallback for plain text seed data (common in dev seeds)
         isValid = password === user.password;
     }

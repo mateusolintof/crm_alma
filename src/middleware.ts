@@ -5,6 +5,11 @@ import { verifyToken } from './lib/auth';
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    // Allow all API routes (handled by route handlers) except auth already public
+    if (pathname.startsWith('/api')) {
+        return NextResponse.next();
+    }
+
     // Public routes
     if (pathname === '/login' || pathname.startsWith('/api/auth')) {
         return NextResponse.next();

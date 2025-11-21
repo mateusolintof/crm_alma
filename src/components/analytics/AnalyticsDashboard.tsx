@@ -1,11 +1,36 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    LineChart,
+    Line,
+} from 'recharts';
 import styles from './Analytics.module.css';
 
+type MrrPoint = {
+    month: string;
+    mrr: number;
+};
+
+type FunnelPoint = {
+    name: string;
+    value: number;
+};
+
+type AnalyticsData = {
+    mrrData: MrrPoint[];
+    funnelData: FunnelPoint[];
+};
+
 export default function AnalyticsDashboard() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

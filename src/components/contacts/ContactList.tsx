@@ -32,6 +32,15 @@ export default function ContactList() {
 
     if (loading) return <div>Carregando contatos...</div>;
 
+    const safeParseArray = (value: string | undefined) => {
+        try {
+            const parsed = value ? JSON.parse(value) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -52,8 +61,8 @@ export default function ContactList() {
                 </thead>
                 <tbody>
                     {contacts.map(contact => {
-                        const emails = JSON.parse(contact.emails || '[]');
-                        const phones = JSON.parse(contact.phones || '[]');
+                        const emails = safeParseArray(contact.emails);
+                        const phones = safeParseArray(contact.phones);
                         return (
                             <tr key={contact.id} className={styles.tr}>
                                 <td className={styles.td}>

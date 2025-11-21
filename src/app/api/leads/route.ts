@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getTenantByDomain } from '@/services/tenant.service';
 
-export async function GET(request: Request) {
+export async function GET() {
     const tenant = await getTenantByDomain('alma.agency');
     if (!tenant) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
 
@@ -26,29 +26,49 @@ export async function POST(request: Request) {
     const { name, email, phone, companyName, sourceType } = body;
 
     try {
-        // 1. Create or find Company
+        // 1. Create or find Company (simple dedupe by name)
         let company;
         if (companyName) {
-            company = await prisma.company.create({
+            company = await prisma.company.findFirst({
+                where: { tenantId: tenant.id, name: companyName },
+            });
+
+            if (!company) {
+                company = await prisma.company.create({
+                    data: {
+                        tenantId: tenant.id,
+                        name: companyName,
+                        tags: '[]',
+                    },
+                });
+            }
+        }
+
+        // 2. Create or find Contact (dedupe by email if provided)
+        const contactFilters = [
+            { name },
+            email ? { emails: { contains: email } } : null,
+        ].filter(Boolean) as { [key: string]: unknown }[];
+
+        let contact = await prisma.contact.findFirst({
+            where: {
+                tenantId: tenant.id,
+                OR: contactFilters,
+            },
+        });
+
+        if (!contact) {
+            contact = await prisma.contact.create({
                 data: {
                     tenantId: tenant.id,
-                    name: companyName,
-                    tags: '[]',
+                    companyId: company?.id,
+                    name: name,
+                    emails: JSON.stringify(email ? [email] : []),
+                    phones: JSON.stringify(phone ? [phone] : []),
+                    socialProfiles: '[]',
                 },
             });
         }
-
-        // 2. Create Contact
-        const contact = await prisma.contact.create({
-            data: {
-                tenantId: tenant.id,
-                companyId: company?.id,
-                name: name,
-                emails: JSON.stringify([email]),
-                phones: JSON.stringify([phone]),
-                socialProfiles: '[]',
-            },
-        });
 
         // 3. Create Lead
         const lead = await prisma.lead.create({

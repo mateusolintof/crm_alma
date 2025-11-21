@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getTenantByDomain } from '@/services/tenant.service';
 
-export async function GET(request: Request) {
+export async function GET() {
     // Mock tenant resolution (in real app, from session/subdomain)
     const tenant = await getTenantByDomain('alma.agency');
     if (!tenant) {

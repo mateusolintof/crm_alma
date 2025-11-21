@@ -2,8 +2,26 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
-const SECRET_KEY = process.env.JWT_SECRET || 'development_secret_key_change_in_prod';
-const key = new TextEncoder().encode(SECRET_KEY);
+const SECRET_KEY_SOURCE =
+    process.env.NODE_ENV === 'production'
+        ? process.env.JWT_SECRET
+        : process.env.JWT_SECRET || 'development_secret_key_change_in_prod';
+
+if (process.env.NODE_ENV === 'production' && !SECRET_KEY_SOURCE) {
+    throw new Error('JWT_SECRET is required in production');
+}
+
+const resolvedSecret = SECRET_KEY_SOURCE ?? 'development_secret_key_change_in_prod';
+
+const key = new TextEncoder().encode(resolvedSecret);
+
+export interface AuthPayload {
+    userId: string;
+    email: string;
+    role: string;
+    tenantId: string;
+    tenantDomain?: string;
+}
 
 export async function hashPassword(password: string) {
     return await bcrypt.hash(password, 10);
@@ -13,7 +31,7 @@ export async function verifyPassword(password: string, hash: string) {
     return await bcrypt.compare(password, hash);
 }
 
-export async function signToken(payload: any) {
+export async function signToken(payload: AuthPayload) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
@@ -21,11 +39,11 @@ export async function signToken(payload: any) {
         .sign(key);
 }
 
-export async function verifyToken(token: string) {
+export async function verifyToken(token: string): Promise<AuthPayload | null> {
     try {
-        const { payload } = await jwtVerify(token, key);
+        const { payload } = await jwtVerify<AuthPayload>(token, key);
         return payload;
-    } catch (error) {
+    } catch {
         return null;
     }
 }

@@ -14,8 +14,6 @@
 
 @media (max-width: 768px) {
     .sidebar {
-        display: none;
-        /* Simple hide for MVP, ideally hamburger menu */
         position: fixed;
         bottom: 0;
         width: 100%;

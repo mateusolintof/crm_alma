@@ -14,7 +14,6 @@ import {
     DragEndEvent,
 } from '@dnd-kit/core';
 import {
-    arrayMove,
     SortableContext,
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
@@ -37,6 +36,19 @@ type Column = {
     id: string;
     title: string;
     deals: Deal[];
+};
+
+type PipelineApiDeal = {
+    id: string;
+    title: string;
+    expectedMRR: number | null;
+    company: { name: string } | null;
+};
+
+type PipelineStage = {
+    id: string;
+    name: string;
+    deals: PipelineApiDeal[];
 };
 
 
@@ -106,6 +118,7 @@ export default function PipelineBoard() {
     const [columns, setColumns] = useState<Column[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
+    const [snapshotColumns, setSnapshotColumns] = useState<Column[]>([]);
 
     useEffect(() => {
         async function fetchPipeline() {
@@ -114,10 +127,10 @@ export default function PipelineBoard() {
                 const data = await res.json();
 
                 if (data.stages) {
-                    const mappedColumns = data.stages.map((stage: any) => ({
+                    const mappedColumns = data.stages.map((stage: PipelineStage) => ({
                         id: stage.id,
                         title: stage.name,
-                        deals: stage.deals.map((deal: any) => ({
+                        deals: stage.deals.map((deal: PipelineApiDeal) => ({
                             id: deal.id,
                             title: deal.title,
                             value: deal.expectedMRR ? `R$ ${deal.expectedMRR}/mês` : 'R$ 0',
@@ -143,14 +156,13 @@ export default function PipelineBoard() {
         })
     );
 
-    const findColumn = (id: string) => {
-        return columns.find(col => col.deals.some(d => d.id === id)) || columns.find(col => col.id === id);
-    };
-
     const handleDragStart = (event: DragStartEvent) => {
         const { active } = event;
         const deal = active.data.current?.deal as Deal;
-        if (deal) setActiveDeal(deal);
+        if (deal) {
+            setSnapshotColumns(columns);
+            setActiveDeal(deal);
+        }
     };
 
     const handleDragOver = (event: DragOverEvent) => {
@@ -235,7 +247,8 @@ export default function PipelineBoard() {
                 console.log(`Moved deal ${activeId} to stage ${overColumn.title}`);
             } catch (error) {
                 console.error('Failed to persist deal move', error);
-                // TODO: Revert state on error
+                // Revert to snapshot if persistence fails
+                setColumns(snapshotColumns);
             }
         }
     };
@@ -248,6 +261,10 @@ export default function PipelineBoard() {
                     + Novo Negócio
                 </button>
             </div>
+
+            {loading && (
+                <div style={{ padding: '16px' }}>Carregando pipeline...</div>
+            )}
 
             <DndContext
                 sensors={sensors}

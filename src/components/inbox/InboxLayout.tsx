@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './Inbox.module.css';
-import { Search, Filter, Phone, Video, MoreVertical, Send, Paperclip } from 'lucide-react';
+import { Search, Phone, Video, MoreVertical, Send, Paperclip } from 'lucide-react';
 import clsx from 'clsx';
 
 // Mock Data Types
