@@ -40,6 +40,24 @@
     color: #0f172a;
 }
 
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--bg-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-border);
+}
+
 .td {
     padding: var(--spacing-3) var(--spacing-4);
     border-bottom: 1px solid var(--border-color);

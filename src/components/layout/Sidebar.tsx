@@ -12,7 +12,6 @@ const NAV_ITEMS = [
     { label: 'Leads', href: '/leads', icon: Users },
     { label: 'Contatos', href: '/contacts', icon: Users },
     { label: 'Empresas', href: '/companies', icon: Building2 },
-    { label: 'Analytics', href: '/analytics', icon: BarChart3 },
     { label: 'Config', href: '/settings', icon: Settings },
 ];
 

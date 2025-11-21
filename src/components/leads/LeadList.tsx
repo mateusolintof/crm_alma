@@ -88,53 +88,68 @@ export default function LeadList() {
                 <h1 className={styles.title}>Leads</h1>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    style={{ padding: '10px 16px', background: 'var(--primary-color)', color: '#0b1220', border: 'none', borderRadius: '10px', fontWeight: 700, boxShadow: '0 10px 20px rgba(20, 184, 166, 0.25)', cursor: 'pointer' }}
+                    className="btn btn-primary"
                 >
                     + Novo Lead
                 </button>
             </div>
 
             {showForm && (
-                <div style={{ background: '#ffffff', padding: '16px', borderRadius: 'var(--radius-lg)', marginBottom: '16px', border: '1px solid var(--border-color)' }}>
+                <div style={{ background: '#ffffff', padding: '24px', borderRadius: 'var(--radius-lg)', marginBottom: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
                     {submitError && (
-                        <div style={{ marginBottom: '12px', color: '#c00' }}>{submitError}</div>
+                        <div style={{ marginBottom: '12px', color: 'var(--danger)' }}>{submitError}</div>
                     )}
-                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '12px', maxWidth: '400px' }}>
-                        <input
-                            placeholder="Nome do Contato"
-                            value={formData.name}
-                            onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            required
-                            style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', background: '#f8fafc', color: 'var(--text-strong)' }}
-                        />
-                        <input
-                            placeholder="Email"
-                            value={formData.email}
-                            onChange={e => setFormData({ ...formData, email: e.target.value })}
-                            style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-surface-2)', color: 'var(--text-strong)' }}
-                        />
-                        <input
-                            placeholder="Telefone"
-                            value={formData.phone}
-                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                            style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-surface-2)', color: 'var(--text-strong)' }}
-                        />
-                        <input
-                            placeholder="Empresa (Opcional)"
-                            value={formData.companyName}
-                            onChange={e => setFormData({ ...formData, companyName: e.target.value })}
-                            style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-surface-2)', color: 'var(--text-strong)' }}
-                        />
-                        <select
-                            value={formData.sourceType}
-                            onChange={e => setFormData({ ...formData, sourceType: e.target.value })}
-                            style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-surface-2)', color: 'var(--text-strong)' }}
-                        >
-                            <option value="MANUAL">Manual</option>
-                            <option value="WHATSAPP">WhatsApp</option>
-                            <option value="SITE_FORM">Site</option>
-                        </select>
-                        <button type="submit" style={{ padding: '10px', background: 'var(--primary-color)', color: '#0b1220', border: 'none', borderRadius: '10px', fontWeight: 700, boxShadow: '0 10px 20px rgba(20, 184, 166, 0.25)', cursor: 'pointer' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '16px', maxWidth: '400px' }}>
+                        <div>
+                            <label className="label">Nome do Contato</label>
+                            <input
+                                className="input"
+                                placeholder="Ex: João Silva"
+                                value={formData.name}
+                                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="label">Email</label>
+                            <input
+                                className="input"
+                                placeholder="joao@empresa.com"
+                                value={formData.email}
+                                onChange={e => setFormData({ ...formData, email: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="label">Telefone</label>
+                            <input
+                                className="input"
+                                placeholder="+55 11 99999-9999"
+                                value={formData.phone}
+                                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="label">Empresa</label>
+                            <input
+                                className="input"
+                                placeholder="Nome da Empresa"
+                                value={formData.companyName}
+                                onChange={e => setFormData({ ...formData, companyName: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="label">Origem</label>
+                            <select
+                                className="input"
+                                value={formData.sourceType}
+                                onChange={e => setFormData({ ...formData, sourceType: e.target.value })}
+                            >
+                                <option value="MANUAL">Manual</option>
+                                <option value="WHATSAPP">WhatsApp</option>
+                                <option value="SITE_FORM">Site</option>
+                            </select>
+                        </div>
+                        <button type="submit" className="btn btn-primary" style={{ marginTop: '8px' }}>
                             Salvar Lead
                         </button>
                     </form>

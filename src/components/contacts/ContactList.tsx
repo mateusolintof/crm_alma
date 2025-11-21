@@ -37,7 +37,7 @@ export default function ContactList() {
             <div className={styles.container}>
                 <div className={styles.header}>
                     <h1 className={styles.title}>Contatos</h1>
-                    <button style={{ padding: '10px 16px', background: 'var(--primary-color)', color: '#0b172a', border: 'none', borderRadius: '10px', fontWeight: 700, boxShadow: '0 10px 20px rgba(15, 157, 146, 0.2)', cursor: 'pointer' }}>
+                    <button className="btn btn-primary">
                         + Novo Contato
                     </button>
                 </div>
@@ -61,7 +61,7 @@ export default function ContactList() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Contatos</h1>
-                <button style={{ padding: '10px 16px', background: 'var(--primary-color)', color: '#0b1220', border: 'none', borderRadius: '10px', fontWeight: 700, boxShadow: '0 10px 20px rgba(20, 184, 166, 0.25)', cursor: 'pointer' }}>
+                <button className="btn btn-primary">
                     + Novo Contato
                 </button>
             </div>
