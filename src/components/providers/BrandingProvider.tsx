@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface TenantBranding {
     primaryColor: string;
@@ -11,53 +11,35 @@ interface TenantBranding {
     textOnLight: string;
 }
 
-interface ThemeContextType {
-    theme: 'light' | 'dark';
-    toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType>({ theme: 'light', toggleTheme: () => { } });
-
-export const useTheme = () => useContext(ThemeContext);
+// ThemeContext removed as per "no dark mode" requirement
 
 export default function BrandingProvider({ branding, children }: { branding: TenantBranding, children: React.ReactNode }) {
-    const [theme] = useState<'light' | 'dark'>('light');
+    // User requested "no dark mode" and "professional look". 
+    // We will strictly enforce the light mode professional palette defined in globals.css
+    // We only inject the primary color from the tenant if it exists, otherwise we stick to the default Royal Blue.
 
     useEffect(() => {
         const root = document.documentElement;
-        root.style.setProperty('--primary-color', branding.primaryColor);
-        root.style.setProperty('--primary-strong', branding.primaryColor);
-        root.style.setProperty('--accent-color', branding.accentColor);
 
-        // Light-only background and text
-        root.style.setProperty('--background-main', branding.backgroundLight);
-        root.style.setProperty('--bg-app', branding.backgroundLight || '#f5f7fb');
-        root.style.setProperty('--bg-surface', '#ffffff');
-        root.style.setProperty('--bg-surface-2', '#f1f5f9');
-        root.style.setProperty('--bg-muted', '#e9eef5');
-        root.style.setProperty('--border-color', '#e2e8f0');
+        // Only override primary color if needed, but for now let's stick to the defined professional blue 
+        // unless the tenant specifically requests a different BRAND color. 
+        // The user said "lost all customization", so we should probably respect the primary color 
+        // BUT ensure it doesn't break the professional feel.
 
-        root.style.setProperty('--text-main', branding.textOnLight);
-        root.style.setProperty('--text-strong', '#0f172a');
-        root.style.setProperty('--text-muted', '#475569');
+        if (branding.primaryColor) {
+            root.style.setProperty('--primary-color', branding.primaryColor);
+            // We might need to calculate hover/light variants here if we were fully dynamic, 
+            // but for MVP let's trust the CSS variables or just set the main one.
+        }
 
-        // Keep original variables for reference if needed
-        root.style.setProperty('--background-dark', branding.backgroundDark);
-        root.style.setProperty('--background-light', branding.backgroundLight);
-        root.style.setProperty('--text-on-dark', branding.textOnDark);
-        root.style.setProperty('--text-on-light', branding.textOnLight);
+        // We explicitly DO NOT override backgrounds to ensure the "professional" slate palette is used.
+        // root.style.setProperty('--bg-app', ...); // REMOVED
 
-        // Set body background explicitly
-        document.body.style.backgroundColor = branding.backgroundLight;
-        document.body.style.color = branding.textOnLight;
-
-    }, [branding, theme]);
-
-    const toggleTheme = () => {}; // no-op, light only
+    }, [branding]);
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <>
             {children}
-        </ThemeContext.Provider>
+        </>
     );
 }

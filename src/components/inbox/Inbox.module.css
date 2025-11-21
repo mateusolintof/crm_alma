@@ -1,142 +1,178 @@
 .container {
     display: grid;
-    grid-template-columns: 350px 1fr 350px;
+    grid-template-columns: 320px 1fr 300px;
     height: 100vh;
     background-color: var(--bg-app);
-    color: var(--text-strong);
+    color: var(--text-primary);
     overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 300px 1fr;
+    }
+
+    .contextPanel {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
     .container {
         grid-template-columns: 1fr;
     }
-
-    /* Logic to show/hide panels based on state would be needed in JS, 
-     but for CSS we can just stack them or hide via utility classes applied by JS */
 }
 
+/* List Panel */
 .listPanel {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--bg-border);
     height: 100%;
-    overflow-y: auto;
-    background: #ffffff;
+    background: var(--bg-surface);
 }
 
-.panel:last-child {
-    border-right: none;
-}
-
-/* Dark mode adjustments if needed, handled by vars */
-@media (prefers-color-scheme: dark) {
-    .panel {
-        border-color: #333;
-    }
-}
-
-/* Conversation List Items */
-.conversationItem {
+.header {
     padding: var(--spacing-4);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--bg-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.conversationItem {
+    padding: var(--spacing-3) var(--spacing-4);
+    border-bottom: 1px solid var(--bg-border);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color var(--transition-fast);
 }
 
 .conversationItem:hover {
-    background-color: rgba(20, 184, 166, 0.08);
+    background-color: var(--bg-surface-hover);
 }
 
 .conversationItem.active {
-    background-color: rgba(20, 184, 166, 0.12);
+    background-color: var(--primary-light);
     border-left: 3px solid var(--primary-color);
 }
 
 .avatar {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(20, 184, 166, 0.22));
+    border-radius: var(--radius-full);
+    background: var(--bg-surface-hover);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    color: #16e0c1;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
-/* Message Thread */
+/* Thread Panel */
+.panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--bg-surface);
+}
+
 .threadHeader {
-    padding: var(--spacing-4);
-    border-bottom: 1px solid var(--border-color);
+    padding: var(--spacing-3) var(--spacing-5);
+    border-bottom: 1px solid var(--bg-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
+    background: var(--bg-surface);
+    height: 64px;
 }
 
 .messageList {
     flex: 1;
-    padding: var(--spacing-4);
+    padding: var(--spacing-5);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-3);
+    gap: var(--spacing-2);
+    background: var(--bg-app);
 }
 
 .messageBubble {
-    max-width: 70%;
-    padding: var(--spacing-3) var(--spacing-4);
-    border-radius: var(--radius-lg);
+    max-width: 65%;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-md);
     font-size: 0.95rem;
-    line-height: 1.4;
+    line-height: 1.5;
     position: relative;
+    box-shadow: var(--shadow-sm);
 }
 
 .messageInbound {
     align-self: flex-start;
-    background-color: #f1f5f9;
-    color: var(--text-strong);
-    border-bottom-left-radius: 6px;
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--bg-border);
 }
 
 .messageOutbound {
     align-self: flex-end;
-    background-color: var(--primary-color);
-    color: var(--text-on-dark);
-    border-bottom-right-radius: 6px;
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    border: 1px solid rgba(37, 99, 235, 0.2);
 }
 
 .composer {
     padding: var(--spacing-4);
-    border-top: 1px solid var(--border-color);
-    background: #ffffff;
+    border-top: 1px solid var(--bg-border);
+    background: var(--bg-surface);
 }
 
 .input {
     width: 100%;
     padding: var(--spacing-3);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--bg-border);
     border-radius: var(--radius-md);
     font-family: inherit;
     resize: none;
-    background: #f8fafc;
-    color: var(--text-strong);
+    background: var(--bg-app);
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: var(--bg-surface);
 }
 
 /* Context Panel */
+.contextPanel {
+    border-left: 1px solid var(--bg-border);
+    background: var(--bg-surface);
+    height: 100%;
+    overflow-y: auto;
+}
+
 .contextSection {
-    padding: var(--spacing-4);
-    border-bottom: 1px solid var(--border-color);
+    padding: var(--spacing-5);
+    border-bottom: 1px solid var(--bg-border);
 }
 
 .sectionTitle {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-muted);
-    margin-bottom: var(--spacing-2);
+    color: var(--text-tertiary);
+    margin-bottom: var(--spacing-3);
+    font-weight: 600;
+}
+
+.hiddenOnMobile {
+    /* Utility handled by JS/Media Queries */
 }

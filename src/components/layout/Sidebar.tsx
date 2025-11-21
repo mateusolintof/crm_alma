@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Inbox, Trello, Users, Building2, BarChart3, Settings, LogOut } from 'lucide-react';
-import { useTheme } from '../providers/BrandingProvider';
 import styles from './Sidebar.module.css';
 import clsx from 'clsx';
 
@@ -19,7 +18,6 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
     const pathname = usePathname();
-    useTheme(); // theme context currently fixed to light; retained for future use
 
     const handleLogout = async () => {
         await fetch('/api/auth/logout', { method: 'POST' });
@@ -52,7 +50,7 @@ export default function Sidebar() {
                 <button
                     onClick={handleLogout}
                     className={styles.navItem}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff4444' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)' }}
                 >
                     <LogOut size={20} />
                     <span className={styles.tooltip}>Sair</span>
