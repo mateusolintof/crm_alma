@@ -1,123 +1,184 @@
-# CRM Alma
+# Alma CRM - Edição Profissional
 
-CRM moderno para equipes comerciais e CS, com múltiplos tenants, pipeline Kanban, contatos, inbox e finanças, construído em Next.js 16 + React 19 e banco Supabase Postgres via Prisma.
+**Alma CRM** é um sistema de Gestão de Relacionamento com o Cliente (CRM) multi-inquilino (multi-tenant) especializado, projetado especificamente para **Agências de Marketing**. Ele unifica a comunicação, funis de vendas e gestão de clientes em uma interface única e profissional.
 
-## Visão Geral
-- Multi-tenant: isolamento de dados por organização (Tenant) e branding in-app.
-- CRM completo: empresas, contatos, leads, deals, atividades e briefing.
-- Pipeline Kanban: visualização por estágios, edição e atualização de deals.
-- Inbox unificado: conversas vinculadas a contatos/deals com mensagens e canais.
-- Pós-venda/financeiro: contas de cliente, contratos, serviços e MRR.
-- Analytics: visão de pipeline e saúde da receita em tempo real (Recharts).
-- Autenticação JWT custom: cookies HTTPOnly + CSRF token, roles simples.
+![Banner Alma CRM](https://via.placeholder.com/1200x400/2563EB/FFFFFF?text=Alma+CRM+|+Edição+Profissional)
 
-## Tecnologias Principais
-- Framework: Next.js 16 (App Router) + React 19 + TypeScript.
-- Banco de Dados: Supabase Postgres (PG Bouncer) via Prisma ORM.
-- Estilos: CSS Modules + CSS variables de branding (dark/light).
-- UI & UX: Lucide React (ícones), Recharts (gráficos), dnd-kit (drag & drop).
-- Auth/Security: jose (JWT), bcryptjs (hash), CSRF cookie, cookies httpOnly.
-- Tipografia: Google Fonts via `next/font` (Space Grotesk, Inter Tight, Geist Mono). Requer acesso à internet no build ou configure fontes locais se buildar offline.
+---
 
-## Arquitetura e Componentes
-- `src/app/layout.tsx`: carrega tenant padrão, aplica tema (BrandingProvider) e sidebar global.
-- `src/app/page.tsx`: redireciona para `/inbox`.
-- Páginas principais: `inbox/`, `pipeline/`, `leads/`, `companies/`, `contacts/`, `analytics/`, `login/`.
-- Rotas de API (App Router):
-  - `api/auth/login`: autenticação; gera cookie `auth-token` e CSRF.
-  - `api/leads`, `api/deals/[id]`, `api/pipeline`, `api/companies`, `api/contacts`, `api/contracts`, `api/analytics`: CRUD e consultas para UI.
-- `src/components/`: layout (Sidebar), cards, listas, gráficos e providers de tema.
-- `src/lib/`: integrações utilitárias (Prisma client, auth helpers, CSRF).
-- `src/services/tenant.service.ts`: caching/fetch de Tenant por domínio para branding e isolamento.
-- `prisma/schema.prisma`: modelo relacional completo (Tenant, User, Team, Lead/Deal, Pipeline/Stage, Activity, Messaging, Financial).
+## 📖 Índice
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Principais Funcionalidades](#-principais-funcionalidades)
+- [Stack Tecnológica](#-stack-tecnológica)
+- [Começando](#-começando)
+    - [Pré-requisitos](#pré-requisitos)
+    - [Instalação](#instalação)
+    - [Configuração do Banco de Dados](#configuração-do-banco-de-dados)
+- [Guia de Uso](#-guia-de-uso)
+    - [Credenciais de Login](#credenciais-de-login)
+    - [Módulos Principais](#módulos-principais)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Design System](#-design-system)
 
-## Modelo de Dados (resumo)
-- Tenant: dados e cores do tenant + relações para todo o CRM.
-- Usuário/Time: User (role string), Team e TeamMember.
-- CRM Core: Company, Contact, Lead, Deal (com Pipeline/Stage), Activity, Briefing.
-- Inbox: Conversation, Message, ChannelAccount.
-- Financeiro: ClientAccount, Contract, ServiceSubscription, MRRRecord.
-- Auditoria: AuditLog.
+---
 
-## Ambiente e Configuração
-1) Pré-requisitos: Node.js 18+; acesso ao projeto Supabase; npm.
-2) Dependências:
-```bash
-npm install
-```
-3) Variáveis de ambiente: copie `.env.example` para `.env` e preencha com strings do Supabase (Settings > Database > Connection string > Prisma):
-```env
-DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:6543/postgres?pgbouncer=true&connection_limit=1"
-DIRECT_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:5432/postgres"
-JWT_SECRET="your-super-secret-key"
-```
-- `DATABASE_URL`: conexão via pool (porta 6543) usada pela app.
-- `DIRECT_URL`: conexão direta (porta 5432) para migrations/seeds do Prisma.
-- (Opcional) `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` se futuramente usar Supabase JS client (storage/auth).
+## 🚀 Sobre o Projeto
 
-4) Banco de dados (Supabase):
-```bash
-# Cria as tabelas no banco de dados (obrigatório)
-npx prisma db push
+O Alma CRM foi construído para resolver o problema de fragmentação enfrentado pelas agências. Em vez de alternar entre WhatsApp, Trello e Planilhas, o Alma fornece um **hub centralizado** para:
+*   **Inbox Unificado**: Gerencie todas as conversas com clientes em um só lugar.
+*   **Funis Visuais**: Acompanhe leads e negociações através de um quadro Kanban.
+*   **Gestão de Clientes**: Armazene contatos, empresas e contratos.
+*   **Analytics**: Monitore a Receita Recorrente Mensal (MRR) e funis de vendas.
 
-# Popula o banco com dados de exemplo/teste (opcional)
-# Execute APENAS em desenvolvimento - isso adiciona dados fictícios para testes
-# Em produção, pule este passo e adicione seus clientes reais pela interface
-npx ts-node prisma/seed.ts
-```
+O sistema é construído com uma **Arquitetura Multi-tenant**, permitindo que múltiplas agências usem a mesma plataforma com isolamento total de dados.
 
-**Sobre o seed:**
-- **Para ambiente de desenvolvimento/teste**: Execute o seed para ter dados de exemplo prontos (usuários, leads, empresas fictícias)
-- **Para ambiente de produção**: NÃO execute o seed. Comece com banco vazio e adicione seus clientes reais através da interface do CRM
+---
 
-5) Desenvolvimento:
-```bash
-npm run dev
-# http://localhost:3000
-```
+## ✨ Principais Funcionalidades
 
-6) Build/produção:
-```bash
-npm run build
-npm run start -- --hostname 127.0.0.1 --port 3005
-```
-  - Servidor de produção está configurado para rodar em `127.0.0.1:3005` (porta livre neste ambiente).
-  - Aviso de múltiplos lockfiles: o `next.config.ts` já força `turbopack.root` para este diretório. Mantenha o `package-lock.json` local como fonte de verdade.
+### 1. Inbox Unificado 📨
+*   **Layout de 3 Painéis**: Lista de Conversas, Tópico de Mensagens e Painel de Contexto.
+*   **Mensagens Estilo Documento**: Interface limpa e profissional focada na clareza.
+*   **Contexto do Cliente**: Visualize detalhes do cliente ao lado do chat.
 
-## Scripts
-- `npm run dev`: inicia Next.js em modo desenvolvimento.
-- `npm run build`: build de produção.
-- `npm run start`: inicia build de produção.
-- `npm run lint`: checagem de lint.
+### 2. Funil Visual (Kanban) 📊
+*   **Arrastar e Soltar**: Mova negociações facilmente entre as etapas (ex: Lead -> Proposta -> Fechado).
+*   **Etapas Personalizadas**: Funis configuráveis para diferentes fluxos de trabalho (Novos Negócios, Renovações).
+*   **Cartões de Negociação**: Cartões minimalistas mostrando valor, título e tags.
 
-## Autenticação e Segurança
-- Login via `POST /api/auth/login` com email/senha do tenant.
-- Gera cookie `auth-token` (JWT) httpOnly + `csrf-token` não httpOnly.
-- Hash de senha com `bcryptjs`; fallback em dev para seeds simples.
-- Middleware/guards: use `lib/auth` para validar token e role quando criar novas rotas.
+### 3. Entidades CRM 📇
+*   **Leads**: Capture e qualifique clientes em potencial.
+*   **Contatos e Empresas**: Gerencie sua agenda com perfis detalhados.
+*   **Contratos**: Acompanhe contratos ativos e MRR.
 
-## Branding e Multi-Tenancy
-- Tenant define cores/logos (dark/light) e textos base. `BrandingProvider` injeta variáveis CSS globais.
-- `getCachedTenantByDomain` resolve tenant pelo domínio; por padrão usa `alma.agency`. Ajuste conforme onboarding multi-domínio.
+### 4. Dashboard de Analytics 📈
+*   **Visão Geral de MRR**: Acompanhe o crescimento da receita ao longo do tempo.
+*   **Análise de Funil**: Visualize taxas de conversão através das etapas do funil.
 
-## Estrutura de Pastas
+### 5. Segurança e Arquitetura 🔒
+*   **RBAC**: Controle de Acesso Baseado em Função (Admin, Vendas, Suporte).
+*   **Autenticação Segura**: Autenticação JWT personalizada com cookies HTTP-only.
+*   **Isolamento de Dados**: Separação estrita de inquilinos no nível do banco de dados.
+
+---
+
+## 🛠 Stack Tecnológica
+
+**Frontend:**
+*   **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+*   **Linguagem**: [TypeScript](https://www.typescriptlang.org/)
+*   **Estilização**: CSS Modules + CSS Variables (Zero runtime overhead)
+*   **Ícones**: [Lucide React](https://lucide.dev/)
+*   **Drag & Drop**: `@dnd-kit`
+
+**Backend:**
+*   **Banco de Dados**: SQLite (Dev) / PostgreSQL (Pronto para Prod)
+*   **ORM**: [Prisma](https://www.prisma.io/)
+*   **Auth**: `jose` (JWT), `bcryptjs` (Hashing)
+
+---
+
+## 🏁 Começando
+
+### Pré-requisitos
+*   **Node.js**: v18 ou superior
+*   **npm**: v9 ou superior
+
+### Instalação
+
+1.  **Clone o repositório**:
+    ```bash
+    git clone https://github.com/seu-repo/crm-alma.git
+    cd crm-alma
+    ```
+
+2.  **Instale as dependências**:
+    ```bash
+    npm install
+    ```
+
+3.  **Configure o Ambiente**:
+    O projeto vem com um arquivo `.env` pré-configurado para desenvolvimento local.
+    ```env
+    DATABASE_URL="file:./dev.db"
+    JWT_SECRET="sua-chave-super-secreta-mude-em-prod"
+    ```
+
+### Configuração do Banco de Dados
+
+1.  **Inicialize o Banco de Dados**:
+    Este comando cria o arquivo SQLite e aplica o esquema.
+    ```bash
+    npx prisma migrate dev --name init
+    ```
+
+2.  **Popule com Dados Iniciais (Seed)**:
+    Popule o banco de dados com o inquilino padrão ("Alma") e usuários.
+    ```bash
+    npx tsx prisma/seed.ts
+    ```
+
+3.  **Execute o Servidor**:
+    ```bash
+    npm run dev
+    ```
+    Acesse o app em [http://localhost:3000](http://localhost:3000).
+
+---
+
+## 🎮 Guia de Uso
+
+### Credenciais de Login
+O script de seed cria as seguintes contas padrão para o inquilino **Alma**:
+
+| Função | Email | Senha |
+| :--- | :--- | :--- |
+| **Admin** | `admin@alma.agency` | `123456` |
+| **Vendas** | `vendas@alma.agency` | `123456` |
+
+### Módulos Principais
+
+*   **Inbox**: Clique no ícone "Inbox" na barra lateral. Selecione uma conversa para ver as mensagens.
+*   **Funil**: Clique no ícone "Trello". Arraste os cartões para atualizar sua etapa.
+*   **Contatos/Empresas**: Use os ícones "Usuários" e "Prédio" para gerenciar entidades.
+*   **Sair**: Clique no ícone "Log Out" na parte inferior da barra lateral.
+
+---
+
+## 📂 Estrutura do Projeto
+
 ```
 src/
-├─ app/           # Rotas Next.js (páginas e APIs)
-├─ components/    # UI compartilhada (layout, cards, gráficos, listas)
-├─ lib/           # Prisma client, auth helpers, CSRF, utils
-├─ services/      # Acesso a dados/tenants
-├─ middleware.ts  # Proteção/edge middleware (autenticação)
+├── app/                 # Páginas e rotas de API do Next.js App Router
+│   ├── api/             # Endpoints da API Backend (auth, leads, pipeline...)
+│   ├── (routes)/        # Rotas de UI (inbox, pipeline, etc.)
+│   ├── globals.css      # Estilos globais e variáveis
+│   └── layout.tsx       # Layout raiz com Sidebar e Providers
+├── components/          # Componentes React
+│   ├── inbox/           # Componentes específicos do Inbox
+│   ├── pipeline/        # Componentes do quadro Kanban
+│   ├── layout/          # Sidebar e estrutura
+│   └── providers/       # Provedores de Contexto (Branding)
+├── lib/                 # Utilitários (Cliente Prisma, Auxiliares de Auth)
+└── services/            # Camada de lógica de negócios
 prisma/
-├─ schema.prisma  # Schema Prisma (Supabase Postgres)
-└─ seed.ts        # Seed opcional com tenant/dados de teste
+├── schema.prisma        # Definição do esquema do banco de dados
+└── seed.ts              # Script de população de dados
 ```
 
-## Notas Operacionais
-- Tenha certeza de que a instância Supabase está com acessos liberados para a origem do app.
-- Em produção, mantenha `secure: true` nos cookies (já condicionado por `NODE_ENV`).
-- Para novas entidades, crie modelos Prisma e rode `prisma db push` ou `migrate`.
-- Caso use Storage/Auth do Supabase, defina as chaves públicas/privadas nas envs opcionais.
+---
 
-## Licença
-Este projeto é proprietário e confidencial. A cópia não autorizada, por qualquer meio, é estritamente proibida.
+## 🎨 Design System
+
+O projeto utiliza um **Design System Profissional** focado em clareza e confiança.
+
+*   **Cor Primária**: Azul Royal (`#2563EB`)
+*   **Fundos**: Cinza Slate (`#F8FAFC`, `#FFFFFF`)
+*   **Tipografia**: `Geist Sans` (Moderna, geométrica, legível)
+*   **Modo**: Apenas Modo Claro (Forçado para consistência)
+
+---
+
+## 📄 Licença
+
+Este software é proprietário e desenvolvido para **Alma Agência Digital**.
