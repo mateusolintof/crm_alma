@@ -27,13 +27,15 @@ async function main() {
     console.log('Created Tenant:', alma.name)
 
     // 2. Create Users
-    await prisma.user.create({
-        data: {
+    await prisma.user.upsert({
+        where: { email: 'admin@alma.agency' },
+        update: {},
+        create: {
             tenantId: alma.id,
             name: 'Admin Alma',
             email: 'admin@alma.agency',
             role: 'ADMIN',
-            password: '$2a$10$EpWaTgiFbI.w.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1', // Hash for "123456"
+            password: '$2b$10$YKaP3noy/Gr6pK3LQ.ETRuHMZa0ubKVLP0gAq60qocT3L7Q1SHnNy', // Hash for "123456"
         },
     });
 
@@ -45,7 +47,7 @@ async function main() {
             email: 'vendas@alma.agency',
             name: 'João Vendas',
             role: 'SALES_REP',
-            password: '$2a$10$EpWaTgiFbI.w.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1', // Hash for "123456"
+            password: '$2b$10$YKaP3noy/Gr6pK3LQ.ETRuHMZa0ubKVLP0gAq60qocT3L7Q1SHnNy', // Hash for "123456"
         },
     });
 
