@@ -257,7 +257,7 @@ export default function PipelineBoard() {
         <div className={styles.boardContainer}>
             <div className={styles.header}>
                 <h2 style={{ fontSize: '1.2rem', fontWeight: '600' }}>Pipeline: Novos Negócios</h2>
-                <button style={{ padding: '8px 16px', background: 'var(--primary-color)', color: 'var(--text-on-dark)', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                <button style={{ padding: '10px 16px', background: 'linear-gradient(135deg, #14b8a6, #0ea5e9)', color: '#0b1220', border: 'none', borderRadius: '12px', fontWeight: 700, boxShadow: '0 10px 20px rgba(20, 184, 166, 0.25)', cursor: 'pointer' }}>
                     + Novo Negócio
                 </button>
             </div>

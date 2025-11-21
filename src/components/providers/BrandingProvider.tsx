@@ -16,23 +16,30 @@ interface ThemeContextType {
     toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextType>({ theme: 'dark', toggleTheme: () => { } });
+const ThemeContext = createContext<ThemeContextType>({ theme: 'light', toggleTheme: () => { } });
 
 export const useTheme = () => useContext(ThemeContext);
 
 export default function BrandingProvider({ branding, children }: { branding: TenantBranding, children: React.ReactNode }) {
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+    const [theme] = useState<'light' | 'dark'>('light');
 
     useEffect(() => {
         const root = document.documentElement;
-        const isDark = theme === 'dark';
-
         root.style.setProperty('--primary-color', branding.primaryColor);
+        root.style.setProperty('--primary-strong', branding.primaryColor);
         root.style.setProperty('--accent-color', branding.accentColor);
 
-        // Dynamic background and text based on theme
-        root.style.setProperty('--background-main', isDark ? branding.backgroundDark : branding.backgroundLight);
-        root.style.setProperty('--text-main', isDark ? branding.textOnDark : branding.textOnLight);
+        // Light-only background and text
+        root.style.setProperty('--background-main', branding.backgroundLight);
+        root.style.setProperty('--bg-app', branding.backgroundLight || '#f5f7fb');
+        root.style.setProperty('--bg-surface', '#ffffff');
+        root.style.setProperty('--bg-surface-2', '#f1f5f9');
+        root.style.setProperty('--bg-muted', '#e9eef5');
+        root.style.setProperty('--border-color', '#e2e8f0');
+
+        root.style.setProperty('--text-main', branding.textOnLight);
+        root.style.setProperty('--text-strong', '#0f172a');
+        root.style.setProperty('--text-muted', '#475569');
 
         // Keep original variables for reference if needed
         root.style.setProperty('--background-dark', branding.backgroundDark);
@@ -41,14 +48,12 @@ export default function BrandingProvider({ branding, children }: { branding: Ten
         root.style.setProperty('--text-on-light', branding.textOnLight);
 
         // Set body background explicitly
-        document.body.style.backgroundColor = isDark ? branding.backgroundDark : branding.backgroundLight;
-        document.body.style.color = isDark ? branding.textOnDark : branding.textOnLight;
+        document.body.style.backgroundColor = branding.backgroundLight;
+        document.body.style.color = branding.textOnLight;
 
     }, [branding, theme]);
 
-    const toggleTheme = () => {
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-    };
+    const toggleTheme = () => {}; // no-op, light only
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>

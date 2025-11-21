@@ -2,11 +2,12 @@
     padding: var(--spacing-6);
     max-width: 1200px;
     margin: 0 auto;
+    color: var(--text-strong);
 }
 
 .title {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: var(--spacing-6);
 }
 
@@ -17,15 +18,16 @@
 }
 
 .card {
-    background: #fff;
+    background: #ffffff;
     padding: var(--spacing-6);
-    border-radius: var(--radius-md);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
 }
 
 .cardTitle {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: var(--spacing-4);
-    color: #333;
+    color: var(--text-strong);
 }

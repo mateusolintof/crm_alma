@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Inbox, Trello, Users, Building2, BarChart3, Settings, LogOut, Sun, Moon } from 'lucide-react';
+import { Inbox, Trello, Users, Building2, BarChart3, Settings, LogOut } from 'lucide-react';
 import { useTheme } from '../providers/BrandingProvider';
 import styles from './Sidebar.module.css';
 import clsx from 'clsx';
@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const { theme, toggleTheme } = useTheme();
+    useTheme(); // theme context currently fixed to light; retained for future use
 
     const handleLogout = async () => {
         await fetch('/api/auth/logout', { method: 'POST' });
@@ -41,6 +41,7 @@ export default function Sidebar() {
                             className={clsx(styles.navItem, isActive && styles.active)}
                         >
                             <item.icon size={20} />
+                            <span className={styles.label}>{item.label}</span>
                             <span className={styles.tooltip}>{item.label}</span>
                         </Link>
                     );
@@ -48,15 +49,6 @@ export default function Sidebar() {
             </nav>
 
             <div style={{ marginTop: 'auto', paddingBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <button
-                    onClick={toggleTheme}
-                    className={styles.navItem}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                    <span className={styles.tooltip}>Tema</span>
-                </button>
-
                 <button
                     onClick={handleLogout}
                     className={styles.navItem}

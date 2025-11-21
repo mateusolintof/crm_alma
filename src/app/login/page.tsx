@@ -43,20 +43,21 @@ export default function LoginPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'var(--background-dark)',
-            color: 'var(--text-on-dark)'
+            background: 'radial-gradient(circle at 20% 20%, rgba(15,157,146,0.08), transparent 26%), radial-gradient(circle at 80% 0%, rgba(245,158,11,0.12), transparent 32%), #f5f7fb',
+            color: 'var(--text-on-light)'
         }}>
             <div style={{
                 width: '100%',
                 maxWidth: '400px',
                 padding: '40px',
-                background: '#1a1a1a',
-                borderRadius: '12px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                background: '#ffffff',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(15,23,42,0.12)',
+                border: '1px solid var(--border-color)'
             }}>
                 <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>Alma CRM</h1>
-                    <p style={{ color: '#888', marginTop: '8px' }}>Entre na sua conta</p>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary-color)', fontFamily: 'var(--font-heading)' }}>Alma CRM</h1>
+                    <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Entre na sua conta</p>
                 </div>
 
                 {error && (
@@ -85,11 +86,11 @@ export default function LoginPage() {
                                 required
                                 style={{
                                     width: '100%',
-                                    padding: '10px 10px 10px 40px',
-                                    background: '#333',
-                                    border: '1px solid #444',
-                                    borderRadius: '6px',
-                                    color: '#fff',
+                                    padding: '12px 12px 12px 40px',
+                                    background: 'var(--bg-surface-2)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '10px',
+                                    color: 'var(--text-strong)',
                                     outline: 'none'
                                 }}
                                 placeholder="seu@email.com"
@@ -108,11 +109,11 @@ export default function LoginPage() {
                                 required
                                 style={{
                                     width: '100%',
-                                    padding: '10px 10px 10px 40px',
-                                    background: '#333',
-                                    border: '1px solid #444',
-                                    borderRadius: '6px',
-                                    color: '#fff',
+                                    padding: '12px 12px 12px 40px',
+                                    background: 'var(--bg-surface-2)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '10px',
+                                    color: 'var(--text-strong)',
                                     outline: 'none'
                                 }}
                                 placeholder="••••••••"
@@ -126,13 +127,14 @@ export default function LoginPage() {
                         style={{
                             marginTop: '16px',
                             padding: '12px',
-                            background: 'var(--primary-color)',
-                            color: 'var(--text-on-dark)',
+                            background: 'linear-gradient(135deg, #14b8a6, #0ea5e9)',
+                            color: '#0b1220',
                             border: 'none',
-                            borderRadius: '6px',
-                            fontWeight: '600',
+                            borderRadius: '12px',
+                            fontWeight: '700',
                             cursor: loading ? 'not-allowed' : 'pointer',
-                            opacity: loading ? 0.7 : 1
+                            opacity: loading ? 0.7 : 1,
+                            boxShadow: '0 12px 30px rgba(20, 184, 166, 0.35)'
                         }}
                     >
                         {loading ? 'Entrando...' : 'Entrar'}
