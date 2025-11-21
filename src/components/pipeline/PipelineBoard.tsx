@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     DndContext,
     DragOverlay,
@@ -20,7 +20,8 @@ import {
     useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DollarSign, Building2, Plus } from 'lucide-react';
+import { DollarSign, Building2, Plus, ChevronDown, Settings } from 'lucide-react';
+import Link from 'next/link';
 
 // Types
 type Deal = {
@@ -134,16 +135,61 @@ function PipelineColumn({ column }: { column: Column }) {
     );
 }
 
+type Pipeline = {
+    id: string;
+    name: string;
+    type: string;
+};
+
 export default function PipelineBoard() {
     const [columns, setColumns] = useState<Column[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
     const [snapshotColumns, setSnapshotColumns] = useState<Column[]>([]);
+    const [pipelines, setPipelines] = useState<Pipeline[]>([]);
+    const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(null);
+    const [showPipelineDropdown, setShowPipelineDropdown] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
+    // Close dropdown when clicking outside
     useEffect(() => {
-        async function fetchPipeline() {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowPipelineDropdown(false);
+            }
+        }
+
+        if (showPipelineDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [showPipelineDropdown]);
+
+    // Fetch available pipelines
+    useEffect(() => {
+        async function fetchPipelines() {
             try {
-                const res = await fetch('/api/pipeline');
+                const res = await fetch('/api/pipelines');
+                const data = await res.json();
+                setPipelines(data);
+                if (data.length > 0 && !selectedPipelineId) {
+                    setSelectedPipelineId(data[0].id);
+                }
+            } catch (error) {
+                console.error('Failed to fetch pipelines', error);
+            }
+        }
+        fetchPipelines();
+    }, []);
+
+    // Fetch pipeline data when selected pipeline changes
+    useEffect(() => {
+        if (!selectedPipelineId) return;
+
+        async function fetchPipeline() {
+            setLoading(true);
+            try {
+                const res = await fetch(`/api/pipelines/${selectedPipelineId}`);
                 const data = await res.json();
 
                 if (data.stages) {
@@ -167,7 +213,7 @@ export default function PipelineBoard() {
             }
         }
         fetchPipeline();
-    }, []);
+    }, [selectedPipelineId]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -277,7 +323,58 @@ export default function PipelineBoard() {
         <div className="flex flex-col h-screen bg-bg-app overflow-hidden">
             {/* Header */}
             <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-text-primary">Pipeline: Novos Negócios</h2>
+                <div className="flex items-center gap-4">
+                    {/* Pipeline Selector Dropdown */}
+                    <div className="relative" ref={dropdownRef}>
+                        <button
+                            onClick={() => setShowPipelineDropdown(!showPipelineDropdown)}
+                            className="flex items-center gap-2 px-4 py-2 bg-bg-surface-hover hover:bg-bg-border rounded-md transition-colors"
+                        >
+                            <span className="text-lg font-semibold text-text-primary">
+                                {pipelines.find(p => p.id === selectedPipelineId)?.name || 'Selecione Pipeline'}
+                            </span>
+                            <ChevronDown size={18} className={`text-text-secondary transition-transform ${showPipelineDropdown ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {showPipelineDropdown && (
+                            <div className="absolute top-full mt-2 left-0 bg-white border border-bg-border rounded-lg shadow-lg min-w-[240px] z-50">
+                                <div className="py-1">
+                                    {pipelines.map(pipeline => (
+                                        <button
+                                            key={pipeline.id}
+                                            onClick={() => {
+                                                setSelectedPipelineId(pipeline.id);
+                                                setShowPipelineDropdown(false);
+                                            }}
+                                            className={`w-full px-4 py-2.5 text-left hover:bg-bg-surface-hover transition-colors flex items-center justify-between ${
+                                                selectedPipelineId === pipeline.id ? 'bg-bg-surface-hover' : ''
+                                            }`}
+                                        >
+                                            <div>
+                                                <div className="font-medium text-text-primary">{pipeline.name}</div>
+                                                <div className="text-xs text-text-tertiary">{pipeline.type}</div>
+                                            </div>
+                                            {selectedPipelineId === pipeline.id && (
+                                                <div className="w-2 h-2 rounded-full bg-primary"></div>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="border-t border-bg-border py-1">
+                                    <Link
+                                        href="/settings/pipelines"
+                                        className="w-full px-4 py-2.5 text-left hover:bg-bg-surface-hover transition-colors flex items-center gap-2 text-text-secondary"
+                                    >
+                                        <Settings size={16} />
+                                        Gerenciar Pipelines
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 <button className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md font-medium transition-all duration-150 hover:-translate-y-0.5 shadow-sm hover:shadow-md">
                     <Plus size={18} />
                     Novo Negócio
