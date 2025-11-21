@@ -4,19 +4,24 @@ import { getTenantByDomain } from '@/services/tenant.service';
 import { assertCsrf } from '@/lib/csrf';
 
 export async function GET() {
-    const tenant = await getTenantByDomain('alma.agency');
-    if (!tenant) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+    try {
+        const tenant = await getTenantByDomain('alma.agency');
+        if (!tenant) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
 
-    const leads = await prisma.lead.findMany({
-        where: { tenantId: tenant.id },
-        include: {
-            company: true,
-            primaryContact: true,
-        },
-        orderBy: { createdAt: 'desc' },
-    });
+        const leads = await prisma.lead.findMany({
+            where: { tenantId: tenant.id },
+            include: {
+                company: true,
+                primaryContact: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
 
-    return NextResponse.json(leads);
+        return NextResponse.json(leads);
+    } catch (error) {
+        console.error('Failed to fetch leads:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 }
 
 export async function POST(request: Request) {

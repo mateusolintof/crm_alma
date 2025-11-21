@@ -35,6 +35,9 @@ export default function LeadList() {
     async function fetchLeads() {
         try {
             const res = await fetch('/api/leads');
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
             const data = await res.json();
             setLeads(data);
         } catch (error) {
@@ -156,7 +159,7 @@ export default function LeadList() {
                                 <td className={styles.td}>{lead.company?.name || '-'}</td>
                                 <td className={styles.td}><span className={styles.tag}>{lead.sourceType}</span></td>
                                 <td className={styles.td}>{lead.status}</td>
-                                <td className={styles.td}>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                                <td className={styles.td}>{new Date(lead.createdAt).toISOString().split('T')[0]}</td>
                             </tr>
                         ))}
                     </tbody>
