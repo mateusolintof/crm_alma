@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CRM Alma
 
-## Getting Started
+A modern, comprehensive Customer Relationship Management (CRM) system built with Next.js 16, designed to streamline sales processes, manage client relationships, and provide actionable analytics.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Core CRM
+-   **Multi-Tenancy Support**: Built from the ground up to support multiple organizations (Tenants) with data isolation.
+-   **Company & Contact Management**: Centralized database for all your business relationships.
+-   **Sales Pipeline**: Visual Kanban-style pipeline to manage Leads and Deals through various stages.
+-   **Activity Tracking**: Log calls, meetings, and tasks associated with leads and deals.
+
+### Communication & Inbox
+-   **Unified Inbox**: Manage conversations from multiple channels in one place.
+-   **Message History**: Full history of interactions linked to contacts and deals.
+
+### Finance & Post-Sales
+-   **Client Accounts**: Manage active client subscriptions and health scores.
+-   **Contract Management**: Track contract terms, renewals, and dates.
+-   **MRR Tracking**: Monitor Monthly Recurring Revenue (MRR) and financial growth.
+
+### Analytics & Dashboard
+-   **Real-time Dashboard**: Overview of key performance indicators (KPIs).
+-   **Visual Charts**: Interactive charts powered by Recharts for data visualization.
+
+### Security & Tech
+-   **Secure Authentication**: Custom JWT-based authentication system with secure password hashing.
+-   **Role-Based Access**: Support for different user roles (e.g., Sales Rep, Admin).
+-   **Modern Stack**: Built on the latest Next.js 16 App Router and React 19.
+
+## 🛠 Tech Stack
+
+-   **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+-   **Language**: [TypeScript](https://www.typescriptlang.org/)
+-   **Database**: [SQLite](https://www.sqlite.org/) (Development) via [Prisma ORM](https://www.prisma.io/)
+-   **Styling**: CSS Modules with Native CSS Variables for theming
+-   **Icons**: [Lucide React](https://lucide.dev/)
+-   **Charts**: [Recharts](https://recharts.org/)
+-   **Drag & Drop**: [dnd-kit](https://dndkit.com/)
+-   **Authentication**: `jose` (JWT) & `bcryptjs`
+
+## 📦 Prerequisites
+
+Before you begin, ensure you have the following installed:
+-   [Node.js](https://nodejs.org/) (v18 or higher recommended)
+-   npm, yarn, pnpm, or bun
+
+## 🚀 Getting Started
+
+1.  **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    cd CRM_Alma
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Setup**
+    Create a `.env` file in the root directory (copy from `.env.example` if available) and configure your database URL and JWT secret.
+    ```env
+    DATABASE_URL="file:./dev.db"
+    JWT_SECRET="your-super-secret-key"
+    ```
+
+4.  **Database Setup**
+    Push the Prisma schema to your database:
+    ```bash
+    npx prisma db push
+    ```
+
+5.  **Run the Development Server**
+    ```bash
+    npm run dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 📂 Project Structure
+
+```
+src/
+├── app/                # Next.js App Router pages and layouts
+│   ├── api/            # Backend API routes
+│   ├── (auth)/         # Authentication routes (login, etc.)
+│   ├── dashboard/      # Main dashboard views
+│   └── ...
+├── components/         # Reusable UI components
+├── lib/                # Utility functions and shared logic
+├── services/           # Business logic and data access layer
+└── middleware.ts       # Edge middleware for auth protection
+prisma/
+└── schema.prisma       # Database schema definition
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📜 Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-   `npm run dev`: Starts the development server.
+-   `npm run build`: Builds the application for production.
+-   `npm run start`: Runs the built production application.
+-   `npm run lint`: Runs ESLint to check for code quality issues.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📄 License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is proprietary and confidential. Unauthorized copying of this file, via any medium is strictly prohibited.
