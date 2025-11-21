@@ -12,6 +12,7 @@ datasource db {
 model Tenant {
   id        String   @id @default(uuid())
   name      String
+  domain    String   @unique @default("alma.agency") // Default for migration
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -56,6 +57,7 @@ model User {
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
   name      String
   email     String   @unique
+  password  String   @default("$2a$10$EpWaTgiFbI.w.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1") // Default hash for "123456" (placeholder)
   role      String   @default("SALES_REP") // Enum handled in app logic or simple string for SQLite
   createdAt DateTime @default(now())
 

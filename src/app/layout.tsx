@@ -41,13 +41,14 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <BrandingProvider branding={tenant} />
-        <div style={{ display: 'flex', minHeight: '100vh' }}>
-          <Sidebar />
-          <main style={{ flex: 1, overflow: 'auto' }}>
-            {children}
-          </main>
-        </div>
+        <BrandingProvider branding={tenant}>
+          <div style={{ display: 'flex', minHeight: '100vh' }}>
+            <Sidebar />
+            <main style={{ flex: 1, overflow: 'auto' }}>
+              {children}
+            </main>
+          </div>
+        </BrandingProvider>
       </body>
     </html>
   );

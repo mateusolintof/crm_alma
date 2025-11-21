@@ -39,13 +39,24 @@ const MOCK_MESSAGES: Message[] = [
 export default function InboxLayout() {
     const [selectedId, setSelectedId] = useState<string | null>('1');
     const [messageText, setMessageText] = useState('');
+    const [showList, setShowList] = useState(true);
 
     const selectedConversation = MOCK_CONVERSATIONS.find(c => c.id === selectedId);
+
+    const handleSelectConversation = (id: string) => {
+        setSelectedId(id);
+        setShowList(false);
+    };
+
+    const handleBackToList = () => {
+        setShowList(true);
+        setSelectedId(null);
+    };
 
     return (
         <div className={styles.container}>
             {/* Left Panel: List */}
-            <div className={styles.panel}>
+            <div className={clsx(styles.listPanel, !showList && styles.hiddenOnMobile)}>
                 <div style={{ padding: '16px', borderBottom: '1px solid #eee' }}>
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                         <h2 style={{ fontSize: '1.2rem', fontWeight: '600' }}>Inbox</h2>
@@ -65,7 +76,7 @@ export default function InboxLayout() {
                         <div
                             key={conv.id}
                             className={clsx(styles.conversationItem, selectedId === conv.id && styles.active)}
-                            onClick={() => setSelectedId(conv.id)}
+                            onClick={() => handleSelectConversation(conv.id)}
                         >
                             <div style={{ display: 'flex', gap: '12px' }}>
                                 <div className={styles.avatar}>{conv.contactName.charAt(0)}</div>
@@ -85,10 +96,11 @@ export default function InboxLayout() {
             </div>
 
             {/* Center Panel: Thread */}
-            <div className={styles.panel}>
+            <div className={clsx(styles.panel, showList && styles.hiddenOnMobile)}>
                 {selectedConversation ? (
                     <>
                         <div className={styles.threadHeader}>
+                            <button onClick={handleBackToList} className={styles.backButton}>←</button>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div className={styles.avatar}>{selectedConversation.contactName.charAt(0)}</div>
                                 <div>
@@ -137,7 +149,7 @@ export default function InboxLayout() {
             </div>
 
             {/* Right Panel: Context */}
-            <div className={styles.panel}>
+            <div className={clsx(styles.panel, styles.hiddenOnMobile)}>
                 {selectedConversation ? (
                     <>
                         <div className={styles.contextSection} style={{ textAlign: 'center' }}>

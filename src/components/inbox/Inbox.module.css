@@ -7,7 +7,16 @@
     overflow: hidden;
 }
 
-.panel {
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    /* Logic to show/hide panels based on state would be needed in JS, 
+     but for CSS we can just stack them or hide via utility classes applied by JS */
+}
+
+.listPanel {
     display: flex;
     flex-direction: column;
     border-right: 1px solid #e5e5e5;

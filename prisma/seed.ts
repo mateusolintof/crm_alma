@@ -6,21 +6,23 @@ async function main() {
     console.log('Seeding database...')
 
     // 1. Create Tenant: Alma Agência Digital
-    const alma = await prisma.tenant.create({
-        data: {
+    const alma = await prisma.tenant.upsert({
+        where: { id: 'alma-tenant-id' }, // Use a fixed ID for idempotency if possible, or find unique
+        // Since we don't have a unique field other than ID (and domain now), let's use domain for upsert if possible, 
+        // but ID is safer if we want to hardcode it. 
+        // Actually, let's just create or find first.
+        update: {},
+        create: {
             name: 'Alma Agência Digital',
-            logoDarkHorizontalUrl: '/mnt/data/WhatsApp Image 2025-10-19 at 11.33.58 (1).jpeg',
-            logoDarkVerticalUrl: '/mnt/data/WhatsApp Image 2025-10-19 at 11.33.58.jpeg',
-            logoLightHorizontalUrl: '/mnt/data/WhatsApp Image 2025-10-19 at 11.33.59.jpeg',
-            logoLightVerticalUrl: '/mnt/data/WhatsApp Image 2025-10-19 at 11.34.01.jpeg',
-            primaryColor: '#000000',
-            backgroundDark: '#000000',
-            backgroundLight: '#FFFFFF',
+            domain: 'alma.agency',
+            primaryColor: '#D4AF37', // Gold
+            backgroundDark: '#050505',
+            backgroundLight: '#F5F5F5',
             accentColor: '#FFFFFF',
             textOnDark: '#FFFFFF',
-            textOnLight: '#111111',
+            textOnLight: '#111111'
         }
-    })
+    });
 
     console.log('Created Tenant:', alma.name)
 
@@ -30,18 +32,22 @@ async function main() {
             tenantId: alma.id,
             name: 'Admin Alma',
             email: 'admin@alma.agency',
-            role: 'ADMIN'
-        }
-    })
+            role: 'ADMIN',
+            password: '$2a$10$EpWaTgiFbI.w.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1', // Hash for "123456"
+        },
+    });
 
-    const salesRep = await prisma.user.create({
-        data: {
+    const salesUser = await prisma.user.upsert({
+        where: { email: 'vendas@alma.agency' },
+        update: {},
+        create: {
             tenantId: alma.id,
-            name: 'Vendedor 1',
             email: 'vendas@alma.agency',
-            role: 'SALES_REP'
-        }
-    })
+            name: 'João Vendas',
+            role: 'SALES_REP',
+            password: '$2a$10$EpWaTgiFbI.w.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1', // Hash for "123456"
+        },
+    });
 
     console.log('Created Users')
 
