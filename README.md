@@ -1,110 +1,120 @@
 # CRM Alma
 
-Um sistema moderno e abrangente de Customer Relationship Management (CRM) construído com Next.js 16, projetado para otimizar processos de vendas, gerenciar relacionamentos com clientes e fornecer análises acionáveis.
+CRM moderno para equipes comerciais e CS, com múltiplos tenants, pipeline Kanban, contatos, inbox e finanças, construído em Next.js 16 + React 19 e banco Supabase Postgres via Prisma.
 
-## 🚀 Funcionalidades
+## Visão Geral
+- Multi-tenant: isolamento de dados por organização (Tenant) e branding in-app.
+- CRM completo: empresas, contatos, leads, deals, atividades e briefing.
+- Pipeline Kanban: visualização por estágios, edição e atualização de deals.
+- Inbox unificado: conversas vinculadas a contatos/deals com mensagens e canais.
+- Pós-venda/financeiro: contas de cliente, contratos, serviços e MRR.
+- Analytics: visão de pipeline e saúde da receita em tempo real (Recharts).
+- Autenticação JWT custom: cookies HTTPOnly + CSRF token, roles simples.
 
-### Core CRM
--   **Suporte Multi-Tenancy**: Construído desde o início para suportar múltiplas organizações (Tenants) com isolamento de dados.
--   **Gerenciamento de Empresas e Contatos**: Base de dados centralizada para todos os seus relacionamentos de negócios.
--   **Sales Pipeline**: Pipeline visual estilo Kanban para gerenciar Leads e Deals através de vários estágios.
--   **Rastreamento de Atividades**: Registre ligações, reuniões e tarefas associadas a leads e deals.
+## Tecnologias Principais
+- Framework: Next.js 16 (App Router) + React 19 + TypeScript.
+- Banco de Dados: Supabase Postgres (PG Bouncer) via Prisma ORM.
+- Estilos: CSS Modules + CSS variables de branding (dark/light).
+- UI & UX: Lucide React (ícones), Recharts (gráficos), dnd-kit (drag & drop).
+- Auth/Security: jose (JWT), bcryptjs (hash), CSRF cookie, cookies httpOnly.
 
-### Comunicação & Inbox
--   **Inbox Unificado**: Gerencie conversas de múltiplos canais em um único lugar.
--   **Histórico de Mensagens**: Histórico completo de interações vinculadas a contatos e deals.
+## Arquitetura e Componentes
+- `src/app/layout.tsx`: carrega tenant padrão, aplica tema (BrandingProvider) e sidebar global.
+- `src/app/page.tsx`: redireciona para `/inbox`.
+- Páginas principais: `inbox/`, `pipeline/`, `leads/`, `companies/`, `contacts/`, `analytics/`, `login/`.
+- Rotas de API (App Router):
+  - `api/auth/login`: autenticação; gera cookie `auth-token` e CSRF.
+  - `api/leads`, `api/deals/[id]`, `api/pipeline`, `api/companies`, `api/contacts`, `api/contracts`, `api/analytics`: CRUD e consultas para UI.
+- `src/components/`: layout (Sidebar), cards, listas, gráficos e providers de tema.
+- `src/lib/`: integrações utilitárias (Prisma client, auth helpers, CSRF).
+- `src/services/tenant.service.ts`: caching/fetch de Tenant por domínio para branding e isolamento.
+- `prisma/schema.prisma`: modelo relacional completo (Tenant, User, Team, Lead/Deal, Pipeline/Stage, Activity, Messaging, Financial).
 
-### Financeiro & Pós-Vendas
--   **Contas de Clientes**: Gerencie assinaturas ativas de clientes e pontuações de saúde.
--   **Gerenciamento de Contratos**: Acompanhe termos de contrato, renovações e datas.
--   **Rastreamento de MRR**: Monitore Monthly Recurring Revenue (MRR) e crescimento financeiro.
+## Modelo de Dados (resumo)
+- Tenant: dados e cores do tenant + relações para todo o CRM.
+- Usuário/Time: User (role string), Team e TeamMember.
+- CRM Core: Company, Contact, Lead, Deal (com Pipeline/Stage), Activity, Briefing.
+- Inbox: Conversation, Message, ChannelAccount.
+- Financeiro: ClientAccount, Contract, ServiceSubscription, MRRRecord.
+- Auditoria: AuditLog.
 
-### Analytics & Dashboard
--   **Dashboard em Tempo Real**: Visão geral dos principais indicadores de performance (KPIs).
--   **Gráficos Visuais**: Gráficos interativos com Recharts para visualização de dados.
+## Ambiente e Configuração
+1) Pré-requisitos: Node.js 18+; acesso ao projeto Supabase; npm.
+2) Dependências:
+```bash
+npm install
+```
+3) Variáveis de ambiente: copie `.env.example` para `.env` e preencha com strings do Supabase (Settings > Database > Connection string > Prisma):
+```env
+DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:6543/postgres?pgbouncer=true&connection_limit=1"
+DIRECT_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:5432/postgres"
+JWT_SECRET="your-super-secret-key"
+```
+- `DATABASE_URL`: conexão via pool (porta 6543) usada pela app.
+- `DIRECT_URL`: conexão direta (porta 5432) para migrations/seeds do Prisma.
+- (Opcional) `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` se futuramente usar Supabase JS client (storage/auth).
 
-### Segurança & Tecnologia
--   **Autenticação Segura**: Sistema de autenticação customizado baseado em JWT com hash seguro de senhas.
--   **Controle de Acesso Baseado em Funções**: Suporte para diferentes funções de usuário (ex: Sales Rep, Admin).
--   **Stack Moderna**: Construído com Next.js 16 App Router e React 19 mais recentes.
+4) Banco de dados (Supabase):
+```bash
+# Cria as tabelas no banco de dados (obrigatório)
+npx prisma db push
 
-## 🛠 Tech Stack
+# Popula o banco com dados de exemplo/teste (opcional)
+# Execute APENAS em desenvolvimento - isso adiciona dados fictícios para testes
+# Em produção, pule este passo e adicione seus clientes reais pela interface
+npx ts-node prisma/seed.ts
+```
 
--   **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
--   **Linguagem**: [TypeScript](https://www.typescriptlang.org/)
--   **Database**: [Supabase Postgres](https://supabase.com/) via [Prisma ORM](https://www.prisma.io/)
--   **Styling**: CSS Modules com Native CSS Variables para temas
--   **Ícones**: [Lucide React](https://lucide.dev/)
--   **Gráficos**: [Recharts](https://recharts.org/)
--   **Drag & Drop**: [dnd-kit](https://dndkit.com/)
--   **Authentication**: `jose` (JWT) & `bcryptjs`
+**Sobre o seed:**
+- **Para ambiente de desenvolvimento/teste**: Execute o seed para ter dados de exemplo prontos (usuários, leads, empresas fictícias)
+- **Para ambiente de produção**: NÃO execute o seed. Comece com banco vazio e adicione seus clientes reais através da interface do CRM
 
-## 📦 Pré-requisitos
+5) Desenvolvimento:
+```bash
+npm run dev
+# http://localhost:3000
+```
 
-Antes de começar, certifique-se de ter os seguintes itens instalados:
--   [Node.js](https://nodejs.org/) (v18 ou superior recomendado)
--   npm, yarn, pnpm, ou bun
+6) Build/produção:
+```bash
+npm run build
+npm run start
+```
 
-## 🚀 Começando
+## Scripts
+- `npm run dev`: inicia Next.js em modo desenvolvimento.
+- `npm run build`: build de produção.
+- `npm run start`: inicia build de produção.
+- `npm run lint`: checagem de lint.
 
-1.  **Clone o repositório**
-    ```bash
-    git clone <repository-url>
-    cd CRM_Alma
-    ```
+## Autenticação e Segurança
+- Login via `POST /api/auth/login` com email/senha do tenant.
+- Gera cookie `auth-token` (JWT) httpOnly + `csrf-token` não httpOnly.
+- Hash de senha com `bcryptjs`; fallback em dev para seeds simples.
+- Middleware/guards: use `lib/auth` para validar token e role quando criar novas rotas.
 
-2.  **Instale as dependências**
-    ```bash
-    npm install
-    ```
+## Branding e Multi-Tenancy
+- Tenant define cores/logos (dark/light) e textos base. `BrandingProvider` injeta variáveis CSS globais.
+- `getCachedTenantByDomain` resolve tenant pelo domínio; por padrão usa `alma.agency`. Ajuste conforme onboarding multi-domínio.
 
-3.  **Configuração do Environment**
-    Copie `.env.example` para `.env` e preencha com as strings do seu projeto Supabase (Settings > Database > Connection string > Prisma):
-    ```env
-    DATABASE_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:6543/postgres?pgbouncer=true&connection_limit=1"
-    DIRECT_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT>.supabase.co:5432/postgres"
-    JWT_SECRET="your-super-secret-key"
-    ```
-    - `DATABASE_URL`: usa o pool (porta 6543) recomendado para a aplicação.
-    - `DIRECT_URL`: usa a conexão direta (porta 5432) para migrations/seeds do Prisma.
-
-4.  **Configuração do Database**
-    Execute o push do schema Prisma apontando para o banco Supabase:
-    ```bash
-    npx prisma db push
-    ```
-
-5.  **Execute o Servidor de Desenvolvimento**
-    ```bash
-    npm run dev
-    ```
-
-    Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.
-
-## 📂 Estrutura do Projeto
-
+## Estrutura de Pastas
 ```
 src/
-├── app/                # Páginas e layouts do Next.js App Router
-│   ├── api/            # Rotas da API backend
-│   ├── (auth)/         # Rotas de autenticação (login, etc.)
-│   ├── dashboard/      # Visualizações do dashboard principal
-│   └── ...
-├── components/         # Componentes de UI reutilizáveis
-├── lib/                # Funções utilitárias e lógica compartilhada
-├── services/           # Lógica de negócio e camada de acesso a dados
-└── middleware.ts       # Edge middleware para proteção de autenticação
+├─ app/           # Rotas Next.js (páginas e APIs)
+├─ components/    # UI compartilhada (layout, cards, gráficos, listas)
+├─ lib/           # Prisma client, auth helpers, CSRF, utils
+├─ services/      # Acesso a dados/tenants
+├─ middleware.ts  # Proteção/edge middleware (autenticação)
 prisma/
-└── schema.prisma       # Definição do schema do database
+├─ schema.prisma  # Schema Prisma (Supabase Postgres)
+└─ seed.ts        # Seed opcional com tenant/dados de teste
 ```
 
-## 📜 Scripts
+## Notas Operacionais
+- Tenha certeza de que a instância Supabase está com acessos liberados para a origem do app.
+- Em produção, mantenha `secure: true` nos cookies (já condicionado por `NODE_ENV`).
+- Para novas entidades, crie modelos Prisma e rode `prisma db push` ou `migrate`.
+- Caso use Storage/Auth do Supabase, defina as chaves públicas/privadas nas envs opcionais.
 
--   `npm run dev`: Inicia o servidor de desenvolvimento.
--   `npm run build`: Compila a aplicação para produção.
--   `npm run start`: Executa a aplicação compilada para produção.
--   `npm run lint`: Executa o ESLint para verificar problemas de qualidade de código.
-
-## 📄 Licença
-
-Este projeto é proprietário e confidencial. A cópia não autorizada deste arquivo, por qualquer meio, é estritamente proibida.
+## Licença
+Este projeto é proprietário e confidencial. A cópia não autorizada, por qualquer meio, é estritamente proibida.
