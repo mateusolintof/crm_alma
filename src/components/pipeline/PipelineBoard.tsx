@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     DndContext,
     DragOverlay,
@@ -20,8 +20,7 @@ import {
     useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import styles from './Pipeline.module.css';
-import clsx from 'clsx';
+import { DollarSign, Building2, Plus } from 'lucide-react';
 
 // Types
 type Deal = {
@@ -51,7 +50,6 @@ type PipelineStage = {
     deals: PipelineApiDeal[];
 };
 
-
 // --- Components ---
 
 function DealCard({ deal, isOverlay }: { deal: Deal; isOverlay?: boolean }) {
@@ -75,17 +73,32 @@ function DealCard({ deal, isOverlay }: { deal: Deal; isOverlay?: boolean }) {
             style={style}
             {...attributes}
             {...listeners}
-            className={clsx(styles.card, (isDragging || isOverlay) && styles.cardDragging)}
+            className={`
+                bg-white border border-bg-border rounded-lg p-4 cursor-grab
+                transition-all duration-150
+                hover:shadow-md hover:border-primary hover:-translate-y-0.5
+                ${(isDragging || isOverlay) ? 'opacity-80 cursor-grabbing shadow-lg scale-105' : ''}
+            `}
         >
-            <div className={styles.cardTitle}>{deal.title}</div>
-            <div className={styles.cardValue}>{deal.value}</div>
-            <div className={styles.cardFooter}>
-                <span>{deal.company}</span>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                    {deal.tags.map(tag => (
-                        <span key={tag} className={styles.tag}>{tag}</span>
-                    ))}
+            <h4 className="font-semibold text-text-primary mb-2">{deal.title}</h4>
+            <div className="flex items-center gap-1.5 text-sm text-text-secondary font-medium mb-3">
+                <DollarSign size={16} className="text-success" />
+                {deal.value}
+            </div>
+            <div className="flex items-center justify-between text-xs border-t border-bg-border pt-2.5">
+                <div className="flex items-center gap-1.5 text-text-tertiary">
+                    <Building2 size={14} />
+                    <span className="truncate">{deal.company}</span>
                 </div>
+                {deal.tags.length > 0 && (
+                    <div className="flex gap-1">
+                        {deal.tags.map(tag => (
+                            <span key={tag} className="px-2 py-0.5 bg-bg-surface-hover text-text-secondary rounded text-xs">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -98,12 +111,19 @@ function PipelineColumn({ column }: { column: Column }) {
     });
 
     return (
-        <div ref={setNodeRef} className={styles.column}>
-            <div className={styles.columnHeader}>
-                {column.title}
-                <span style={{ fontSize: '0.8rem', color: '#888' }}>{column.deals.length}</span>
+        <div ref={setNodeRef} className="min-w-[320px] w-80 flex flex-col max-h-full">
+            {/* Column Header */}
+            <div className="px-1 py-3 flex items-center justify-between">
+                <h3 className="font-semibold text-sm text-text-secondary uppercase tracking-wide">
+                    {column.title}
+                </h3>
+                <span className="text-xs text-text-tertiary bg-bg-surface-hover px-2 py-1 rounded-full">
+                    {column.deals.length}
+                </span>
             </div>
-            <div className={styles.columnContent}>
+
+            {/* Column Content */}
+            <div className="flex-1 overflow-y-auto py-1 flex flex-col gap-3">
                 <SortableContext items={column.deals.map(d => d.id)} strategy={verticalListSortingStrategy}>
                     {column.deals.map(deal => (
                         <DealCard key={deal.id} deal={deal} />
@@ -135,7 +155,7 @@ export default function PipelineBoard() {
                             title: deal.title,
                             value: deal.expectedMRR ? `R$ ${deal.expectedMRR}/mês` : 'R$ 0',
                             company: deal.company?.name || 'Sem empresa',
-                            tags: [], // TODO: Add tags to DB
+                            tags: [],
                         })),
                     }));
                     setColumns(mappedColumns);
@@ -172,7 +192,6 @@ export default function PipelineBoard() {
         const activeId = active.id;
         const overId = over.id;
 
-        // Find the containers
         const activeColumn = columns.find(col => col.deals.some(d => d.id === activeId));
         const overColumn = columns.find(col => col.id === overId || col.deals.some(d => d.id === overId));
 
@@ -188,7 +207,6 @@ export default function PipelineBoard() {
 
             let newIndex;
             if (overId === overColumn.id) {
-                // We're over the column container itself
                 newIndex = overItems.length + 1;
             } else {
                 const isBelowOverItem =
@@ -207,9 +225,7 @@ export default function PipelineBoard() {
                     const newDeals = [...c.deals];
                     const item = activeItems[activeIndex];
 
-                    // Check if already exists to prevent duplicates during rapid drag
                     if (!newDeals.find(d => d.id === item.id)) {
-                        // If overIndex is -1 (dropped on column), push to end
                         if (overIndex === -1) {
                             newDeals.push(item);
                         } else {
@@ -232,12 +248,9 @@ export default function PipelineBoard() {
         const activeId = active.id;
         const overId = over.id;
 
-        // Find the column the item was dropped into
-        // Note: overId could be the column ID OR an item ID within that column
         const overColumn = columns.find(col => col.id === overId || col.deals.some(d => d.id === overId));
 
         if (overColumn) {
-            // Call API to persist change
             try {
                 await fetch(`/api/deals/${activeId}`, {
                     method: 'PATCH',
@@ -247,41 +260,49 @@ export default function PipelineBoard() {
                 console.log(`Moved deal ${activeId} to stage ${overColumn.title}`);
             } catch (error) {
                 console.error('Failed to persist deal move', error);
-                // Revert to snapshot if persistence fails
                 setColumns(snapshotColumns);
             }
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-full p-6">
+                <div className="text-text-secondary">Carregando pipeline...</div>
+            </div>
+        );
+    }
+
     return (
-        <div className={styles.boardContainer}>
-            <div className={styles.header}>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: '600' }}>Pipeline: Novos Negócios</h2>
-                <button className="btn btn-primary">
-                    + Novo Negócio
+        <div className="flex flex-col h-screen bg-bg-app overflow-hidden">
+            {/* Header */}
+            <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-text-primary">Pipeline: Novos Negócios</h2>
+                <button className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md font-medium transition-all duration-150 hover:-translate-y-0.5 shadow-sm hover:shadow-md">
+                    <Plus size={18} />
+                    Novo Negócio
                 </button>
             </div>
 
-            {loading && (
-                <div style={{ padding: '16px' }}>Carregando pipeline...</div>
-            )}
-
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCorners}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDragEnd={handleDragEnd}
-            >
-                <div className={styles.board}>
-                    {columns.map(col => (
-                        <PipelineColumn key={col.id} column={col} />
-                    ))}
-                </div>
-                <DragOverlay>
-                    {activeDeal ? <DealCard deal={activeDeal} isOverlay /> : null}
-                </DragOverlay>
-            </DndContext>
+            {/* Pipeline Board */}
+            <div className="flex-1 overflow-x-auto overflow-y-hidden p-6">
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCorners}
+                    onDragStart={handleDragStart}
+                    onDragOver={handleDragOver}
+                    onDragEnd={handleDragEnd}
+                >
+                    <div className="flex gap-5 h-full items-start">
+                        {columns.map(col => (
+                            <PipelineColumn key={col.id} column={col} />
+                        ))}
+                    </div>
+                    <DragOverlay>
+                        {activeDeal ? <DealCard deal={activeDeal} isOverlay /> : null}
+                    </DragOverlay>
+                </DndContext>
+            </div>
         </div>
     );
 }

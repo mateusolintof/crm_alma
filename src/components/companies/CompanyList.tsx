@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import styles from '../contacts/Contacts.module.css'; // Reusing styles
+import { Building2, Globe, Tag, Plus } from 'lucide-react';
 
 type Company = {
     id: string;
@@ -31,46 +31,75 @@ export default function CompanyList() {
         fetchCompanies();
     }, []);
 
-    if (loading) return <div style={{ padding: '24px' }}>Carregando empresas...</div>;
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-full p-6">
+                <div className="text-text-secondary">Carregando empresas...</div>
+            </div>
+        );
+    }
+
     if (error) {
-        return <div style={{ padding: '24px', color: '#fca5a5' }}>{error}</div>;
+        return (
+            <div className="flex items-center justify-center h-full p-6">
+                <div className="text-danger">{error}</div>
+            </div>
+        );
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Empresas</h1>
-                <button className="btn btn-primary">
-                    + Nova Empresa
+        <div className="p-6 max-w-7xl mx-auto animate-fade-in">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-semibold text-text-primary">Empresas</h1>
+                <button className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md font-medium transition-all duration-150 hover:-translate-y-0.5 shadow-sm hover:shadow-md">
+                    <Plus size={18} />
+                    Nova Empresa
                 </button>
             </div>
 
-            <div className={styles.tableWrap}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th className={styles.th}>Nome</th>
-                            <th className={styles.th}>Segmento</th>
-                            <th className={styles.th}>Website</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {companies.map(company => (
-                            <tr key={company.id} className={styles.tr}>
-                                <td className={styles.td}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <div className={styles.avatar} style={{ borderRadius: '10px' }}>{company.name.charAt(0).toUpperCase()}</div>
-                                        {company.name}
-                                    </div>
-                                </td>
-                                <td className={styles.td}>{company.segment || '-'}</td>
-                                <td className={styles.td}>
-                                    {company.website ? <a href={company.website} target="_blank" rel="noreferrer" style={{ color: 'var(--primary-color)' }}>{company.website}</a> : '-'}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            {/* Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {companies.map(company => (
+                    <div
+                        key={company.id}
+                        className="bg-white border border-bg-border rounded-lg p-5 hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer group"
+                    >
+                        {/* Company Icon + Name */}
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-primary font-semibold text-lg border border-primary/20">
+                                <Building2 size={24} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-text-primary truncate group-hover:text-primary transition-colors">
+                                    {company.name}
+                                </h3>
+                            </div>
+                        </div>
+
+                        {/* Company Info */}
+                        <div className="space-y-2 text-sm">
+                            <div className="flex items-center gap-2 text-text-secondary">
+                                <Tag size={16} className="text-text-tertiary flex-shrink-0" />
+                                <span className="truncate">{company.segment || 'Sem segmento'}</span>
+                            </div>
+                            {company.website && (
+                                <div className="flex items-center gap-2 text-text-secondary">
+                                    <Globe size={16} className="text-text-tertiary flex-shrink-0" />
+                                    <a
+                                        href={company.website}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-primary hover:underline truncate"
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        {company.website.replace(/^https?:\/\//, '')}
+                                    </a>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
