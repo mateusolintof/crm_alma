@@ -16,7 +16,7 @@ export async function PATCH(
 
     try {
         try {
-            assertCsrf(request);
+            await assertCsrf(request);
         } catch {
             return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
         }

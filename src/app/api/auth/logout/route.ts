@@ -4,7 +4,7 @@ import { assertCsrf, CSRF_COOKIE_NAME } from '@/lib/csrf';
 
 export async function POST(request: Request) {
     try {
-        assertCsrf(request);
+        await assertCsrf(request);
     } catch {
         return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }

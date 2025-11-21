@@ -15,17 +15,17 @@ export function createCsrfToken() {
     return crypto.randomUUID();
 }
 
-export function ensureCsrfCookie(token?: string) {
-    const store = cookies();
+export async function ensureCsrfCookie(token?: string) {
+    const store = await cookies();
     const existing = store.get(CSRF_COOKIE_NAME)?.value;
     const value = token || existing || createCsrfToken();
     store.set(CSRF_COOKIE_NAME, value, cookieOptions);
     return value;
 }
 
-export function assertCsrf(request: Request): void {
+export async function assertCsrf(request: Request): Promise<void> {
     const headerToken = request.headers.get('x-csrf-token');
-    const cookieToken = cookies().get(CSRF_COOKIE_NAME)?.value;
+    const cookieToken = (await cookies()).get(CSRF_COOKIE_NAME)?.value;
     if (!headerToken || !cookieToken || headerToken !== cookieToken) {
         throw new Error('Invalid CSRF token');
     }

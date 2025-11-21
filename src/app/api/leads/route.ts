@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     try {
         try {
-            assertCsrf(request);
+            await assertCsrf(request);
         } catch {
             return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
         }

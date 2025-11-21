@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
@@ -15,7 +15,7 @@ const resolvedSecret = SECRET_KEY_SOURCE ?? 'development_secret_key_change_in_pr
 
 const key = new TextEncoder().encode(resolvedSecret);
 
-export interface AuthPayload {
+export interface AuthPayload extends JWTPayload {
     userId: string;
     email: string;
     role: string;

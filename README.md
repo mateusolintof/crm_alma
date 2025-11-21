@@ -17,6 +17,7 @@ CRM moderno para equipes comerciais e CS, com múltiplos tenants, pipeline Kanba
 - Estilos: CSS Modules + CSS variables de branding (dark/light).
 - UI & UX: Lucide React (ícones), Recharts (gráficos), dnd-kit (drag & drop).
 - Auth/Security: jose (JWT), bcryptjs (hash), CSRF cookie, cookies httpOnly.
+- Tipografia: pilhas locais/sistema (Inter/SegoeUI/Helvetica/etc.) para evitar fetch de fontes no build offline.
 
 ## Arquitetura e Componentes
 - `src/app/layout.tsx`: carrega tenant padrão, aplica tema (BrandingProvider) e sidebar global.
@@ -80,6 +81,8 @@ npm run dev
 npm run build
 npm run start
 ```
+  - Se a porta 3000 estiver ocupada, inicie em outra: `PORT=3001 npm run start`.
+  - Aviso de múltiplos lockfiles: o `next.config.ts` já força `turbopack.root` para este diretório. Mantenha o `package-lock.json` local como fonte de verdade.
 
 ## Scripts
 - `npm run dev`: inicia Next.js em modo desenvolvimento.

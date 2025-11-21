@@ -16,10 +16,10 @@
   --text-on-dark: #0f172a;
   --text-on-light: #0f172a;
 
-  /* Typography */
-  --font-heading: var(--font-heading, "Space Grotesk", "Inter Tight", system-ui, -apple-system, sans-serif);
-  --font-body: var(--font-body, "Inter Tight", system-ui, -apple-system, sans-serif);
-  --font-mono: var(--font-geist-mono, "IBM Plex Mono", monospace);
+  /* Typography (local/system stacks to avoid remote fetch in build) */
+  --font-heading: "Inter", "Segoe UI", "Helvetica Neue", Arial, system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", "Segoe UI", "Helvetica Neue", Arial, system-ui, -apple-system, sans-serif;
+  --font-mono: "SFMono-Regular", "Menlo", "Consolas", "Liberation Mono", monospace;
 
   /* Radii & spacing */
   --radius-sm: 6px;
