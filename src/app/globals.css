@@ -1,39 +1,55 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@theme {
+  /* Primary Brand (Royal Blue) */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-active: #1E40AF;
+  --color-primary-light: #DBEAFE;
+  --color-primary-dark: #1E3A8A;
+  --color-primary-subtle: #EFF6FF;
+  --color-primary-border: #BFDBFE;
+
+  /* Background Colors */
+  --color-bg-app: #F8FAFC;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-hover: #F1F5F9;
+  --color-bg-border: #E2E8F0;
+  --color-bg-border-hover: #CBD5E1;
+
+  /* Text Colors */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94A3B8;
+  --color-text-on-primary: #FFFFFF;
+
+  /* Semantic Colors */
+  --color-success: #10B981;
+  --color-success-bg: #ECFDF5;
+  --color-warning: #F59E0B;
+  --color-warning-bg: #FFFBEB;
+  --color-danger: #EF4444;
+  --color-danger-bg: #FEF2F2;
+  --color-info: #3B82F6;
+  --color-info-bg: #EFF6FF;
+}
 
 :root {
-  /* --- Professional SaaS Palette (Unified) --- */
-
-  /* Primary Brand (Royal Blue - Trust & Tech) */
+  /* CSS Variables for non-Tailwind usage */
   --primary-color: #2563EB;
   --primary-hover: #1D4ED8;
-  --primary-active: #1E40AF;
-  --primary-subtle: #EFF6FF;
-  --primary-border: #BFDBFE;
-
-  /* Neutrals (Slate - Clean & Modern) */
   --bg-app: #F8FAFC;
   --bg-surface: #FFFFFF;
   --bg-surface-hover: #F1F5F9;
   --bg-border: #E2E8F0;
-  --bg-border-hover: #CBD5E1;
-
-  /* Text */
   --text-primary: #0F172A;
   --text-secondary: #475569;
   --text-tertiary: #94A3B8;
-  --text-on-primary: #FFFFFF;
-
-  /* Semantic Colors */
   --success: #10B981;
-  --success-bg: #ECFDF5;
   --warning: #F59E0B;
-  --warning-bg: #FFFBEB;
   --danger: #EF4444;
-  --danger-bg: #FEF2F2;
   --info: #3B82F6;
-  --info-bg: #EFF6FF;
 
   /* Typography */
   --font-sans: var(--font-geist-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -50,7 +66,7 @@
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-focus: 0 0 0 2px #fff, 0 0 0 4px var(--primary-border);
+  --shadow-focus: 0 0 0 2px #fff, 0 0 0 4px #BFDBFE;
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 
   /* Transitions */
@@ -87,16 +103,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Custom Utility Classes */
-@layer components {
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-md border border-bg-border shadow-glass;
-  }
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--bg-border);
+  box-shadow: var(--shadow-glass);
+}
 
-  .hover-lift {
-    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-lg;
-  }
+.hover-lift {
+  transition: all 200ms ease;
+}
 
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
-  }
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.focus-ring:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus);
 }
