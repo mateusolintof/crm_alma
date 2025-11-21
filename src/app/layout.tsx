@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { getTenantByDomain } from "@/services/tenant.service";
+import { getCachedTenantByDomain } from "@/services/tenant.service";
 import BrandingProvider from "@/components/providers/BrandingProvider";
 import Sidebar from "@/components/layout/Sidebar";
 
@@ -26,7 +26,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch default tenant (Alma)
-  const tenant = await getTenantByDomain("alma.agency");
+  const tenant = await getCachedTenantByDomain("alma.agency");
 
   if (!tenant) {
     return (

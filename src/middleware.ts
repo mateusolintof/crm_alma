@@ -28,6 +28,20 @@ export async function middleware(request: NextRequest) {
             const loginUrl = new URL('/login', request.url);
             return NextResponse.redirect(loginUrl);
         }
+
+        const response = NextResponse.next();
+        const hasCsrf = request.cookies.get('csrf-token')?.value;
+        if (!hasCsrf) {
+            const csrfToken = crypto.randomUUID();
+            response.cookies.set('csrf-token', csrfToken, {
+                httpOnly: false,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                path: '/',
+                maxAge: 60 * 60 * 24,
+            });
+        }
+        return response;
     }
 
     return NextResponse.next();

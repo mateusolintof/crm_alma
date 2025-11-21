@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getTenantByDomain } from '@/services/tenant.service';
+import { assertCsrf } from '@/lib/csrf';
 
 export async function GET() {
     const tenant = await getTenantByDomain('alma.agency');
@@ -26,6 +27,12 @@ export async function POST(request: Request) {
     const { name, email, phone, companyName, sourceType } = body;
 
     try {
+        try {
+            assertCsrf(request);
+        } catch {
+            return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+        }
+
         // 1. Create or find Company (simple dedupe by name)
         let company;
         if (companyName) {

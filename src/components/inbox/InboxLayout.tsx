@@ -37,11 +37,13 @@ const MOCK_MESSAGES: Message[] = [
 ];
 
 export default function InboxLayout() {
-    const [selectedId, setSelectedId] = useState<string | null>('1');
+    const [conversations] = useState<Conversation[]>(MOCK_CONVERSATIONS);
+    const [selectedId, setSelectedId] = useState<string | null>(conversations[0]?.id ?? null);
     const [messageText, setMessageText] = useState('');
     const [showList, setShowList] = useState(true);
+    const error: string | null = null; // placeholder for future API wiring
 
-    const selectedConversation = MOCK_CONVERSATIONS.find(c => c.id === selectedId);
+    const selectedConversation = conversations.find(c => c.id === selectedId);
 
     const handleSelectConversation = (id: string) => {
         setSelectedId(id);
@@ -72,7 +74,10 @@ export default function InboxLayout() {
                 </div>
 
                 <div>
-                    {MOCK_CONVERSATIONS.map(conv => (
+                    {conversations.length === 0 && (
+                        <div style={{ padding: '16px', color: '#777' }}>Nenhuma conversa ainda.</div>
+                    )}
+                    {conversations.map(conv => (
                         <div
                             key={conv.id}
                             className={clsx(styles.conversationItem, selectedId === conv.id && styles.active)}
@@ -97,7 +102,9 @@ export default function InboxLayout() {
 
             {/* Center Panel: Thread */}
             <div className={clsx(styles.panel, showList && styles.hiddenOnMobile)}>
-                {selectedConversation ? (
+                {error ? (
+                    <div style={{ padding: '24px', color: '#c00' }}>Erro ao carregar conversa: {error}</div>
+                ) : selectedConversation ? (
                     <>
                         <div className={styles.threadHeader}>
                             <button onClick={handleBackToList} className={styles.backButton}>←</button>
@@ -143,7 +150,7 @@ export default function InboxLayout() {
                     </>
                 ) : (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#999' }}>
-                        Selecione uma conversa
+                        {conversations.length === 0 ? 'Nenhuma conversa disponível' : 'Selecione uma conversa'}
                     </div>
                 )}
             </div>

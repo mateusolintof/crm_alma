@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { assertCsrf } from '@/lib/csrf';
 
 export async function PATCH(
     request: Request,
@@ -14,6 +15,12 @@ export async function PATCH(
     }
 
     try {
+        try {
+            assertCsrf(request);
+        } catch {
+            return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+        }
+
         const updatedDeal = await prisma.deal.update({
             where: { id },
             data: { stageId },

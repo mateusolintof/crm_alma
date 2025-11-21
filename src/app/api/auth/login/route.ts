@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyPassword, signToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import { CSRF_COOKIE_NAME, createCsrfToken } from '@/lib/csrf';
 
 export async function POST(request: Request) {
     const body = await request.json();
@@ -56,6 +57,13 @@ export async function POST(request: Request) {
         sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 * 24, // 24 hours
+    });
+    cookieStore.set(CSRF_COOKIE_NAME, createCsrfToken(), {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24,
     });
 
     return NextResponse.json({ success: true, user: { email: user.email, name: user.name } });
