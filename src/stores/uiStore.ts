@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 import type { Toast } from '@/types';
 
 interface UIState {
@@ -90,8 +91,8 @@ export const useUIStore = create<UIState>()(
         // Apenas persistir preferências
         sidebarCollapsed: state.sidebarCollapsed,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // Helper hooks para facilitar uso
@@ -99,14 +100,9 @@ export const useToast = () => {
   const showToast = useUIStore((state) => state.showToast);
 
   return {
-    success: (title: string, message?: string) =>
-      showToast({ type: 'success', title, message }),
-    error: (title: string, message?: string) =>
-      showToast({ type: 'error', title, message }),
-    warning: (title: string, message?: string) =>
-      showToast({ type: 'warning', title, message }),
-    info: (title: string, message?: string) =>
-      showToast({ type: 'info', title, message }),
+    success: (title: string, message?: string) => showToast({ type: 'success', title, message }),
+    error: (title: string, message?: string) => showToast({ type: 'error', title, message }),
+    warning: (title: string, message?: string) => showToast({ type: 'warning', title, message }),
+    info: (title: string, message?: string) => showToast({ type: 'info', title, message }),
   };
 };
-

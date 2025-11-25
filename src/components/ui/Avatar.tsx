@@ -1,6 +1,7 @@
 'use client';
 
 import { clsx } from 'clsx';
+
 import Image from 'next/image';
 
 const sizes = {
@@ -37,7 +38,7 @@ function getAvatarColor(name: string): string {
     'from-text-tertiary/10 to-bg-hover text-text-primary border-bg-border',
     'from-text-primary/5 to-bg-hover text-text-secondary border-bg-border',
   ];
-  
+
   // Gerar índice baseado no nome
   const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
@@ -46,22 +47,16 @@ function getAvatarColor(name: string): string {
 // Função para obter iniciais
 function getInitials(name: string): string {
   if (!name) return '?';
-  
+
   const parts = name.trim().split(/\s+/);
   if (parts.length === 1) {
     return parts[0].charAt(0).toUpperCase();
   }
-  
+
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
-export function Avatar({
-  src,
-  name = '',
-  size = 'md',
-  shape = 'circle',
-  className,
-}: AvatarProps) {
+export function Avatar({ src, name = '', size = 'md', shape = 'circle', className }: AvatarProps) {
   const initials = getInitials(name);
   const colorClass = getAvatarColor(name);
 
@@ -72,15 +67,10 @@ export function Avatar({
           'relative overflow-hidden flex-shrink-0',
           sizes[size],
           shapes[shape],
-          className
+          className,
         )}
       >
-        <Image
-          src={src}
-          alt={name || 'Avatar'}
-          fill
-          className="object-cover"
-        />
+        <Image src={src} alt={name || 'Avatar'} fill className="object-cover" />
       </div>
     );
   }
@@ -93,7 +83,7 @@ export function Avatar({
         sizes[size],
         shapes[shape],
         colorClass,
-        className
+        className,
       )}
     >
       {initials}
@@ -112,12 +102,7 @@ export interface AvatarGroupProps {
   className?: string;
 }
 
-export function AvatarGroup({
-  avatars,
-  max = 4,
-  size = 'sm',
-  className,
-}: AvatarGroupProps) {
+export function AvatarGroup({ avatars, max = 4, size = 'sm', className }: AvatarGroupProps) {
   const visible = avatars.slice(0, max);
   const remaining = avatars.length - max;
 
@@ -137,7 +122,7 @@ export function AvatarGroup({
           className={clsx(
             'flex items-center justify-center font-semibold flex-shrink-0',
             'bg-bg-hover text-text-secondary border border-bg-border rounded-full ring-2 ring-white',
-            sizes[size]
+            sizes[size],
           )}
         >
           +{remaining}

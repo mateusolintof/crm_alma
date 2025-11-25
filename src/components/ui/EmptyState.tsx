@@ -1,7 +1,8 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { LucideIcon, Inbox, Users, Building2, FileText, Search, AlertCircle } from 'lucide-react';
+import { AlertCircle, Building2, FileText, Inbox, LucideIcon, Search, Users } from 'lucide-react';
+
 import { Button } from './Button';
 
 export interface EmptyStateProps {
@@ -34,36 +35,22 @@ export function EmptyState({
         variant === 'centered' && 'justify-center min-h-[400px]',
         variant === 'default' && 'py-12 px-6',
         isInline && 'py-8 px-4',
-        className
+        className,
       )}
     >
       <div
         className={clsx(
           'rounded-full bg-bg-hover flex items-center justify-center mb-4',
-          isInline ? 'w-12 h-12' : 'w-16 h-16'
+          isInline ? 'w-12 h-12' : 'w-16 h-16',
         )}
       >
-        <Icon
-          size={isInline ? 24 : 32}
-          className="text-text-tertiary"
-          strokeWidth={1.5}
-        />
+        <Icon size={isInline ? 24 : 32} className="text-text-tertiary" strokeWidth={1.5} />
       </div>
-      <h3
-        className={clsx(
-          'font-semibold text-text-primary',
-          isInline ? 'text-sm' : 'text-lg'
-        )}
-      >
+      <h3 className={clsx('font-semibold text-text-primary', isInline ? 'text-sm' : 'text-lg')}>
         {title}
       </h3>
       {description && (
-        <p
-          className={clsx(
-            'mt-1 text-text-secondary max-w-sm',
-            isInline ? 'text-xs' : 'text-sm'
-          )}
-        >
+        <p className={clsx('mt-1 text-text-secondary max-w-sm', isInline ? 'text-xs' : 'text-sm')}>
           {description}
         </p>
       )}
@@ -206,4 +193,3 @@ export function ErrorState({
 }
 
 export default EmptyState;
-

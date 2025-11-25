@@ -1,26 +1,29 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { getCachedTenantByDomain } from "@/services/tenant.service";
-import { BrandingProvider, QueryProvider } from "@/components/providers";
+import { getCachedTenantByDomain } from '@/services/tenant.service';
+import type { Metadata } from 'next';
+
+import { Geist, Geist_Mono } from 'next/font/google';
+
+import { BrandingProvider, QueryProvider } from '@/components/providers';
+
+import './globals.css';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Alma CRM",
-  description: "CRM Comercial para Agências de Marketing",
+  title: 'Alma CRM',
+  description: 'CRM Comercial para Agências de Marketing',
 };
 
 // Evita pré-renderizar em build e forçar chamadas a banco quando não há conexão.
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function RootLayout({
@@ -29,7 +32,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch default tenant (Alma)
-  const tenant = await getCachedTenantByDomain("alma.agency");
+  const tenant = await getCachedTenantByDomain('alma.agency');
 
   if (!tenant) {
     return (
@@ -60,9 +63,7 @@ export default async function RootLayout({
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <QueryProvider>
-          <BrandingProvider branding={tenant}>
-            {children}
-          </BrandingProvider>
+          <BrandingProvider branding={tenant}>{children}</BrandingProvider>
         </QueryProvider>
       </body>
     </html>

@@ -1,10 +1,20 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Mail, Phone, Building2, Plus } from 'lucide-react';
 import { useContacts } from '@/hooks';
-import { Button, Avatar, Card, SearchInput, EmptyContacts, EmptySearch, ErrorState } from '@/components/ui';
+import { Building2, Mail, Phone, Plus } from 'lucide-react';
+
+import { useMemo, useState } from 'react';
+
 import ListPage from '@/components/common/ListPage';
+import {
+  Avatar,
+  Button,
+  Card,
+  EmptyContacts,
+  EmptySearch,
+  ErrorState,
+  SearchInput,
+} from '@/components/ui';
 
 const safeParseArray = (value: string | undefined): string[] => {
   try {
@@ -29,7 +39,12 @@ export default function ContactList() {
       const emails = safeParseArray(contact.emails).join(' ').toLowerCase();
       const phones = safeParseArray(contact.phones).join(' ');
 
-      return name.includes(query) || company.includes(query) || emails.includes(query) || phones.includes(query);
+      return (
+        name.includes(query) ||
+        company.includes(query) ||
+        emails.includes(query) ||
+        phones.includes(query)
+      );
     });
   }, [contacts, searchQuery]);
 
@@ -109,11 +124,15 @@ export default function ContactList() {
             <div className="space-y-2 text-sm text-text-secondary">
               <div className="flex items-center gap-2">
                 <Mail size={16} className="text-text-tertiary" />
-                <span className="truncate">{safeParseArray(contact.emails)[0] || 'Sem e-mail'}</span>
+                <span className="truncate">
+                  {safeParseArray(contact.emails)[0] || 'Sem e-mail'}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone size={16} className="text-text-tertiary" />
-                <span className="truncate">{safeParseArray(contact.phones)[0] || 'Sem telefone'}</span>
+                <span className="truncate">
+                  {safeParseArray(contact.phones)[0] || 'Sem telefone'}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Building2 size={16} className="text-text-tertiary" />

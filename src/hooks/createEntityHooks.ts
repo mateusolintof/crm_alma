@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createEntityKeys } from '@/lib/query-keys';
 import { useToast } from '@/stores';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { createEntityKeys } from '@/lib/query-keys';
 
 interface ToastMessages {
   createSuccess?: [string, string];
@@ -19,9 +20,11 @@ interface CrudOptions<TCreate, TUpdate> {
   transformUpdateData?: (data: TUpdate) => unknown;
 }
 
-export function createEntityHooks<TEntity, TCreate = Partial<TEntity>, TUpdate = Partial<TEntity> & { id: string }>(
-  options: CrudOptions<TCreate, TUpdate>
-) {
+export function createEntityHooks<
+  TEntity,
+  TCreate = Partial<TEntity>,
+  TUpdate = Partial<TEntity> & { id: string },
+>(options: CrudOptions<TCreate, TUpdate>) {
   const { resource, basePath, toastMessages, transformCreateData, transformUpdateData } = options;
   const keys = createEntityKeys(resource);
 

@@ -21,6 +21,7 @@ Este guia explica como configurar o **Inbox Unificado** do Alma CRM para receber
 Você tem 3 opções:
 
 **A) Self-hosted (Docker):**
+
 ```bash
 git clone https://github.com/EvolutionAPI/evolution-api
 cd evolution-api
@@ -28,10 +29,12 @@ docker-compose up -d
 ```
 
 **B) Cloud (recomendado):**
+
 - Acesse: https://evolution-api.com
 - Crie uma conta e instância
 
 **C) Provedores terceiros:**
+
 - Muitos providers oferecem Evolution API hospedada
 
 ### 2. **Criar Instância WhatsApp**
@@ -63,19 +66,23 @@ WEBHOOK_API_KEY="use_um_secret_aleatorio_aqui"
 Configure o webhook para receber mensagens:
 
 **URL do Webhook:**
+
 ```
 https://seu-dominio.com/api/webhooks/whatsapp
 ```
 
 **Headers:**
+
 ```
 x-api-key: seu_webhook_secret_key_aqui
 ```
 
 **Eventos para escutar:**
+
 - `messages.upsert` (novas mensagens)
 
 **Exemplo via API:**
+
 ```bash
 curl -X POST https://seu-servidor.com/api/v1/webhook/set/alma-crm \
   -H "Content-Type: application/json" \
@@ -111,6 +118,7 @@ EMAIL_SMTP_PASSWORD="senha_ou_app_password"
 ## 📸 Configuração Instagram (Futuro)
 
 Instagram requer:
+
 - Meta Business Account
 - Instagram Professional Account
 - Facebook App configurado
@@ -122,6 +130,7 @@ Documentação oficial: https://developers.facebook.com/docs/instagram-api
 ## 🚀 Como Usar
 
 ### 1. **Acessar o Inbox**
+
 ```
 http://localhost:3000/inbox
 ```
@@ -129,6 +138,7 @@ http://localhost:3000/inbox
 ### 2. **Receber Mensagens**
 
 Quando alguém envia mensagem no WhatsApp:
+
 1. Evolution API recebe a mensagem
 2. Webhook `POST /api/webhooks/whatsapp` é chamado
 3. Contato é criado automaticamente (se não existir)
@@ -156,11 +166,13 @@ Quando alguém envia mensagem no WhatsApp:
 ## 🧪 Testando
 
 ### 1. **Teste o Webhook**
+
 ```bash
 curl https://seu-dominio.com/api/webhooks/whatsapp
 ```
 
 Deve retornar:
+
 ```json
 {
   "status": "ok",
@@ -183,12 +195,14 @@ Responda a mensagem pelo inbox. A resposta deve chegar no WhatsApp do contato.
 ### Mensagens não chegam no inbox:
 
 1. **Verifique se o webhook está ativo:**
+
    ```bash
    curl https://seu-servidor-evolution.com/api/v1/webhook/find/alma-crm \
      -H "apikey: sua_api_key"
    ```
 
 2. **Verifique logs do servidor:**
+
    ```bash
    # Logs do Next.js
    npm run dev
@@ -222,6 +236,7 @@ Responda a mensagem pelo inbox. A resposta deve chegar no WhatsApp do contato.
 ### Mensagens enviadas não chegam no WhatsApp:
 
 1. **Verifique status da instância:**
+
    ```bash
    curl https://seu-servidor-evolution.com/api/v1/instance/connectionState/alma-crm \
      -H "apikey: sua_api_key"

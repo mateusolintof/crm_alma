@@ -1,25 +1,29 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
-import { User, Building2, Tag, Calendar, Plus } from 'lucide-react';
-import { useLeads, useCreateLead } from '@/hooks';
+import { useCreateLead, useLeads } from '@/hooks';
+import { Building2, Calendar, Plus, Tag, User } from 'lucide-react';
+
+import { useCallback, useMemo, useState } from 'react';
+
+import ListPage from '@/components/common/ListPage';
 import {
+  Badge,
   Button,
   Card,
-  SearchInput,
   EmptyLeads,
   EmptySearch,
   ErrorState,
-  StatusBadge,
-  Badge,
-  Modal,
-  Input,
-  Select,
   FormField,
+  Input,
+  Modal,
+  SearchInput,
+  Select,
+  StatusBadge,
 } from '@/components/ui';
-import type { LeadStatus } from '@/types';
-import ListPage from '@/components/common/ListPage';
+
 import type { CreateLeadData } from '@/hooks/useLeads';
+
+import type { LeadStatus } from '@/types';
 
 const initialFormData: CreateLeadData = {
   name: '',
@@ -44,7 +48,9 @@ export default function LeadList() {
       const contactName = lead.primaryContact?.name?.toLowerCase() || '';
       const companyName = lead.company?.name?.toLowerCase() || '';
       const sourceType = lead.sourceType?.toLowerCase() || '';
-      return contactName.includes(query) || companyName.includes(query) || sourceType.includes(query);
+      return (
+        contactName.includes(query) || companyName.includes(query) || sourceType.includes(query)
+      );
     });
   }, [leads, searchQuery]);
 
@@ -59,7 +65,7 @@ export default function LeadList() {
         // Erro já tratado pelo hook
       }
     },
-    [formData, createLead]
+    [formData, createLead],
   );
 
   const handleInputChange = useCallback((field: keyof CreateLeadData, value: string) => {
@@ -195,7 +201,14 @@ interface LeadFormModalProps {
   isSubmitting: boolean;
 }
 
-function LeadFormModal({ open, onClose, formData, onInputChange, onSubmit, isSubmitting }: LeadFormModalProps) {
+function LeadFormModal({
+  open,
+  onClose,
+  formData,
+  onInputChange,
+  onSubmit,
+  isSubmitting,
+}: LeadFormModalProps) {
   return (
     <Modal
       open={open}

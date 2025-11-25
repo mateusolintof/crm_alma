@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { Conversation, Message, InboxFilters } from '@/types';
+
+import type { Conversation, InboxFilters, Message } from '@/types';
 
 interface InboxState {
   // Estado das conversas
@@ -66,7 +67,7 @@ export const useInboxStore = create<InboxState>((set, get) => ({
   updateConversation: (id, updates) =>
     set((state) => ({
       conversations: state.conversations.map((conv) =>
-        conv.id === id ? { ...conv, ...updates } : conv
+        conv.id === id ? { ...conv, ...updates } : conv,
       ),
     })),
 
@@ -79,18 +80,16 @@ export const useInboxStore = create<InboxState>((set, get) => ({
               messages: [...conv.messages, message],
               lastMessageAt: message.timestamp,
               unreadCount:
-                message.direction === 'INBOUND'
-                  ? conv.unreadCount + 1
-                  : conv.unreadCount,
+                message.direction === 'INBOUND' ? conv.unreadCount + 1 : conv.unreadCount,
             }
-          : conv
+          : conv,
       ),
     })),
 
   markAsRead: (conversationId) =>
     set((state) => ({
       conversations: state.conversations.map((conv) =>
-        conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv
+        conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv,
       ),
     })),
 
@@ -132,8 +131,7 @@ export const useInboxStore = create<InboxState>((set, get) => ({
         const search = searchQuery.toLowerCase();
         const contactName = conv.contact?.name?.toLowerCase() || '';
         const companyName = conv.company?.name?.toLowerCase() || '';
-        const lastMessage =
-          conv.messages[conv.messages.length - 1]?.content?.toLowerCase() || '';
+        const lastMessage = conv.messages[conv.messages.length - 1]?.content?.toLowerCase() || '';
 
         if (
           !contactName.includes(search) &&
@@ -159,8 +157,7 @@ export const useInboxActions = () => {
   const store = useInboxStore();
 
   const sendMessage = async (content: string) => {
-    const { selectedConversationId, setIsSending, setDraftMessage, addMessage } =
-      store;
+    const { selectedConversationId, setIsSending, setDraftMessage, addMessage } = store;
 
     if (!selectedConversationId || !content.trim()) return false;
 
@@ -197,10 +194,10 @@ export const useInboxActions = () => {
       if (!res.ok) throw new Error('Failed to fetch conversations');
       const data = await res.json();
       store.setConversations(data);
-  } catch {
-    store.setError('Erro ao carregar conversas');
-  }
-};
+    } catch {
+      store.setError('Erro ao carregar conversas');
+    }
+  };
 
   return {
     sendMessage,

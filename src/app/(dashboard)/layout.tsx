@@ -1,15 +1,11 @@
-import Sidebar from "@/components/layout/Sidebar";
-import { CommandPalette, ToastContainer } from "@/components/ui";
+import Sidebar from '@/components/layout/Sidebar';
+import { CommandPalette, ToastContainer } from '@/components/ui';
 
 /**
  * Layout para páginas autenticadas (dashboard)
  * Inclui Sidebar, ToastContainer e CommandPalette
  */
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-bg-app">
       {/* Skip link para acessibilidade */}
@@ -19,21 +15,20 @@ export default function DashboardLayout({
       >
         Pular para conteúdo principal
       </a>
-      
+
       {/* Sidebar Navigation */}
       <Sidebar />
-      
+
       {/* Main Content Area */}
       <main id="main-content" className="flex-1 overflow-auto" role="main">
         {children}
       </main>
-      
+
       {/* Sistema de Toast Notifications */}
       <ToastContainer />
-      
+
       {/* Command Palette (Cmd+K) */}
       <CommandPalette />
     </div>
   );
 }
-

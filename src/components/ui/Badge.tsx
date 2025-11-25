@@ -1,6 +1,10 @@
 'use client';
 
 import { clsx } from 'clsx';
+// ============================================
+// Channel Badge - para canais de comunicação
+// ============================================
+import { Globe, Instagram, Mail, MessageSquare, Phone } from 'lucide-react';
 
 // Variantes de cor
 const variants = {
@@ -40,7 +44,7 @@ export function Badge({
         'inline-flex items-center gap-1 font-medium rounded-full border',
         variants[variant],
         sizes[size],
-        className
+        className,
       )}
     >
       {dot && (
@@ -52,7 +56,7 @@ export function Badge({
             variant === 'danger' && 'bg-danger',
             variant === 'info' && 'bg-info',
             variant === 'primary' && 'bg-primary',
-            variant === 'default' && 'bg-text-tertiary'
+            variant === 'default' && 'bg-text-tertiary',
           )}
         />
       )}
@@ -61,9 +65,7 @@ export function Badge({
   );
 }
 
-// ============================================
 // Status Badge - para status comuns
-// ============================================
 
 const statusMap = {
   // Lead Status
@@ -71,11 +73,11 @@ const statusMap = {
   CONTACTED: { variant: 'warning' as const, label: 'Contatado' },
   QUALIFIED: { variant: 'success' as const, label: 'Qualificado' },
   LOST: { variant: 'danger' as const, label: 'Perdido' },
-  
+
   // Deal Status
   OPEN: { variant: 'info' as const, label: 'Aberto' },
   WON: { variant: 'success' as const, label: 'Ganho' },
-  
+
   // Conversation Status
   CLOSED: { variant: 'default' as const, label: 'Fechado' },
   ARCHIVED: { variant: 'default' as const, label: 'Arquivado' },
@@ -90,7 +92,7 @@ export interface StatusBadgeProps {
 
 export function StatusBadge({ status, size = 'md', dot = true, className }: StatusBadgeProps) {
   const config = statusMap[status] || { variant: 'default', label: status };
-  
+
   return (
     <Badge variant={config.variant} size={size} dot={dot} className={className}>
       {config.label}
@@ -99,10 +101,8 @@ export function StatusBadge({ status, size = 'md', dot = true, className }: Stat
 }
 
 // ============================================
-// Channel Badge - para canais de comunicação
-// ============================================
 
-import { MessageSquare, Mail, Instagram, Phone, Globe } from 'lucide-react';
+// ============================================
 
 const channelMap = {
   WHATSAPP: {
@@ -139,24 +139,24 @@ export interface ChannelBadgeProps {
   className?: string;
 }
 
-export function ChannelBadge({ 
-  channel, 
-  size = 'md', 
-  showLabel = true, 
-  className 
+export function ChannelBadge({
+  channel,
+  size = 'md',
+  showLabel = true,
+  className,
 }: ChannelBadgeProps) {
   const config = channelMap[channel];
   if (!config) return null;
-  
+
   const Icon = config.icon;
-  
+
   return (
     <span
       className={clsx(
         'inline-flex items-center gap-1 font-medium rounded-full border',
         config.color,
         sizes[size],
-        className
+        className,
       )}
     >
       <Icon size={size === 'sm' ? 10 : 12} />

@@ -1,4 +1,5 @@
 import type { Contact } from '@/types';
+
 import { createEntityHooks } from './createEntityHooks';
 
 const {
@@ -21,4 +22,11 @@ const {
   },
 });
 
-export { contactKeys, useContacts, useContact, useCreateContact, useUpdateContact, useDeleteContact };
+export {
+  contactKeys,
+  useContacts,
+  useContact,
+  useCreateContact,
+  useUpdateContact,
+  useDeleteContact,
+};

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { clsx } from 'clsx';
+
+import { useState } from 'react';
 
 // ============================================
 // Base Skeleton
@@ -23,7 +24,7 @@ export function Skeleton({
   animation = 'pulse',
 }: SkeletonProps) {
   const baseStyles = 'bg-bg-border';
-  
+
   const animationStyles = {
     pulse: 'animate-pulse',
     wave: 'animate-shimmer',
@@ -39,12 +40,7 @@ export function Skeleton({
 
   return (
     <div
-      className={clsx(
-        baseStyles,
-        animationStyles[animation],
-        variantStyles[variant],
-        className
-      )}
+      className={clsx(baseStyles, animationStyles[animation], variantStyles[variant], className)}
       style={{
         width: typeof width === 'number' ? `${width}px` : width,
         height: typeof height === 'number' ? `${height}px` : height,
@@ -66,11 +62,7 @@ export function SkeletonText({ lines = 3, className }: SkeletonTextProps) {
   return (
     <div className={clsx('space-y-2', className)}>
       {Array.from({ length: lines }).map((_, i) => (
-        <Skeleton
-          key={i}
-          variant="text"
-          width={i === lines - 1 ? '75%' : '100%'}
-        />
+        <Skeleton key={i} variant="text" width={i === lines - 1 ? '75%' : '100%'} />
       ))}
     </div>
   );
@@ -94,12 +86,7 @@ const avatarSizes = {
 };
 
 export function SkeletonAvatar({ size = 'md', className }: SkeletonAvatarProps) {
-  return (
-    <Skeleton
-      variant="circular"
-      className={clsx(avatarSizes[size], className)}
-    />
-  );
+  return <Skeleton variant="circular" className={clsx(avatarSizes[size], className)} />;
 }
 
 // ============================================
@@ -120,16 +107,9 @@ export function SkeletonCard({
   className,
 }: SkeletonCardProps) {
   return (
-    <div
-      className={clsx(
-        'bg-white border border-bg-border rounded-lg p-4 space-y-4',
-        className
-      )}
-    >
-      {hasImage && (
-        <Skeleton variant="rounded" height={160} className="w-full" />
-      )}
-      
+    <div className={clsx('bg-white border border-bg-border rounded-lg p-4 space-y-4', className)}>
+      {hasImage && <Skeleton variant="rounded" height={160} className="w-full" />}
+
       <div className="flex items-center gap-3">
         {hasAvatar && <SkeletonAvatar size="lg" />}
         <div className="flex-1 space-y-2">
@@ -200,11 +180,7 @@ export interface SkeletonListProps {
   className?: string;
 }
 
-export function SkeletonList({
-  items = 5,
-  hasAvatar = true,
-  className,
-}: SkeletonListProps) {
+export function SkeletonList({ items = 5, hasAvatar = true, className }: SkeletonListProps) {
   return (
     <div className={clsx('space-y-3', className)}>
       {Array.from({ length: items }).map((_, i) => (
@@ -279,7 +255,7 @@ export function SkeletonKanban({
 
 export function SkeletonInbox() {
   const [bubbleWidths] = useState(() =>
-    Array.from({ length: 4 }).map(() => 200 + Math.random() * 100)
+    Array.from({ length: 4 }).map(() => 200 + Math.random() * 100),
   );
 
   return (
@@ -322,18 +298,8 @@ export function SkeletonInbox() {
         </div>
         <div className="flex-1 p-6 space-y-4">
           {bubbleWidths.map((width, i) => (
-            <div
-              key={i}
-              className={clsx(
-                'flex',
-                i % 2 === 0 ? 'justify-start' : 'justify-end'
-              )}
-            >
-              <Skeleton
-                variant="rounded"
-                width={width}
-                height={60}
-              />
+            <div key={i} className={clsx('flex', i % 2 === 0 ? 'justify-start' : 'justify-end')}>
+              <Skeleton variant="rounded" width={width} height={60} />
             </div>
           ))}
         </div>

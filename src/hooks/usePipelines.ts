@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
-import type { Pipeline, Deal } from '@/types';
 import { useToast } from '@/stores';
+import { type UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import type { Deal, Pipeline } from '@/types';
 
 // Keys para cache
 export const pipelineKeys = {
@@ -50,7 +51,10 @@ async function createPipeline(data: CreatePipelineData): Promise<Pipeline> {
   return res.json();
 }
 
-async function updatePipeline({ id, ...data }: Partial<Pipeline> & { id: string }): Promise<Pipeline> {
+async function updatePipeline({
+  id,
+  ...data
+}: Partial<Pipeline> & { id: string }): Promise<Pipeline> {
   const res = await fetch(`/api/pipelines/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -99,7 +103,7 @@ export function usePipelines() {
 
 export function usePipeline(
   id: string | undefined,
-  options?: Pick<UseQueryOptions<Pipeline>, 'onSuccess'>
+  options?: Pick<UseQueryOptions<Pipeline>, 'onSuccess'>,
 ) {
   return useQuery({
     queryKey: id ? pipelineKeys.detail(id) : pipelineKeys.details(),
@@ -169,7 +173,7 @@ export function useUpdateDeal() {
     onSuccess: (_, variables) => {
       // Invalidar o pipeline que contém o deal
       queryClient.invalidateQueries({ queryKey: pipelineKeys.details() });
-      
+
       // Mostrar toast apenas para mudanças significativas (não para drag-and-drop)
       if (variables.title || variables.expectedMRR) {
         toast.success('Negócio atualizado', 'As alterações foram salvas.');
@@ -192,10 +196,10 @@ export function useMoveDeal() {
     onMutate: async () => {
       // Cancelar queries em andamento
       await queryClient.cancelQueries({ queryKey: pipelineKeys.details() });
-      
+
       // Snapshot do estado anterior para rollback
       const previousData = queryClient.getQueriesData({ queryKey: pipelineKeys.details() });
-      
+
       return { previousData };
     },
     onError: (err, variables, context) => {

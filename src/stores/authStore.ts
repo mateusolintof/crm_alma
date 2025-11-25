@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, Tenant } from '@/types';
+
+import type { Tenant, User } from '@/types';
 
 interface AuthState {
   // Estado
@@ -8,7 +9,7 @@ interface AuthState {
   tenant: Tenant | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Ações
   setUser: (user: User | null) => void;
   setTenant: (tenant: Tenant | null) => void;
@@ -107,6 +108,6 @@ export const useAuthStore = create<AuthState>()(
         // Apenas persistir dados não sensíveis
         tenant: state.tenant,
       }),
-    }
-  )
+    },
+  ),
 );

@@ -1,4 +1,5 @@
 import type { Lead } from '@/types';
+
 import { createEntityHooks } from './createEntityHooks';
 
 export interface CreateLeadData {

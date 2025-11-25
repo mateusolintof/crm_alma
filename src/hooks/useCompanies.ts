@@ -1,4 +1,5 @@
 import type { Company } from '@/types';
+
 import { createEntityHooks } from './createEntityHooks';
 
 const {
@@ -21,4 +22,11 @@ const {
   },
 });
 
-export { companyKeys, useCompanies, useCompany, useCreateCompany, useUpdateCompany, useDeleteCompany };
+export {
+  companyKeys,
+  useCompanies,
+  useCompany,
+  useCreateCompany,
+  useUpdateCompany,
+  useDeleteCompany,
+};

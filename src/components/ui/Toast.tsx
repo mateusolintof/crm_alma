@@ -1,9 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
-import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import { clsx } from 'clsx';
+import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
+
+import { useEffect } from 'react';
+
 import { useUIStore } from '@/stores/uiStore';
+
 import type { Toast as ToastType } from '@/types';
 
 // ============================================
@@ -37,7 +40,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       role="alert"
       className={clsx(
         'flex items-start gap-3 p-4 rounded-lg border shadow-lg animate-slide-up',
-        'bg-white border-bg-border'
+        'bg-white border-bg-border',
       )}
     >
       <div className={clsx('flex-shrink-0 p-1 rounded-full', styles[toast.type])}>
@@ -45,9 +48,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-medium text-text-primary text-sm">{toast.title}</p>
-        {toast.message && (
-          <p className="mt-0.5 text-sm text-text-secondary">{toast.message}</p>
-        )}
+        {toast.message && <p className="mt-0.5 text-sm text-text-secondary">{toast.message}</p>}
       </div>
       <button
         onClick={() => onDismiss(toast.id)}
@@ -97,13 +98,7 @@ export interface StandaloneToastProps {
   onClose: () => void;
 }
 
-export function StandaloneToast({
-  type,
-  title,
-  message,
-  visible,
-  onClose,
-}: StandaloneToastProps) {
+export function StandaloneToast({ type, title, message, visible, onClose }: StandaloneToastProps) {
   const Icon = icons[type];
 
   useEffect(() => {
@@ -120,7 +115,7 @@ export function StandaloneToast({
       role="alert"
       className={clsx(
         'fixed bottom-4 right-4 z-[100] flex items-start gap-3 p-4 rounded-lg border shadow-lg',
-        'bg-white border-bg-border animate-slide-up max-w-sm'
+        'bg-white border-bg-border animate-slide-up max-w-sm',
       )}
     >
       <div className={clsx('flex-shrink-0 p-1 rounded-full', styles[type])}>
@@ -128,9 +123,7 @@ export function StandaloneToast({
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-medium text-text-primary text-sm">{title}</p>
-        {message && (
-          <p className="mt-0.5 text-sm text-text-secondary">{message}</p>
-        )}
+        {message && <p className="mt-0.5 text-sm text-text-secondary">{message}</p>}
       </div>
       <button
         onClick={onClose}
@@ -144,4 +137,3 @@ export function StandaloneToast({
 }
 
 export default ToastContainer;
-

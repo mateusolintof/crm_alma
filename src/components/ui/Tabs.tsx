@@ -1,7 +1,8 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
 import { clsx } from 'clsx';
+
+import { createContext, useContext, useState } from 'react';
 
 // ============================================
 // Context
@@ -104,21 +105,21 @@ export function TabTrigger({
       isActive
         ? 'bg-white text-text-primary shadow-sm'
         : 'text-text-secondary hover:text-text-primary',
-      disabled && 'opacity-50 cursor-not-allowed'
+      disabled && 'opacity-50 cursor-not-allowed',
     ),
     pills: clsx(
       'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all',
       isActive
         ? 'bg-primary text-white'
         : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary',
-      disabled && 'opacity-50 cursor-not-allowed'
+      disabled && 'opacity-50 cursor-not-allowed',
     ),
     underline: clsx(
       'flex items-center gap-2 px-1 pb-3 text-sm font-medium border-b-2 -mb-px transition-all',
       isActive
         ? 'border-primary text-primary'
         : 'border-transparent text-text-secondary hover:text-text-primary hover:border-bg-border',
-      disabled && 'opacity-50 cursor-not-allowed'
+      disabled && 'opacity-50 cursor-not-allowed',
     ),
   };
 
@@ -143,7 +144,7 @@ export function TabTrigger({
               ? variant === 'pills'
                 ? 'bg-white/20 text-white'
                 : 'bg-primary-subtle text-primary'
-              : 'bg-bg-border text-text-tertiary'
+              : 'bg-bg-border text-text-tertiary',
           )}
         >
           {badge}
@@ -182,4 +183,3 @@ export function TabContent({ id, children, className }: TabContentProps) {
 }
 
 export default Tabs;
-

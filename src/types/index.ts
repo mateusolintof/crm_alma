@@ -1,7 +1,6 @@
 // ============================================
 // TIPOS CENTRALIZADOS - ALMA CRM
 // ============================================
-
 import type React from 'react';
 
 // --- Entidades Base ---

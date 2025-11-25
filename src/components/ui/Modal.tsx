@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useCallback, Fragment } from 'react';
-import { X } from 'lucide-react';
 import { clsx } from 'clsx';
+import { X } from 'lucide-react';
+
+import { Fragment, useCallback, useEffect } from 'react';
+
 import { Button } from './Button';
 
 // ============================================
@@ -49,7 +51,7 @@ export function Modal({
         onClose();
       }
     },
-    [closeOnEsc, onClose]
+    [closeOnEsc, onClose],
   );
 
   useEffect(() => {
@@ -84,7 +86,7 @@ export function Modal({
         className={clsx(
           'relative bg-white rounded-xl shadow-xl w-full animate-scale-in',
           'max-h-[90vh] flex flex-col',
-          sizes[size]
+          sizes[size],
         )}
       >
         {/* Header */}
@@ -245,20 +247,14 @@ export function Sheet({
         className={clsx(
           'fixed inset-y-0 bg-white shadow-xl w-full flex flex-col',
           sheetWidths[width],
-          side === 'right'
-            ? 'right-0 animate-slide-in-right'
-            : 'left-0 animate-slide-in-left'
+          side === 'right' ? 'right-0 animate-slide-in-right' : 'left-0 animate-slide-in-left',
         )}
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 p-6 border-b border-bg-border">
           <div>
-            {title && (
-              <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
-            )}
-            {description && (
-              <p className="mt-1 text-sm text-text-secondary">{description}</p>
-            )}
+            {title && <h2 className="text-xl font-semibold text-text-primary">{title}</h2>}
+            {description && <p className="mt-1 text-sm text-text-secondary">{description}</p>}
           </div>
           <button
             onClick={onClose}

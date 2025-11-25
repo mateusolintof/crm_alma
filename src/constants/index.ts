@@ -1,5 +1,4 @@
-export const DEFAULT_TENANT_DOMAIN =
-  process.env.DEFAULT_TENANT_DOMAIN || 'alma.agency';
+export const DEFAULT_TENANT_DOMAIN = process.env.DEFAULT_TENANT_DOMAIN || 'alma.agency';
 
 export const API_TIMEOUT_MS = 10000;
 export const TOAST_DURATION_MS = 4000;

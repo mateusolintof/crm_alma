@@ -1,7 +1,8 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { Tenant } from '@prisma/client';
-import { getTenantByDomain } from '@/services/tenant.service';
 import { DEFAULT_TENANT_DOMAIN, TENANT_HEADER } from '@/constants';
+import { getTenantByDomain } from '@/services/tenant.service';
+import type { Tenant } from '@prisma/client';
+
+import { type NextRequest, NextResponse } from 'next/server';
 
 function normalizeDomain(domain: string | null): string | null {
   if (!domain) return null;
@@ -10,7 +11,9 @@ function normalizeDomain(domain: string | null): string | null {
 
 export async function resolveTenant(request?: NextRequest): Promise<Tenant | null> {
   const headerDomain = normalizeDomain(request?.headers.get(TENANT_HEADER));
-  const urlDomain = request ? normalizeDomain(new URL(request.url).searchParams.get('tenant')) : null;
+  const urlDomain = request
+    ? normalizeDomain(new URL(request.url).searchParams.get('tenant'))
+    : null;
   const hostDomain = normalizeDomain(request?.headers.get('host'));
 
   const domain = headerDomain || urlDomain || hostDomain || DEFAULT_TENANT_DOMAIN;
@@ -21,7 +24,7 @@ export async function resolveTenant(request?: NextRequest): Promise<Tenant | nul
 
 export async function withTenant(
   request: NextRequest | undefined,
-  handler: (tenant: Tenant) => Promise<NextResponse>
+  handler: (tenant: Tenant) => Promise<NextResponse>,
 ): Promise<NextResponse> {
   const tenant = await resolveTenant(request);
   if (!tenant) {

@@ -1,12 +1,11 @@
 /**
  * Utilitários de acessibilidade para o Alma CRM
- * 
+ *
  * Este módulo contém helpers para melhorar a acessibilidade do sistema:
  * - Gerenciamento de foco
  * - Navegação por teclado
  * - Screen reader helpers
  */
-
 import React from 'react';
 
 // ============================================
@@ -80,7 +79,7 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
  */
 export function saveFocus(): () => void {
   const previouslyFocused = document.activeElement as HTMLElement;
-  
+
   return () => {
     if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
       previouslyFocused.focus();
@@ -116,7 +115,7 @@ export function handleListNavigation(
   currentIndex: number,
   totalItems: number,
   onSelect: (index: number) => void,
-  onActivate?: (index: number) => void
+  onActivate?: (index: number) => void,
 ) {
   let newIndex = currentIndex;
 
@@ -167,7 +166,7 @@ export function getStatusAriaProps(status: 'loading' | 'error' | 'success' | 'id
   return {
     'aria-busy': status === 'loading',
     'aria-invalid': status === 'error',
-    'aria-live': status === 'error' ? 'assertive' as const : 'polite' as const,
+    'aria-live': status === 'error' ? ('assertive' as const) : ('polite' as const),
   };
 }
 
@@ -211,18 +210,22 @@ export function VisuallyHidden({ children }: { children: React.ReactNode }) {
 /**
  * Anuncia uma mensagem para screen readers
  */
-export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite') {
+export function announceToScreenReader(
+  message: string,
+  priority: 'polite' | 'assertive' = 'polite',
+) {
   const announcement = document.createElement('div');
   announcement.setAttribute('aria-live', priority);
   announcement.setAttribute('aria-atomic', 'true');
-  announcement.style.cssText = 'position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;';
-  
+  announcement.style.cssText =
+    'position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;';
+
   document.body.appendChild(announcement);
-  
+
   // Pequeno delay para garantir que o elemento foi inserido
   setTimeout(() => {
     announcement.textContent = message;
-    
+
     // Remove após um tempo
     setTimeout(() => {
       document.body.removeChild(announcement);
@@ -247,7 +250,7 @@ export function prefersReducedMotion(): boolean {
  */
 export function usePrefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false;
-  
+
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   return mediaQuery.matches;
 }
@@ -262,8 +265,8 @@ export function usePrefersReducedMotion(): boolean {
 export function getSkipLinkProps(targetId: string) {
   return {
     href: `#${targetId}`,
-    className: 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-md',
+    className:
+      'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-md',
     'aria-label': 'Pular para conteúdo principal',
   };
 }
-

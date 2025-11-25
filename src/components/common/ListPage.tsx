@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { clsx } from 'clsx';
+
+import React from 'react';
 
 interface ListPageProps {
   title: string;
@@ -58,7 +59,12 @@ export function ListPage({
         <div>
           <h1 className="text-2xl font-semibold text-text-primary">{title}</h1>
           {(subtitle || count !== undefined) && (
-            <p className={clsx('text-sm text-text-secondary mt-1', !subtitle && 'text-text-tertiary')}>
+            <p
+              className={clsx(
+                'text-sm text-text-secondary mt-1',
+                !subtitle && 'text-text-tertiary',
+              )}
+            >
               {subtitle ?? `${count} ${count === 1 ? 'item' : 'itens'}`}
             </p>
           )}

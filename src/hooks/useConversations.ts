@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Conversation, Message, QueryFilters } from '@/types';
 import { useToast } from '@/stores';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import type { Conversation, Message, QueryFilters } from '@/types';
 
 // Keys para cache
 export const conversationKeys = {
@@ -58,10 +59,10 @@ export function useSendMessage() {
     onMutate: async (newMessage) => {
       // Cancelar queries em andamento
       await queryClient.cancelQueries({ queryKey: conversationKeys.lists() });
-      
+
       // Snapshot do estado anterior
       const previousConversations = queryClient.getQueryData<Conversation[]>(
-        conversationKeys.lists()
+        conversationKeys.lists(),
       );
 
       // Atualizar otimisticamente
@@ -87,8 +88,8 @@ export function useSendMessage() {
                   messages: [...conv.messages, optimisticMessage],
                   lastMessageAt: optimisticMessage.timestamp,
                 }
-              : conv
-          )
+              : conv,
+          ),
         );
       }
 
@@ -97,10 +98,7 @@ export function useSendMessage() {
     onError: (err, variables, context) => {
       // Rollback em caso de erro
       if (context?.previousConversations) {
-        queryClient.setQueryData(
-          conversationKeys.lists(),
-          context.previousConversations
-        );
+        queryClient.setQueryData(conversationKeys.lists(), context.previousConversations);
       }
       toast.error('Erro ao enviar', 'A mensagem não foi enviada. Tente novamente.');
     },
@@ -123,19 +121,17 @@ export function useMarkAsRead() {
     },
     onMutate: async (conversationId) => {
       await queryClient.cancelQueries({ queryKey: conversationKeys.lists() });
-      
+
       const previousConversations = queryClient.getQueryData<Conversation[]>(
-        conversationKeys.lists()
+        conversationKeys.lists(),
       );
 
       if (previousConversations) {
         queryClient.setQueryData<Conversation[]>(
           conversationKeys.lists(),
           previousConversations.map((conv) =>
-            conv.id === conversationId
-              ? { ...conv, unreadCount: 0 }
-              : conv
-          )
+            conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv,
+          ),
         );
       }
 
@@ -143,10 +139,7 @@ export function useMarkAsRead() {
     },
     onError: (err, variables, context) => {
       if (context?.previousConversations) {
-        queryClient.setQueryData(
-          conversationKeys.lists(),
-          context.previousConversations
-        );
+        queryClient.setQueryData(conversationKeys.lists(), context.previousConversations);
       }
     },
   });

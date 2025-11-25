@@ -1,10 +1,20 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Building2, Globe, Tag, Plus, Users } from 'lucide-react';
 import { useCompanies } from '@/hooks';
-import { Button, Card, SearchInput, EmptyCompanies, EmptySearch, ErrorState, Badge } from '@/components/ui';
+import { Building2, Globe, Plus, Tag, Users } from 'lucide-react';
+
+import { useMemo, useState } from 'react';
+
 import ListPage from '@/components/common/ListPage';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyCompanies,
+  EmptySearch,
+  ErrorState,
+  SearchInput,
+} from '@/components/ui';
 
 export default function CompanyList() {
   const { data: companies = [], isLoading, error, refetch } = useCompanies();

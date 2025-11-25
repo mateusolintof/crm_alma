@@ -1,17 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
+
 import { useRouter } from 'next/navigation';
 
 /**
  * Layout para páginas de autenticação (login, registro, etc.)
  * NÃO inclui a Sidebar - apenas o conteúdo da página
  */
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   // Verificar se já está autenticado e redirecionar
@@ -37,4 +34,3 @@ export default function AuthLayout({
     </div>
   );
 }
-
