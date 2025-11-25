@@ -1,14 +1,23 @@
 'use client';
 
-import { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import { clsx } from 'clsx';
+// ============================================
+// Search Input
+// ============================================
+import { Search, X } from 'lucide-react';
+// ============================================
+// Select
+// ============================================
+import { ChevronDown } from 'lucide-react';
+
+import { InputHTMLAttributes, TextareaHTMLAttributes, forwardRef } from 'react';
 
 // Base styles compartilhados
 const baseStyles = clsx(
   'w-full rounded-md border bg-white text-text-primary placeholder:text-text-tertiary',
   'transition-all duration-150',
   'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
-  'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-bg-hover'
+  'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-bg-hover',
 );
 
 const sizes = {
@@ -18,9 +27,7 @@ const sizes = {
   xl: 'h-11 px-4 text-base',
 } as const;
 
-// ============================================
 // Input Text
-// ============================================
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   size?: keyof typeof sizes;
@@ -30,17 +37,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      size = 'md',
-      error = false,
-      icon,
-      iconPosition = 'left',
-      className,
-      ...props
-    },
-    ref
-  ) => {
+  ({ size = 'md', error = false, icon, iconPosition = 'left', className, ...props }, ref) => {
     const hasIcon = !!icon;
 
     if (hasIcon) {
@@ -59,7 +56,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               error ? 'border-danger focus:ring-danger' : 'border-bg-border',
               iconPosition === 'left' && 'pl-10',
               iconPosition === 'right' && 'pr-10',
-              className
+              className,
             )}
             {...props}
           />
@@ -79,19 +76,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           baseStyles,
           sizes[size],
           error ? 'border-danger focus:ring-danger' : 'border-bg-border',
-          className
+          className,
         )}
         {...props}
       />
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';
 
-// ============================================
 // Textarea
-// ============================================
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: boolean;
@@ -106,21 +101,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           baseStyles,
           'min-h-[80px] py-2 px-3 text-sm resize-y',
           error ? 'border-danger focus:ring-danger' : 'border-bg-border',
-          className
+          className,
         )}
         {...props}
       />
     );
-  }
+  },
 );
 
 Textarea.displayName = 'Textarea';
 
 // ============================================
-// Search Input
-// ============================================
 
-import { Search, X } from 'lucide-react';
+// ============================================
 
 export interface SearchInputProps extends Omit<InputProps, 'icon' | 'iconPosition' | 'size'> {
   onClear?: () => void;
@@ -144,8 +137,8 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             sizes.md,
             'pl-9',
             showClear && 'pr-9',
-            'border-bg-border',
-            className
+            'border-bg-border focus-ring',
+            className,
           )}
           {...props}
         />
@@ -160,16 +153,14 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 SearchInput.displayName = 'SearchInput';
 
 // ============================================
-// Select
-// ============================================
 
-import { ChevronDown } from 'lucide-react';
+// ============================================
 
 export interface SelectProps extends Omit<InputHTMLAttributes<HTMLSelectElement>, 'size'> {
   size?: keyof typeof sizes;
@@ -188,7 +179,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             sizes[size],
             'appearance-none pr-10 cursor-pointer',
             error ? 'border-danger focus:ring-danger' : 'border-bg-border',
-            className
+            className,
           )}
           {...props}
         >
@@ -199,7 +190,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = 'Select';
@@ -226,12 +217,8 @@ export function FormField({ label, error, required, hint, children }: FormFieldP
         </label>
       )}
       {children}
-      {hint && !error && (
-        <p className="text-xs text-text-tertiary">{hint}</p>
-      )}
-      {error && (
-        <p className="text-xs text-danger">{error}</p>
-      )}
+      {hint && !error && <p className="text-xs text-text-tertiary">{hint}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
-@config "../../tailwind.config.ts";
 
 @theme {
   /* Primary Brand (Royal Blue) */
@@ -22,18 +21,57 @@
   /* Text Colors */
   --color-text-primary: #0F172A;
   --color-text-secondary: #475569;
-  --color-text-tertiary: #94A3B8;
+  --color-text-tertiary: #6B7280;
   --color-text-on-primary: #FFFFFF;
 
   /* Semantic Colors */
   --color-success: #10B981;
+  --color-success-hover: #0EA371;
+  --color-success-active: #0C8C63;
   --color-success-bg: #ECFDF5;
   --color-warning: #F59E0B;
   --color-warning-bg: #FFFBEB;
   --color-danger: #EF4444;
+  --color-danger-hover: #DC2626;
+  --color-danger-active: #B91C1C;
   --color-danger-bg: #FEF2F2;
   --color-info: #3B82F6;
   --color-info-bg: #EFF6FF;
+
+  /* Channels */
+  --color-channels-whatsapp-text: #128C7E;
+  --color-channels-whatsapp-bg: #E9F8F1;
+  --color-channels-whatsapp-border: #C7EDE0;
+  --color-channels-email-text: #1D4ED8;
+  --color-channels-email-bg: #EFF6FF;
+  --color-channels-email-border: #BFDBFE;
+  --color-channels-instagram-text: #C13584;
+  --color-channels-instagram-bg: #FDF1F7;
+  --color-channels-instagram-border: #FAC7E6;
+  --color-channels-sms-text: #7C3AED;
+  --color-channels-sms-bg: #F4F0FF;
+  --color-channels-sms-border: #E0D9FF;
+  --color-channels-web-text: #0F172A;
+  --color-channels-web-bg: #F8FAFC;
+  --color-channels-web-border: #E2E8F0;
+
+  /* Typography */
+  --text-2xs: 0.625rem;
+
+  /* Spacing tokens */
+  --spacing-120: 120px;
+  --spacing-260: 260px;
+  --spacing-320: 320px;
+  --spacing-400: 400px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadows */
+  --shadow-focus: 0 0 0 2px #fff, 0 0 0 4px #BFDBFE;
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }
 
 :root {
@@ -75,10 +113,68 @@
   --transition-base: 200ms ease;
 }
 
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@layer utilities {
+  .animate-fade-in { animation: fade-in 0.3s ease-in-out; }
+  .animate-slide-in-right { animation: slide-in-right 0.3s ease-out; }
+  .animate-slide-in-left { animation: slide-in-left 0.3s ease-out; }
+  .animate-slide-up { animation: slide-up 0.3s ease-out; }
+  .animate-scale-in { animation: scale-in 0.2s ease-out; }
+  .animate-shimmer { background-size: 200% 100%; animation: shimmer 2s linear infinite; }
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 body {

@@ -1,4 +1,5 @@
 # COMPREHENSIVE FRONT-END AUDIT REPORT
+
 ## CRM_Alma Project - Complete Analysis
 
 **Report Generated**: 2025-11-25
@@ -9,14 +10,14 @@
 
 ## EXECUTIVE SUMMARY
 
-| Category | Grade | Issues Found |
-|----------|-------|--------------|
-| **Structure** | B+ | 5 medium issues |
-| **Configuration** | B- | 25 ESLint errors, 33 warnings |
-| **React Patterns** | B+ | 5 medium issues |
-| **Tailwind/Design** | A- | 8 minor issues |
-| **Security** | F | 1 CRITICAL (exposed secrets) |
-| **Accessibility** | A | Well implemented |
+| Category            | Grade | Issues Found                  |
+| ------------------- | ----- | ----------------------------- |
+| **Structure**       | B+    | 5 medium issues               |
+| **Configuration**   | B-    | 25 ESLint errors, 33 warnings |
+| **React Patterns**  | B+    | 5 medium issues               |
+| **Tailwind/Design** | A-    | 8 minor issues                |
+| **Security**        | F     | 1 CRITICAL (exposed secrets)  |
+| **Accessibility**   | A     | Well implemented              |
 
 **Overall Grade: B (78%)**
 
@@ -29,6 +30,7 @@
 **File**: `.env` (committed to git history)
 
 **Problem**: Database credentials and API keys are exposed:
+
 ```
 DATABASE_URL="postgresql://postgres.ecrybmaumjvmhqklxeqb:2t4ZUTRv5j4NUbWz@..."
 JWT_SECRET="KjEnjWXLLywTRUlFjV0vopniCgGE2vaJ"
@@ -36,6 +38,7 @@ SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 **Action Required**:
+
 1. Revoke ALL compromised credentials in Supabase immediately
 2. Generate new credentials
 3. Purge git history: `git filter-branch --tree-filter 'rm -f .env' HEAD`
@@ -48,6 +51,7 @@ SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ### **[HIGH] - React: setState in useEffect Causing Cascading Renders**
 
 **Files**:
+
 - `src/components/pipeline/PipelineBoard.tsx:298,318`
 - `src/components/ui/Tooltip.tsx:83`
 
@@ -56,9 +60,9 @@ SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```typescript
 // ❌ Current - PipelineBoard.tsx:296-300
 useEffect(() => {
-    if (pipelines.length > 0 && !selectedPipelineId) {
-        setSelectedPipelineId(pipelines[0].id); // ERROR
-    }
+  if (pipelines.length > 0 && !selectedPipelineId) {
+    setSelectedPipelineId(pipelines[0].id); // ERROR
+  }
 }, [pipelines, selectedPipelineId]);
 ```
 
@@ -82,6 +86,7 @@ const menuWidth = triggerRef.current?.offsetWidth;
 ### **[HIGH] - TypeScript: 7 Uses of `any` Type**
 
 **Files**:
+
 - `src/hooks/useCompanies.ts:9`
 - `src/hooks/useContacts.ts:9`
 - `src/hooks/useConversations.ts:9`
@@ -104,11 +109,12 @@ const tenant = await getTenantByDomain('alma.agency');
 ```
 
 **Fix**: Create middleware or higher-order function:
+
 ```typescript
 export const withTenant = async (handler: (tenant: Tenant) => Promise<Response>) => {
-    const tenant = await getTenantFromContext();
-    if (!tenant) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
-    return handler(tenant);
+  const tenant = await getTenantFromContext();
+  if (!tenant) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+  return handler(tenant);
 };
 ```
 
@@ -122,18 +128,7 @@ export const withTenant = async (handler: (tenant: Tenant) => Promise<Response>)
 
 **File**: `src/components/ui/Skeleton.tsx:28`
 
-**Fix**: Add to `tailwind.config.ts`:
-```typescript
-animation: {
-  shimmer: 'shimmer 2s linear infinite',
-},
-keyframes: {
-  shimmer: {
-    '0%': { backgroundPosition: '-1000px 0' },
-    '100%': { backgroundPosition: '1000px 0' },
-  },
-}
-```
+**Fix**: Já definido no `@theme`/`@layer utilities` do `globals.css` (Tailwind v4 configless). Sem ação pendente.
 
 ---
 
@@ -156,6 +151,7 @@ success: 'bg-success text-white hover:bg-emerald-600',
 ```
 
 **Fix**: Add danger/success hover variants to theme:
+
 ```typescript
 danger: {
   DEFAULT: '#EF4444',
@@ -183,6 +179,7 @@ width={200 + Math.random() * 100}
 **Files**: `ContactList.tsx`, `CompanyList.tsx`, `LeadList.tsx`
 
 All 195-240 lines with identical:
+
 - Search state
 - Filter logic
 - Loading skeleton
@@ -199,7 +196,7 @@ All 195-240 lines with identical:
 
 ```typescript
 // ❌ Current - allows JS access
-httpOnly: false
+httpOnly: false;
 ```
 
 **Fix**: Set `httpOnly: true`.
@@ -219,6 +216,7 @@ Missing CSP, X-Frame-Options, X-Content-Type-Options headers.
 ### **[LOW] - 33 Unused Imports/Variables**
 
 Examples:
+
 - `Check` in pipelines/page.tsx
 - `Calendar` in CompanyDetailSheet.tsx
 - `Loader2` in InboxLayout.tsx
@@ -240,6 +238,7 @@ const safeParseArray = useCallback((value) => {...}, []);
 ### **[LOW] - Inconsistent Import Ordering**
 
 No standard grouping across files. Recommend:
+
 1. React/Next.js
 2. Third-party packages
 3. Internal hooks
@@ -251,6 +250,7 @@ No standard grouping across files. Recommend:
 ### **[LOW] - Arbitrary Tailwind Values**
 
 Files using non-standard widths:
+
 - `min-w-[320px]`, `max-w-[120px]`, `text-[10px]`
 
 Consider adding to design tokens.
@@ -309,14 +309,9 @@ Recommend standardizing to `focus-visible:` for keyboard-only focus.
 
 ## TAILWIND V4 CONFIGURATION ANALYSIS
 
-**Current Setup**: Using `@tailwindcss/postcss` (correct for v4)
+**Current Setup**: Using `@tailwindcss/postcss` (v4) com `@theme` e tokens no `globals.css`. `tailwind.config.ts` removido; configless ativo.
 
-**Issue Found**: `globals.css:3` has incorrect config path:
-```css
-@config "../../tailwind.config.ts";  // May be wrong relative path
-```
-
-**Recommendation**: Tailwind v4 uses `@theme` directive in CSS - the project correctly implements this, but maintains dual definition in both `globals.css` and `tailwind.config.ts` which creates redundancy.
+**Recommendation**: Manter tokens e animações centralizados no `globals.css` apenas; nenhuma config extra necessária para Tailwind v4.
 
 ---
 
@@ -357,14 +352,14 @@ src/
 
 ### Errors (25 Total)
 
-| Category | Count |
-|----------|-------|
-| React hooks violations | 4 |
-| Ref access during render | 3 |
-| TypeScript `any` type | 7 |
-| Impure function in render | 1 |
-| Unescaped HTML entities | 1 |
-| Unused variables | 9 |
+| Category                  | Count |
+| ------------------------- | ----- |
+| React hooks violations    | 4     |
+| Ref access during render  | 3     |
+| TypeScript `any` type     | 7     |
+| Impure function in render | 1     |
+| Unescaped HTML entities   | 1     |
+| Unused variables          | 9     |
 
 ### Warnings (33 Total)
 
@@ -374,27 +369,27 @@ Mostly unused imports and variables across multiple files.
 
 ## FILES WITH MOST ISSUES
 
-| File | Issues | Priority |
-|------|--------|----------|
-| `src/components/pipeline/PipelineBoard.tsx` | 5 | High |
-| `src/components/ui/Dropdown.tsx` | 3 | High |
-| `src/components/ui/Skeleton.tsx` | 2 | Medium |
-| `src/components/ui/Avatar.tsx` | 1 | Medium |
-| `src/components/ui/Button.tsx` | 1 | Medium |
-| `src/middleware.ts` | 1 | Medium |
-| All API routes | 8+ | High (duplication) |
+| File                                        | Issues | Priority           |
+| ------------------------------------------- | ------ | ------------------ |
+| `src/components/pipeline/PipelineBoard.tsx` | 5      | High               |
+| `src/components/ui/Dropdown.tsx`            | 3      | High               |
+| `src/components/ui/Skeleton.tsx`            | 2      | Medium             |
+| `src/components/ui/Avatar.tsx`              | 1      | Medium             |
+| `src/components/ui/Button.tsx`              | 1      | Medium             |
+| `src/middleware.ts`                         | 1      | Medium             |
+| All API routes                              | 8+     | High (duplication) |
 
 ---
 
 ## ESTIMATED EFFORT
 
-| Priority | Tasks | Hours |
-|----------|-------|-------|
-| P0 (Critical) | 2 | 2 |
-| P1 (High) | 4 | 8-12 |
-| P2 (Medium) | 5 | 16-24 |
-| P3 (Low) | 5 | 8-12 |
-| **Total** | **16** | **34-50 hours** |
+| Priority      | Tasks  | Hours           |
+| ------------- | ------ | --------------- |
+| P0 (Critical) | 2      | 2               |
+| P1 (High)     | 4      | 8-12            |
+| P2 (Medium)   | 5      | 16-24           |
+| P3 (Low)      | 5      | 8-12            |
+| **Total**     | **16** | **34-50 hours** |
 
 ---
 
@@ -403,6 +398,7 @@ Mostly unused imports and variables across multiple files.
 The CRM_Alma project has a **solid foundation** with good React/Next.js practices, excellent accessibility, and a well-structured design system. However, there are critical security concerns that must be addressed immediately, along with code quality issues that should be resolved before production deployment.
 
 The main opportunities for improvement are:
+
 1. **Security**: Credential rotation and git history cleanup
 2. **Code reusability**: 30-40% duplication in list components and API routes
 3. **Service layer abstraction**: Move business logic from routes to services

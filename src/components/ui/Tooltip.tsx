@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
 import { clsx } from 'clsx';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface TooltipProps {
   content: React.ReactNode;
@@ -84,7 +85,7 @@ export function Tooltip({
   };
 
   // Força reposicionamento quando o tooltip é reexibido ou quando a posição/alinhamento mudam
-   
+
   useEffect(() => {
     if (visible) {
       updatePosition();
@@ -102,7 +103,7 @@ export function Tooltip({
   return (
     <div
       ref={triggerRef}
-      className="relative inline-flex"
+      className="relative inline-flex focus-ring"
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
       onFocus={showTooltip}
@@ -113,11 +114,11 @@ export function Tooltip({
         <div
           ref={tooltipRef}
           role="tooltip"
-            className={clsx(
+          className={clsx(
             'absolute z-50 px-2.5 py-1.5 text-xs font-medium',
             'bg-slate-900 text-white rounded-md shadow-lg',
             'whitespace-nowrap animate-fade-in',
-            className
+            className,
           )}
           style={{
             transform: `translate(${position.x}px, ${position.y}px)`,
@@ -131,7 +132,7 @@ export function Tooltip({
               side === 'top' && 'bottom-[-4px] left-1/2 -translate-x-1/2',
               side === 'bottom' && 'top-[-4px] left-1/2 -translate-x-1/2',
               side === 'left' && 'right-[-4px] top-1/2 -translate-y-1/2',
-              side === 'right' && 'left-[-4px] top-1/2 -translate-y-1/2'
+              side === 'right' && 'left-[-4px] top-1/2 -translate-y-1/2',
             )}
           />
         </div>
@@ -160,7 +161,7 @@ export function KeyboardShortcut({ keys, className }: KeyboardShortcutProps) {
             'min-w-[20px] h-5 px-1.5',
             'text-2xs font-medium text-text-tertiary',
             'bg-bg-hover border border-bg-border rounded',
-            'font-mono'
+            'font-mono',
           )}
         >
           {key}

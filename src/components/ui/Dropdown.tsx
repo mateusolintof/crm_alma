@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect, Fragment } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Check, ChevronDown } from 'lucide-react';
+
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 // ============================================
 // Dropdown Menu
@@ -45,10 +46,7 @@ export function Dropdown({
   // Fechar ao clicar fora
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
@@ -109,33 +107,27 @@ export function Dropdown({
             'absolute top-full mt-1 z-50',
             'bg-white border border-bg-border rounded-lg shadow-lg',
             'py-1 min-w-[180px] animate-scale-in',
-            align === 'right' ? 'right-0' : 'left-0'
+            align === 'right' ? 'right-0' : 'left-0',
           )}
           style={{ width: menuWidth }}
         >
           {items.map((item, index) => (
             <Fragment key={item.id}>
-              {item.divider && index > 0 && (
-                <div className="my-1 border-t border-bg-border" />
-              )}
+              {item.divider && index > 0 && <div className="my-1 border-t border-bg-border" />}
               <button
                 onClick={() => handleSelect(item)}
                 disabled={item.disabled}
                 className={clsx(
-                  'w-full px-3 py-2 text-left text-sm transition-colors',
+                  'w-full px-3 py-2 text-left text-sm transition-colors focus-ring',
                   'flex items-center gap-2',
                   item.disabled && 'opacity-50 cursor-not-allowed',
                   item.danger
                     ? 'text-danger hover:bg-danger-bg'
                     : 'text-text-primary hover:bg-bg-hover',
-                  selectedId === item.id && 'bg-bg-hover'
+                  selectedId === item.id && 'bg-bg-hover',
                 )}
               >
-                {item.icon && (
-                  <span className="flex-shrink-0 text-text-tertiary">
-                    {item.icon}
-                  </span>
-                )}
+                {item.icon && <span className="flex-shrink-0 text-text-tertiary">{item.icon}</span>}
                 <span className="flex-1 min-w-0">
                   <span className="block truncate">{item.label}</span>
                   {item.description && (
@@ -194,10 +186,7 @@ export function SelectDropdown({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
@@ -221,13 +210,13 @@ export function SelectDropdown({
           'bg-white border rounded-md transition-all',
           'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
           disabled && 'opacity-50 cursor-not-allowed bg-bg-hover',
-          error ? 'border-danger' : 'border-bg-border hover:border-bg-border-hover'
+          error ? 'border-danger' : 'border-bg-border hover:border-bg-border-hover',
         )}
       >
         <span
           className={clsx(
             'flex-1 truncate',
-            selectedOption ? 'text-text-primary' : 'text-text-tertiary'
+            selectedOption ? 'text-text-primary' : 'text-text-tertiary',
           )}
         >
           {selectedOption?.label || placeholder}
@@ -236,7 +225,7 @@ export function SelectDropdown({
           size={16}
           className={clsx(
             'flex-shrink-0 text-text-tertiary transition-transform',
-            open && 'rotate-180'
+            open && 'rotate-180',
           )}
         />
       </button>
@@ -247,7 +236,7 @@ export function SelectDropdown({
           className={clsx(
             'absolute top-full left-0 right-0 mt-1 z-50',
             'bg-white border border-bg-border rounded-lg shadow-lg',
-            'py-1 max-h-60 overflow-y-auto animate-scale-in'
+            'py-1 max-h-60 overflow-y-auto animate-scale-in',
           )}
         >
           {options.map((option) => (
@@ -267,12 +256,10 @@ export function SelectDropdown({
                 option.disabled && 'opacity-50 cursor-not-allowed',
                 option.value === value
                   ? 'bg-primary-subtle text-primary'
-                  : 'text-text-primary hover:bg-bg-hover'
+                  : 'text-text-primary hover:bg-bg-hover',
               )}
             >
-              {option.icon && (
-                <span className="flex-shrink-0">{option.icon}</span>
-              )}
+              {option.icon && <span className="flex-shrink-0">{option.icon}</span>}
               <span className="flex-1 min-w-0">
                 <span className="block truncate">{option.label}</span>
                 {option.description && (
@@ -281,9 +268,7 @@ export function SelectDropdown({
                   </span>
                 )}
               </span>
-              {option.value === value && (
-                <Check size={16} className="flex-shrink-0" />
-              )}
+              {option.value === value && <Check size={16} className="flex-shrink-0" />}
             </button>
           ))}
         </div>

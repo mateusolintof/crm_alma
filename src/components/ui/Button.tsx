@@ -1,8 +1,9 @@
 'use client';
 
-import { forwardRef, ButtonHTMLAttributes } from 'react';
-import { Loader2 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Loader2 } from 'lucide-react';
+
+import { ButtonHTMLAttributes, forwardRef } from 'react';
 
 // Variantes de botão
 const variants = {
@@ -10,12 +11,10 @@ const variants = {
     'bg-primary text-white hover:bg-primary-hover active:bg-primary-active shadow-sm hover:shadow-md',
   secondary:
     'bg-white text-text-primary border border-bg-border hover:bg-bg-hover hover:border-bg-border-hover',
-  ghost:
-    'bg-transparent text-text-secondary hover:bg-bg-hover hover:text-text-primary',
+  ghost: 'bg-transparent text-text-secondary hover:bg-bg-hover hover:text-text-primary',
   danger:
     'bg-danger text-white hover:bg-danger-hover active:bg-danger-active shadow-sm hover:shadow-md',
-  'danger-ghost':
-    'bg-transparent text-danger hover:bg-danger-bg',
+  'danger-ghost': 'bg-transparent text-danger hover:bg-danger-bg',
   success:
     'bg-success text-white hover:bg-success-hover active:bg-success-active shadow-sm hover:shadow-md',
 } as const;
@@ -54,7 +53,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const isIconOnly = size.startsWith('icon');
     const isDisabled = disabled || loading;
@@ -67,7 +66,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           // Base
           'inline-flex items-center justify-center font-medium rounded-md',
           'transition-all duration-150',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+          'focus-ring',
           // Hover lift effect
           'hover:-translate-y-0.5 active:translate-y-0',
           // Variantes
@@ -76,7 +75,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           // Estados
           isDisabled && 'opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-sm',
           fullWidth && 'w-full',
-          className
+          className,
         )}
         {...props}
       >
@@ -94,7 +93,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';

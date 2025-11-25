@@ -75,28 +75,28 @@ O Alma CRM é construído com arquitetura **multi-tenant**, permitindo que múlt
 
 ### Frontend
 
-| Tecnologia | Versão | Propósito |
-|------------|--------|-----------|
-| **React** | 19.2.0 | Framework UI principal |
-| **Next.js** | 16.0.3 | Framework full-stack com App Router |
-| **TypeScript** | 5.x | Type safety e developer experience |
-| **Tailwind CSS** | 4.1.17 | Sistema de design utility-first |
-| **Lucide React** | 0.554.0 | Biblioteca de ícones modernos |
-| **@dnd-kit** | 6.3.1 | Drag-and-drop para Kanban |
-| **clsx** | 2.1.1 | Utilitário para classes condicionais |
-| **date-fns** | 4.1.0 | Manipulação de datas |
+| Tecnologia       | Versão  | Propósito                            |
+| ---------------- | ------- | ------------------------------------ |
+| **React**        | 19.2.0  | Framework UI principal               |
+| **Next.js**      | 16.0.3  | Framework full-stack com App Router  |
+| **TypeScript**   | 5.x     | Type safety e developer experience   |
+| **Tailwind CSS** | 4.1.17  | Sistema de design utility-first      |
+| **Lucide React** | 0.554.0 | Biblioteca de ícones modernos        |
+| **@dnd-kit**     | 6.3.1   | Drag-and-drop para Kanban            |
+| **clsx**         | 2.1.1   | Utilitário para classes condicionais |
+| **date-fns**     | 4.1.0   | Manipulação de datas                 |
 
 ### Backend
 
-| Tecnologia | Versão | Propósito |
-|------------|--------|-----------|
-| **Node.js** | 20.x | Runtime JavaScript |
-| **Next.js API Routes** | 16.0.3 | API RESTful serverless |
-| **Prisma ORM** | 5.22.0 | Database ORM type-safe |
-| **PostgreSQL** | 15+ | Banco de dados relacional |
-| **Supabase** | - | Database hosting e pooling |
-| **jose** | 6.1.2 | JWT authentication |
-| **bcryptjs** | 3.0.3 | Password hashing |
+| Tecnologia             | Versão | Propósito                  |
+| ---------------------- | ------ | -------------------------- |
+| **Node.js**            | 20.x   | Runtime JavaScript         |
+| **Next.js API Routes** | 16.0.3 | API RESTful serverless     |
+| **Prisma ORM**         | 5.22.0 | Database ORM type-safe     |
+| **PostgreSQL**         | 15+    | Banco de dados relacional  |
+| **Supabase**           | -      | Database hosting e pooling |
+| **jose**               | 6.1.2  | JWT authentication         |
+| **bcryptjs**           | 3.0.3  | Password hashing           |
 
 ### Infraestrutura
 
@@ -138,6 +138,7 @@ O Alma CRM é construído com arquitetura **multi-tenant**, permitindo que múlt
 ### Modelos Principais
 
 #### 1. **Tenant** (Multi-tenancy)
+
 ```prisma
 model Tenant {
   id        String   @id @default(uuid())
@@ -160,6 +161,7 @@ model Tenant {
 **Propósito**: Isolamento de dados entre clientes. Cada tenant possui seus próprios usuários, contatos, empresas e pipelines.
 
 #### 2. **User** (Gestão de Usuários)
+
 ```prisma
 model User {
   id        String   @id @default(uuid())
@@ -179,6 +181,7 @@ model User {
 **Propósito**: Autenticação e autorização. Controle de acesso baseado em roles.
 
 #### 3. **Contact** (Contatos)
+
 ```prisma
 model Contact {
   id          String   @id @default(uuid())
@@ -201,6 +204,7 @@ model Contact {
 **Propósito**: Armazenar informações de contato de leads e clientes. Suporta múltiplos telefones/emails via JSON.
 
 #### 4. **Company** (Empresas)
+
 ```prisma
 model Company {
   id        String   @id @default(uuid())
@@ -221,6 +225,7 @@ model Company {
 **Propósito**: Contexto organizacional para contatos e negócios.
 
 #### 5. **Lead** (Leads de Vendas)
+
 ```prisma
 model Lead {
   id               String   @id @default(uuid())
@@ -246,6 +251,7 @@ model Lead {
 **Propósito**: Gerenciamento de leads qualificados antes de virarem deals.
 
 #### 6. **Pipeline & Stage** (Funil de Vendas)
+
 ```prisma
 model Pipeline {
   id       String   @id @default(uuid())
@@ -271,11 +277,13 @@ model Stage {
 **Propósito**: Estruturação de múltiplos funis de vendas com estágios customizáveis.
 
 **Templates Disponíveis**:
+
 - **NEW_BUSINESS**: Lead Qualificado → Reunião → Proposta → Negociação → Fechado
 - **UPSELL**: Oportunidade → Análise → Proposta → Fechado
 - **RENEWAL**: Em Renovação → Negociação → Fechado → Perdido
 
 #### 7. **Deal** (Negócios)
+
 ```prisma
 model Deal {
   id               String   @id @default(uuid())
@@ -302,6 +310,7 @@ model Deal {
 **Propósito**: Representa oportunidades de vendas em um pipeline específico.
 
 #### 8. **Conversation & Message** (Inbox Unificado)
+
 ```prisma
 model Conversation {
   id              String   @id @default(uuid())
@@ -348,16 +357,19 @@ model Message {
 **Arquivo**: `src/app/page.tsx`
 
 **Funcionalidades**:
+
 - Visão geral de métricas (placeholder)
 - Acesso rápido aos módulos principais
 
 ### 2. Inbox Unificado
 
 **Arquivos Principais**:
+
 - `src/app/inbox/page.tsx`
 - `src/components/inbox/InboxLayout.tsx`
 
 **Funcionalidades**:
+
 - Interface estilo WhatsApp Web
 - 3 painéis: Lista de conversas | Chat | Detalhes do contato
 - Filtros por canal (WhatsApp, Email, SMS)
@@ -369,6 +381,7 @@ model Message {
 - Link para deal associado
 
 **Fluxo de Dados**:
+
 ```
 ┌──────────────┐
 │ Evolution API│ (WhatsApp)
@@ -402,11 +415,13 @@ model Message {
 ### 3. Pipeline Kanban (Múltiplos)
 
 **Arquivos Principais**:
+
 - `src/app/pipeline/page.tsx`
 - `src/components/pipeline/PipelineBoard.tsx`
 - `src/app/settings/pipelines/page.tsx`
 
 **Funcionalidades**:
+
 - Visualização Kanban drag-and-drop
 - Seletor de pipeline no header (dropdown)
 - Drag-and-drop entre estágios
@@ -416,6 +431,7 @@ model Message {
 - Link para gerenciamento de pipelines
 
 **Componentes**:
+
 ```typescript
 // PipelineBoard.tsx
 - DealCard (sortable)
@@ -430,6 +446,7 @@ model Message {
 ```
 
 **Gestão de Pipelines** (`/settings/pipelines`):
+
 - Criar novo pipeline
 - Editar pipeline existente
 - Deletar pipeline (se não tiver deals)
@@ -440,10 +457,12 @@ model Message {
 ### 4. Contatos
 
 **Arquivos Principais**:
+
 - `src/app/contacts/page.tsx`
 - `src/components/contacts/ContactList.tsx`
 
 **Funcionalidades**:
+
 - Listagem de contatos
 - Filtros e pesquisa (placeholder)
 - Exibição de canal principal, telefone, email
@@ -452,10 +471,12 @@ model Message {
 ### 5. Empresas
 
 **Arquivos Principais**:
+
 - `src/app/companies/page.tsx`
 - `src/components/companies/CompanyList.tsx`
 
 **Funcionalidades**:
+
 - Listagem de empresas
 - Exibição de segmento, site, tags
 - Contador de contatos associados
@@ -463,10 +484,12 @@ model Message {
 ### 6. Leads
 
 **Arquivos Principais**:
+
 - `src/app/leads/page.tsx`
 - `src/components/leads/LeadList.tsx`
 
 **Funcionalidades**:
+
 - Listagem de leads
 - Status badges (OPEN, QUALIFIED, CONVERTED, LOST)
 - Lead score visual
@@ -476,6 +499,7 @@ model Message {
 ### 7. Autenticação
 
 **Arquivos Principais**:
+
 - `src/app/login/page.tsx`
 - `src/app/api/auth/login/route.ts`
 - `src/app/api/auth/logout/route.ts`
@@ -483,6 +507,7 @@ model Message {
 - `src/middleware.ts`
 
 **Funcionalidades**:
+
 - Login com email/password
 - Password hashing com bcryptjs
 - JWT com jose (ES256)
@@ -491,6 +516,7 @@ model Message {
 - Auto-redirect para /login se não autenticado
 
 **Fluxo de Autenticação**:
+
 ```
 ┌──────────┐
 │  User    │
@@ -522,40 +548,41 @@ model Message {
 
 ### Autenticação
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| POST | `/api/auth/login` | Login de usuário |
-| POST | `/api/auth/logout` | Logout (clear cookie) |
+| Método | Endpoint           | Descrição             |
+| ------ | ------------------ | --------------------- |
+| POST   | `/api/auth/login`  | Login de usuário      |
+| POST   | `/api/auth/logout` | Logout (clear cookie) |
 
 ### Contatos
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/contacts` | Lista todos os contatos do tenant |
+| Método | Endpoint        | Descrição                         |
+| ------ | --------------- | --------------------------------- |
+| GET    | `/api/contacts` | Lista todos os contatos do tenant |
 
 ### Empresas
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/companies` | Lista todas as empresas do tenant |
+| Método | Endpoint         | Descrição                         |
+| ------ | ---------------- | --------------------------------- |
+| GET    | `/api/companies` | Lista todas as empresas do tenant |
 
 ### Leads
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/leads` | Lista todos os leads do tenant |
+| Método | Endpoint     | Descrição                      |
+| ------ | ------------ | ------------------------------ |
+| GET    | `/api/leads` | Lista todos os leads do tenant |
 
 ### Pipelines
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/pipelines` | Lista todos os pipelines |
-| POST | `/api/pipelines` | Cria novo pipeline com stages |
-| GET | `/api/pipelines/:id` | Busca pipeline com stages e deals |
-| PATCH | `/api/pipelines/:id` | Atualiza pipeline e stages |
+| Método | Endpoint             | Descrição                            |
+| ------ | -------------------- | ------------------------------------ |
+| GET    | `/api/pipelines`     | Lista todos os pipelines             |
+| POST   | `/api/pipelines`     | Cria novo pipeline com stages        |
+| GET    | `/api/pipelines/:id` | Busca pipeline com stages e deals    |
+| PATCH  | `/api/pipelines/:id` | Atualiza pipeline e stages           |
 | DELETE | `/api/pipelines/:id` | Deleta pipeline (se não tiver deals) |
 
 **Exemplo de criação de pipeline**:
+
 ```json
 POST /api/pipelines
 {
@@ -571,11 +598,12 @@ POST /api/pipelines
 
 ### Deals
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| PATCH | `/api/deals/:id` | Atualiza deal (ex: mover stage) |
+| Método | Endpoint         | Descrição                       |
+| ------ | ---------------- | ------------------------------- |
+| PATCH  | `/api/deals/:id` | Atualiza deal (ex: mover stage) |
 
 **Exemplo de movimentação de deal**:
+
 ```json
 PATCH /api/deals/abc123
 {
@@ -585,14 +613,15 @@ PATCH /api/deals/abc123
 
 ### Inbox & Mensagens
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/conversations` | Lista conversas com mensagens |
-| POST | `/api/messages` | Envia mensagem (salva + encaminha) |
-| POST | `/api/webhooks/whatsapp` | Webhook para Evolution API |
-| GET | `/api/webhooks/whatsapp` | Health check do webhook |
+| Método | Endpoint                 | Descrição                          |
+| ------ | ------------------------ | ---------------------------------- |
+| GET    | `/api/conversations`     | Lista conversas com mensagens      |
+| POST   | `/api/messages`          | Envia mensagem (salva + encaminha) |
+| POST   | `/api/webhooks/whatsapp` | Webhook para Evolution API         |
+| GET    | `/api/webhooks/whatsapp` | Health check do webhook            |
 
 **Exemplo de envio de mensagem**:
+
 ```json
 POST /api/messages
 {
@@ -604,6 +633,7 @@ POST /api/messages
 ```
 
 **Response**:
+
 ```json
 {
   "id": "msg456",
@@ -623,6 +653,7 @@ POST /api/messages
 **Arquivo**: `src/lib/evolution-api.ts`
 
 **Configuração** (`.env`):
+
 ```bash
 EVOLUTION_API_URL="https://your-evolution-api.com/api/v1"
 EVOLUTION_API_KEY="your_api_key_here"
@@ -635,23 +666,23 @@ WEBHOOK_API_KEY="your_webhook_secret"
 ```typescript
 // Enviar mensagem de texto
 sendWhatsAppTextMessage({
-  number: "5511999999999",
-  text: "Olá!"
-})
+  number: '5511999999999',
+  text: 'Olá!',
+});
 
 // Enviar mídia
 sendWhatsAppMediaMessage({
-  number: "5511999999999",
-  mediaUrl: "https://example.com/image.jpg",
-  caption: "Confira esta imagem",
-  mediaType: "image"
-})
+  number: '5511999999999',
+  mediaUrl: 'https://example.com/image.jpg',
+  caption: 'Confira esta imagem',
+  mediaType: 'image',
+});
 
 // Formatar telefone
-formatPhoneNumber("11999999999") // → "5511999999999"
+formatPhoneNumber('11999999999'); // → "5511999999999"
 
 // Verificar status da instância
-getInstanceStatus()
+getInstanceStatus();
 ```
 
 **Fluxo de Webhook**:
@@ -666,6 +697,7 @@ getInstanceStatus()
 8. Incrementa unreadCount
 
 **Formato do Payload do Webhook**:
+
 ```json
 {
   "event": "messages.upsert",
@@ -693,49 +725,45 @@ getInstanceStatus()
 
 ### Paleta de Cores (Design System 2025)
 
-**Arquivo**: `src/app/globals.css` + `tailwind.config.ts`
+**Arquivo**: `src/app/globals.css` (Tailwind v4 configless)
 
 #### Cores Primárias
+
 ```css
---primary-color: #2563EB        /* Royal Blue */
---primary-hover: #1D4ED8
---primary-active: #1E40AF
---primary-light: #DBEAFE
---primary-dark: #1E3A8A
+--primary-color: #2563eb /* Royal Blue */ --primary-hover: #1d4ed8 --primary-active: #1e40af
+  --primary-light: #dbeafe --primary-dark: #1e3a8a;
 ```
 
 #### Cores de Background
+
 ```css
---bg-app: #F8FAFC             /* App background */
---bg-surface: #FFFFFF         /* Cards, modals */
---bg-surface-hover: #F1F5F9   /* Hover states */
---bg-border: #E2E8F0          /* Borders, dividers */
+--bg-app: #f8fafc /* App background */ --bg-surface: #ffffff /* Cards, modals */
+  --bg-surface-hover: #f1f5f9 /* Hover states */ --bg-border: #e2e8f0 /* Borders, dividers */;
 ```
 
 #### Cores de Texto
+
 ```css
---text-primary: #0F172A       /* Headings */
---text-secondary: #475569     /* Body text */
---text-tertiary: #94A3B8      /* Muted text */
---text-on-primary: #FFFFFF    /* Text on blue */
+--text-primary: #0f172a /* Headings */ --text-secondary: #475569 /* Body text */
+  --text-tertiary: #94a3b8 /* Muted text */ --text-on-primary: #ffffff /* Text on blue */;
 ```
 
 #### Cores Semânticas
+
 ```css
---success: #10B981
---warning: #F59E0B
---danger: #EF4444
---info: #3B82F6
+--success: #10b981 --warning: #f59e0b --danger: #ef4444 --info: #3b82f6;
 ```
 
 ### Componentes Reutilizáveis
 
 #### Glass Card
+
 ```html
 <div class="glass-card">
   <!-- Content -->
 </div>
 ```
+
 ```css
 .glass-card {
   @apply bg-white/90 backdrop-blur-sm border border-bg-border rounded-lg shadow-sm;
@@ -743,11 +771,11 @@ getInstanceStatus()
 ```
 
 #### Hover Lift
+
 ```html
-<button class="hover-lift">
-  Click me
-</button>
+<button class="hover-lift">Click me</button>
 ```
+
 ```css
 .hover-lift {
   @apply transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md;
@@ -755,9 +783,11 @@ getInstanceStatus()
 ```
 
 #### Focus Ring
+
 ```html
 <input class="focus-ring" />
 ```
+
 ```css
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
@@ -766,29 +796,7 @@ getInstanceStatus()
 
 ### Animações
 
-```typescript
-// tailwind.config.ts
-animation: {
-  'fade-in': 'fadeIn 0.2s ease-in',
-  'slide-up': 'slideUp 0.3s ease-out',
-  'scale-in': 'scaleIn 0.2s ease-out',
-}
-
-keyframes: {
-  fadeIn: {
-    '0%': { opacity: '0' },
-    '100%': { opacity: '1' },
-  },
-  slideUp: {
-    '0%': { transform: 'translateY(10px)', opacity: '0' },
-    '100%': { transform: 'translateY(0)', opacity: '1' },
-  },
-  scaleIn: {
-    '0%': { transform: 'scale(0.95)', opacity: '0' },
-    '100%': { transform: 'scale(1)', opacity: '1' },
-  },
-}
-```
+> Tailwind v4: animações definidas no `@theme` e `@layer utilities` de `src/app/globals.css` (configless).
 
 ---
 
@@ -797,6 +805,7 @@ keyframes: {
 ### JWT Flow
 
 **Geração de Token**:
+
 ```typescript
 // src/lib/auth.ts
 import * as jose from 'jose';
@@ -812,6 +821,7 @@ export async function generateToken(payload: TokenPayload) {
 ```
 
 **Verificação de Token**:
+
 ```typescript
 export async function verifyToken(token: string) {
   try {
@@ -851,7 +861,7 @@ export const config = {
     '/pipeline/:path*',
     '/inbox/:path*',
     // ... todas as rotas protegidas
-  ]
+  ],
 };
 ```
 
@@ -1006,22 +1016,26 @@ User arrasta DealCard entre colunas
 ### Setup Inicial
 
 1. **Clone o repositório**
+
 ```bash
 git clone <repo-url>
 cd CRM_Alma
 ```
 
 2. **Instalar dependências**
+
 ```bash
 npm install
 ```
 
 3. **Configurar variáveis de ambiente**
+
 ```bash
 cp .env.example .env
 ```
 
 Editar `.env`:
+
 ```bash
 DATABASE_URL="postgresql://..."
 DIRECT_URL="postgresql://..."
@@ -1033,16 +1047,19 @@ WEBHOOK_API_KEY="..."
 ```
 
 4. **Executar migrations**
+
 ```bash
 npx prisma migrate dev
 ```
 
 5. **Seed inicial** (opcional)
+
 ```bash
 npx prisma db seed
 ```
 
 6. **Rodar em desenvolvimento**
+
 ```bash
 npm run dev
 ```
@@ -1096,7 +1113,7 @@ CRM_Alma/
 │   ├── services/
 │   │   └── tenant.service.ts
 │   └── middleware.ts          # Auth middleware
-├── tailwind.config.ts
+├── (configless Tailwind v4 - tokens em src/app/globals.css)
 ├── package.json
 ├── .env.example
 ├── CLAUDE.md                  # This file
@@ -1112,36 +1129,33 @@ CRM_Alma/
 ```typescript
 // src/app/api/example/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+
 import prisma from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     // 1. Extract tenant (from session/auth - future)
     const tenant = await prisma.tenant.findFirst({
-      where: { domain: 'alma.agency' }
+      where: { domain: 'alma.agency' },
     });
 
     if (!tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
     }
 
     // 2. Query database
     const data = await prisma.yourModel.findMany({
       where: { tenantId: tenant.id },
-      include: { /* relations */ }
+      include: {
+        /* relations */
+      },
     });
 
     // 3. Return response
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching data:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   }
 }
 ```
@@ -1151,10 +1165,13 @@ export async function GET(request: NextRequest) {
 1. Editar `prisma/schema.prisma`
 2. Adicionar relacionamento com Tenant
 3. Criar migration:
+
 ```bash
 npx prisma migrate dev --name add_new_model
 ```
+
 4. Regenerar Prisma Client:
+
 ```bash
 npx prisma generate
 ```
@@ -1162,12 +1179,14 @@ npx prisma generate
 ### Testando a Aplicação
 
 **Login padrão** (após seed):
+
 ```
 Email: admin@alma.agency
 Password: 123456
 ```
 
 **Endpoints para testar**:
+
 - GET `/api/contacts` → Lista contatos
 - GET `/api/companies` → Lista empresas
 - GET `/api/pipelines` → Lista pipelines
@@ -1180,6 +1199,7 @@ Password: 123456
 3. Deploy automático em cada push
 
 **Configurações importantes**:
+
 - Framework: Next.js
 - Build Command: `npm run build`
 - Output Directory: `.next`
@@ -1194,6 +1214,7 @@ Password: 123456
 **Causa**: Seed não executado ou tenant não criado
 
 **Solução**:
+
 ```bash
 npx prisma db seed
 ```
@@ -1203,8 +1224,10 @@ npx prisma db seed
 **Causa**: Variáveis de ambiente incorretas ou instância inativa
 
 **Solução**:
+
 1. Verificar `.env`: `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE_NAME`
 2. Testar:
+
 ```typescript
 const status = await getInstanceStatus();
 console.log(status);
@@ -1215,6 +1238,7 @@ console.log(status);
 **Causa**: Token JWT inválido ou expirado
 
 **Solução**:
+
 1. Fazer logout: `POST /api/auth/logout`
 2. Fazer login novamente
 3. Verificar `JWT_SECRET` no `.env`
@@ -1224,6 +1248,7 @@ console.log(status);
 **Causa**: Conflito de z-index ou problema com @dnd-kit
 
 **Solução**:
+
 1. Verificar `DragOverlay` está renderizado
 2. Verificar `sensors` estão configurados
 3. Console errors no navegador

@@ -1,4 +1,5 @@
 # TASKS - CRM_Alma Project
+
 ## Complete Action Plan
 
 **Generated**: 2025-11-25
@@ -353,7 +354,7 @@
   - Action: Configure @trivago/prettier-plugin-sort-imports
   - Estimated: 30 min
 
-- [ ] **TASK-061**: Run Prettier across all files
+- [x] **TASK-061**: Run Prettier across all files
   - Command: `npx prettier --write "src/**/*.{ts,tsx}"`
   - Estimated: 10 min
 
@@ -443,43 +444,47 @@
 
 ## TASK SUMMARY BY FILE
 
-| File | Task Count |
-|------|------------|
-| `tailwind.config.ts` | 8 |
-| `src/components/pipeline/PipelineBoard.tsx` | 4 |
-| `src/components/ui/Modal.tsx` | 1 |
-| `src/components/ui/Dropdown.tsx` | 1 |
-| `src/components/ui/Skeleton.tsx` | 2 |
-| `src/components/ui/Avatar.tsx` | 1 |
-| `src/components/ui/Button.tsx` | 2 |
-| `src/components/ui/Badge.tsx` | 2 |
-| `src/components/ui/Tooltip.tsx` | 1 |
-| `src/hooks/*.ts` | 5 |
-| `src/app/api/**/*.ts` | 9 |
-| `src/middleware.ts` | 1 |
-| `next.config.ts` | 1 |
-| New files to create | 6 |
-| Other files | 23 |
+| File                                        | Task Count |
+| ------------------------------------------- | ---------- |
+| `tailwind.config.ts`                        | 8          |
+| `src/components/pipeline/PipelineBoard.tsx` | 4          |
+| `src/components/ui/Modal.tsx`               | 1          |
+| `src/components/ui/Dropdown.tsx`            | 1          |
+| `src/components/ui/Skeleton.tsx`            | 2          |
+| `src/components/ui/Avatar.tsx`              | 1          |
+| `src/components/ui/Button.tsx`              | 2          |
+| `src/components/ui/Badge.tsx`               | 2          |
+| `src/components/ui/Tooltip.tsx`             | 1          |
+| `src/hooks/*.ts`                            | 5          |
+| `src/app/api/**/*.ts`                       | 9          |
+| `src/middleware.ts`                         | 1          |
+| `next.config.ts`                            | 1          |
+| New files to create                         | 6          |
+| Other files                                 | 23         |
 
 ---
 
 ## EXECUTION ORDER RECOMMENDATION
 
 ### Week 1 - Critical & Security
+
 1. TASK-001 to TASK-007 (Security fixes)
 2. TASK-041 (CSRF fix)
 3. TASK-042 (Security headers)
 
 ### Week 2 - High Priority Fixes
+
 4. TASK-008 to TASK-011 (React hooks)
 5. TASK-012 to TASK-018 (TypeScript any)
 6. TASK-019 to TASK-027 (API refactoring)
 
 ### Week 3 - Design System
+
 7. TASK-028 to TASK-038 (Tailwind fixes)
 8. TASK-039 to TASK-040 (React fixes)
 
 ### Week 4 - Code Quality
+
 9. TASK-043 to TASK-048 (Duplication removal)
 10. TASK-049 to TASK-067 (Low priority cleanup)
 
@@ -487,10 +492,10 @@
 
 ## PROGRESS TRACKING
 
-**Completed**: 60/67 (89%)
+**Completed**: 61/67 (91%)
 **In Progress**: 0/67
-**Remaining**: 7/67
+**Remaining**: 6/67
 
 ---
 
-*This task list should be updated as tasks are completed. Mark tasks with [x] when done.*
+_This task list should be updated as tasks are completed. Mark tasks with [x] when done._

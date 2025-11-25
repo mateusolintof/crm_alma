@@ -57,13 +57,7 @@ npm install
 cp .env.example .env
 # Edite o .env com suas credenciais
 
-# 4. Execute as migrations
-npx prisma migrate dev
-
-# 5. (Opcional) Popule com dados de exemplo
-npx prisma db seed
-
-# 6. Rode o projeto
+# 4. Rode o projeto (frontend-first, Tailwind v4 configless)
 npm run dev
 ```
 
@@ -78,24 +72,14 @@ Password: 123456
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 🛠️ Stack Tecnológica (UI)
 
-### Frontend
 - **React 19.2** + **Next.js 16.0** (App Router)
-- **TypeScript 5.x** para type safety
-- **Tailwind CSS 4.1** para design moderno
+- **TypeScript 5.x**
+- **Tailwind CSS 4.x** (configless; tokens e animações em `src/app/globals.css`)
 - **@dnd-kit** para drag-and-drop
 - **Lucide React** para ícones
-
-### Backend
-- **Next.js API Routes** (serverless functions)
-- **Prisma ORM 5.22** para database
-- **PostgreSQL** via Supabase
-- **JWT** com jose para autenticação
-- **bcryptjs** para password hashing
-
-### Integrações
-- **Evolution API** para WhatsApp (não usa API oficial Meta)
+- **React Query** (Devtools opcional com `NEXT_PUBLIC_ENABLE_RQ_DEVTOOLS=true`)
 
 ---
 
@@ -137,7 +121,8 @@ CRM_Alma/
 ├── .env.example               # Template de env vars
 ├── CLAUDE.md                  # Documentação técnica completa
 ├── ROADMAP.md                 # Melhorias futuras
-└── INBOX_SETUP.md             # Setup Evolution API
+├── INBOX_SETUP.md             # Setup Evolution API
+└── ARCHITECTURE.md            # Guia atualizado de lógica e configuração (frontend-first)
 ```
 
 ---
@@ -224,15 +209,18 @@ Gestão visual de vendas com drag-and-drop:
 ## 🔌 APIs e Endpoints
 
 ### Autenticação
+
 - `POST /api/auth/login` - Login
 - `POST /api/auth/logout` - Logout
 
 ### CRM Core
+
 - `GET /api/contacts` - Lista contatos
 - `GET /api/companies` - Lista empresas
 - `GET /api/leads` - Lista leads
 
 ### Pipelines
+
 - `GET /api/pipelines` - Lista todos os pipelines
 - `POST /api/pipelines` - Cria novo pipeline
 - `GET /api/pipelines/:id` - Busca pipeline com deals
@@ -241,6 +229,7 @@ Gestão visual de vendas com drag-and-drop:
 - `PATCH /api/deals/:id` - Atualiza deal (ex: mover stage)
 
 ### Inbox
+
 - `GET /api/conversations` - Lista conversas com mensagens
 - `POST /api/messages` - Envia mensagem
 - `POST /api/webhooks/whatsapp` - Webhook Evolution API
@@ -264,6 +253,7 @@ WEBHOOK_API_KEY="random_secret_for_webhook"
 ```
 
 3. Configure o webhook na Evolution API:
+
 ```
 URL: https://your-domain.com/api/webhooks/whatsapp
 Header: x-api-key: your_webhook_secret
@@ -319,6 +309,7 @@ O projeto usa **PostgreSQL** com **Prisma ORM**.
 ### Outras plataformas
 
 O projeto é compatível com qualquer plataforma que suporte Next.js:
+
 - Railway
 - Render
 - AWS Amplify
