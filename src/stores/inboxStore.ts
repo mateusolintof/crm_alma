@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Conversation, Message, InboxFilters, ChannelType } from '@/types';
+import type { Conversation, Message, InboxFilters } from '@/types';
 
 interface InboxState {
   // Estado das conversas
@@ -197,14 +197,13 @@ export const useInboxActions = () => {
       if (!res.ok) throw new Error('Failed to fetch conversations');
       const data = await res.json();
       store.setConversations(data);
-    } catch (error) {
-      store.setError('Erro ao carregar conversas');
-    }
-  };
+  } catch {
+    store.setError('Erro ao carregar conversas');
+  }
+};
 
   return {
     sendMessage,
     refreshConversations,
   };
 };
-

@@ -1,32 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Lead, QueryFilters } from '@/types';
-import { useToast } from '@/stores';
+import type { Lead } from '@/types';
+import { createEntityHooks } from './createEntityHooks';
 
-// Keys para cache
-export const leadKeys = {
-  all: ['leads'] as const,
-  lists: () => [...leadKeys.all, 'list'] as const,
-  list: (filters: QueryFilters) => [...leadKeys.lists(), filters] as const,
-  details: () => [...leadKeys.all, 'detail'] as const,
-  detail: (id: string) => [...leadKeys.details(), id] as const,
-};
-
-// Fetch de leads
-async function fetchLeads(): Promise<Lead[]> {
-  const res = await fetch('/api/leads');
-  if (!res.ok) throw new Error('Falha ao carregar leads');
-  return res.json();
-}
-
-// Fetch de lead por ID
-async function fetchLead(id: string): Promise<Lead> {
-  const res = await fetch(`/api/leads/${id}`);
-  if (!res.ok) throw new Error('Lead não encontrado');
-  return res.json();
-}
-
-// Criar lead
-interface CreateLeadData {
+export interface CreateLeadData {
   name: string;
   email?: string;
   phone?: string;
@@ -34,98 +9,24 @@ interface CreateLeadData {
   sourceType: string;
 }
 
-async function createLead(data: CreateLeadData): Promise<Lead> {
-  const res = await fetch('/api/leads', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error('Falha ao criar lead');
-  return res.json();
-}
+const {
+  keys: leadKeys,
+  useList: useLeads,
+  useDetail: useLead,
+  useCreate: useCreateLead,
+  useUpdate: useUpdateLead,
+  useDelete: useDeleteLead,
+} = createEntityHooks<Lead, CreateLeadData, Partial<Lead> & { id: string }>({
+  resource: 'leads',
+  basePath: '/api/leads',
+  toastMessages: {
+    createSuccess: ['Lead criado', 'O lead foi adicionado com sucesso.'],
+    createError: ['Erro', 'Não foi possível criar o lead.'],
+    updateSuccess: ['Lead atualizado', 'As alterações foram salvas.'],
+    updateError: ['Erro', 'Não foi possível atualizar o lead.'],
+    deleteSuccess: ['Lead removido', 'O lead foi deletado.'],
+    deleteError: ['Erro', 'Não foi possível remover o lead.'],
+  },
+});
 
-// Atualizar lead
-async function updateLead({ id, ...data }: Partial<Lead> & { id: string }): Promise<Lead> {
-  const res = await fetch(`/api/leads/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error('Falha ao atualizar lead');
-  return res.json();
-}
-
-// Deletar lead
-async function deleteLead(id: string): Promise<void> {
-  const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Falha ao deletar lead');
-}
-
-// Hook: Lista de leads
-export function useLeads() {
-  return useQuery({
-    queryKey: leadKeys.lists(),
-    queryFn: fetchLeads,
-  });
-}
-
-// Hook: Lead por ID
-export function useLead(id: string | undefined) {
-  return useQuery({
-    queryKey: leadKeys.detail(id!),
-    queryFn: () => fetchLead(id!),
-    enabled: !!id,
-  });
-}
-
-// Hook: Criar lead
-export function useCreateLead() {
-  const queryClient = useQueryClient();
-  const toast = useToast();
-
-  return useMutation({
-    mutationFn: createLead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: leadKeys.lists() });
-      toast.success('Lead criado', 'O lead foi adicionado com sucesso.');
-    },
-    onError: () => {
-      toast.error('Erro', 'Não foi possível criar o lead.');
-    },
-  });
-}
-
-// Hook: Atualizar lead
-export function useUpdateLead() {
-  const queryClient = useQueryClient();
-  const toast = useToast();
-
-  return useMutation({
-    mutationFn: updateLead,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: leadKeys.lists() });
-      queryClient.setQueryData(leadKeys.detail(data.id), data);
-      toast.success('Lead atualizado', 'As alterações foram salvas.');
-    },
-    onError: () => {
-      toast.error('Erro', 'Não foi possível atualizar o lead.');
-    },
-  });
-}
-
-// Hook: Deletar lead
-export function useDeleteLead() {
-  const queryClient = useQueryClient();
-  const toast = useToast();
-
-  return useMutation({
-    mutationFn: deleteLead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: leadKeys.lists() });
-      toast.success('Lead removido', 'O lead foi deletado.');
-    },
-    onError: () => {
-      toast.error('Erro', 'Não foi possível remover o lead.');
-    },
-  });
-}
+export { leadKeys, useLeads, useLead, useCreateLead, useUpdateLead, useDeleteLead };

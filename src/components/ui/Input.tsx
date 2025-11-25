@@ -130,9 +130,6 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   ({ value, onClear, className, ...props }, ref) => {
     const showClear = value && String(value).length > 0 && onClear;
 
-    // Remover qualquer 'size' que possa estar nos props para evitar conflito com o atributo HTML
-    const { size: _size, ...restProps } = props as { size?: unknown };
-
     return (
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-tertiary">
@@ -150,7 +147,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             'border-bg-border',
             className
           )}
-          {...restProps}
+          {...props}
         />
         {showClear && (
           <button
@@ -240,4 +237,3 @@ export function FormField({ label, error, required, hint, children }: FormFieldP
 }
 
 export default Input;
-

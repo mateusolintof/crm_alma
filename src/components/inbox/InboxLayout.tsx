@@ -62,7 +62,7 @@ export default function InboxLayout() {
                 content: messageText,
             });
             setMessageText('');
-        } catch (error) {
+        } catch {
             // Erro já tratado pelo hook
         }
     }, [messageText, selectedId, sendMessageMutation]);

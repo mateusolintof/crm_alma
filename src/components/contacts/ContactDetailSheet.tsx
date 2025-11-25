@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { Mail, Phone, Building2, Calendar, Tag, Edit, Trash2, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Building2, Edit, Trash2, MessageSquare } from 'lucide-react';
 import { Sheet, Avatar, Button, Badge, Card } from '@/components/ui';
 import type { Contact } from '@/types';
 
@@ -200,4 +200,3 @@ export const ContactDetailSheet = memo(function ContactDetailSheet({
 });
 
 export default ContactDetailSheet;
-

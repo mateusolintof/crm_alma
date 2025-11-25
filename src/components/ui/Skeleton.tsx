@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { clsx } from 'clsx';
 
 // ============================================
@@ -278,9 +278,8 @@ export function SkeletonKanban({
 // ============================================
 
 export function SkeletonInbox() {
-  const bubbleWidths = useMemo(
-    () => Array.from({ length: 4 }).map(() => 200 + Math.random() * 100),
-    []
+  const [bubbleWidths] = useState(() =>
+    Array.from({ length: 4 }).map(() => 200 + Math.random() * 100)
   );
 
   return (

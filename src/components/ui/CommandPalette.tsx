@@ -12,12 +12,10 @@ import {
     Settings,
     Plus,
     ArrowRight,
-    Hash,
     Command,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useUIStore } from '@/stores';
-import { KeyboardShortcut } from './Tooltip';
 
 // Tipos
 interface CommandItem {
@@ -181,12 +179,13 @@ export function CommandPalette() {
     // Total de itens para navegação
     const totalItems = filteredCommands.length;
 
-    // Resetar seleção quando a busca muda
-    useEffect(() => {
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
         setSelectedIndex(0);
-    }, [search]);
+    };
 
     // Focar no input quando abrir
+     
     useEffect(() => {
         if (commandPaletteOpen) {
             setTimeout(() => inputRef.current?.focus(), 50);
@@ -280,7 +279,7 @@ export function CommandPalette() {
                         ref={inputRef}
                         type="text"
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => handleSearchChange(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Buscar comandos, páginas..."
                         className={clsx(

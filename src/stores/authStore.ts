@@ -91,7 +91,7 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false,
             });
           }
-        } catch (error) {
+        } catch {
           set({
             user: null,
             tenant: null,

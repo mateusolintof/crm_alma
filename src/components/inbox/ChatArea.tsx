@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { clsx } from 'clsx';
-import { Avatar, Button, Input } from '@/components/ui';
+import { Avatar, Button } from '@/components/ui';
 import type { Conversation, Message } from '@/types';
 
 interface ChatAreaProps {

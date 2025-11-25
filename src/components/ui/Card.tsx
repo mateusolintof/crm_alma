@@ -101,7 +101,7 @@ export function CardHeader({
 // Card Content
 // ============================================
 
-export interface CardContentProps extends HTMLAttributes<HTMLDivElement> {}
+export type CardContentProps = HTMLAttributes<HTMLDivElement>;
 
 export function CardContent({ className, children, ...props }: CardContentProps) {
   return (
@@ -190,4 +190,3 @@ export function StatCard({
 }
 
 export default Card;
-

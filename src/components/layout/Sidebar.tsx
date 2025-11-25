@@ -41,7 +41,7 @@ export default function Sidebar() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
             window.location.href = '/login';
-        } catch (error) {
+        } catch {
             toast.error('Erro ao sair', 'Tente novamente');
         }
     };

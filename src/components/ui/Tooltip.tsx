@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { clsx } from 'clsx';
 
 export interface TooltipProps {
@@ -26,9 +26,53 @@ export function Tooltip({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current || !tooltipRef.current) return;
+
+    const triggerRect = triggerRef.current.getBoundingClientRect();
+    const tooltipRect = tooltipRef.current.getBoundingClientRect();
+
+    let x = 0;
+    let y = 0;
+
+    switch (side) {
+      case 'top':
+        y = -tooltipRect.height - 8;
+        break;
+      case 'bottom':
+        y = triggerRect.height + 8;
+        break;
+      case 'left':
+        x = -tooltipRect.width - 8;
+        y = (triggerRect.height - tooltipRect.height) / 2;
+        break;
+      case 'right':
+        x = triggerRect.width + 8;
+        y = (triggerRect.height - tooltipRect.height) / 2;
+        break;
+    }
+
+    if (side === 'top' || side === 'bottom') {
+      switch (align) {
+        case 'start':
+          x = 0;
+          break;
+        case 'center':
+          x = (triggerRect.width - tooltipRect.width) / 2;
+          break;
+        case 'end':
+          x = triggerRect.width - tooltipRect.width;
+          break;
+      }
+    }
+
+    setPosition({ x, y });
+  }, [align, side]);
+
   const showTooltip = () => {
     timeoutRef.current = setTimeout(() => {
       setVisible(true);
+      requestAnimationFrame(updatePosition);
     }, delayMs);
   };
 
@@ -39,50 +83,13 @@ export function Tooltip({
     setVisible(false);
   };
 
-  useLayoutEffect(() => {
-    if (visible && triggerRef.current && tooltipRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect();
-      const tooltipRect = tooltipRef.current.getBoundingClientRect();
-
-      let x = 0;
-      let y = 0;
-
-      // Posição vertical
-      switch (side) {
-        case 'top':
-          y = -tooltipRect.height - 8;
-          break;
-        case 'bottom':
-          y = triggerRect.height + 8;
-          break;
-        case 'left':
-          x = -tooltipRect.width - 8;
-          y = (triggerRect.height - tooltipRect.height) / 2;
-          break;
-        case 'right':
-          x = triggerRect.width + 8;
-          y = (triggerRect.height - tooltipRect.height) / 2;
-          break;
-      }
-
-      // Alinhamento horizontal (para top/bottom)
-      if (side === 'top' || side === 'bottom') {
-        switch (align) {
-          case 'start':
-            x = 0;
-            break;
-          case 'center':
-            x = (triggerRect.width - tooltipRect.width) / 2;
-            break;
-          case 'end':
-            x = triggerRect.width - tooltipRect.width;
-            break;
-        }
-      }
-
-      setPosition({ x, y });
+  // Força reposicionamento quando o tooltip é reexibido ou quando a posição/alinhamento mudam
+   
+  useEffect(() => {
+    if (visible) {
+      updatePosition();
     }
-  }, [visible, side, align]);
+  }, [visible, updatePosition]);
 
   useEffect(() => {
     return () => {

@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { User, Building2, Tag, Calendar, DollarSign, TrendingUp, Edit, Trash2, ArrowRight } from 'lucide-react';
+import { Building2, Tag, DollarSign, TrendingUp, Edit, Trash2, ArrowRight } from 'lucide-react';
 import { Sheet, Avatar, Button, Badge, StatusBadge, Card } from '@/components/ui';
 import type { Lead, LeadStatus } from '@/types';
 
@@ -220,4 +220,3 @@ export const LeadDetailSheet = memo(function LeadDetailSheet({
 });
 
 export default LeadDetailSheet;
-

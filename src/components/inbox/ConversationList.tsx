@@ -1,9 +1,9 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { Filter, MessageSquare, Mail, Instagram } from 'lucide-react';
 import { clsx } from 'clsx';
-import { Avatar, SearchInput, Badge, ChannelBadge } from '@/components/ui';
+import { Avatar, SearchInput, Badge } from '@/components/ui';
 import type { Conversation, ChannelType } from '@/types';
 
 type FilterChannel = 'WHATSAPP' | 'EMAIL' | 'INSTAGRAM';

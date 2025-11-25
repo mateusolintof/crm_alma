@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, Fragment, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, Fragment } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -79,24 +79,26 @@ export function Dropdown({
     setOpen(false);
   };
 
-  useLayoutEffect(() => {
-    if (width === 'auto') {
-      setMenuWidth(undefined);
-      return;
-    }
+  const computeMenuWidth = () => {
+    if (width === 'auto') return undefined;
+    if (width === 'trigger') return triggerRef.current?.offsetWidth;
+    return typeof width === 'number' ? width : undefined;
+  };
 
-    if (width === 'trigger') {
-      setMenuWidth(triggerRef.current?.offsetWidth);
-      return;
-    }
-
-    setMenuWidth(typeof width === 'number' ? width : undefined);
-  }, [width, open]);
+  const toggleOpen = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (!prev) {
+        setMenuWidth(computeMenuWidth());
+      }
+      return next;
+    });
+  };
 
   return (
     <div ref={dropdownRef} className={clsx('relative', className)}>
       {/* Trigger */}
-      <div ref={triggerRef} onClick={() => setOpen(!open)}>
+      <div ref={triggerRef} onClick={toggleOpen}>
         {trigger}
       </div>
 

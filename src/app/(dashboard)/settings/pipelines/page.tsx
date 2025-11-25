@@ -141,8 +141,9 @@ export default function PipelinesSettingsPage() {
                 throw new Error(error.error);
             }
             fetchPipelines();
-        } catch (error: any) {
-            alert(error.message || 'Erro ao excluir pipeline');
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Erro ao excluir pipeline';
+            alert(message);
         }
     }
 
@@ -154,7 +155,7 @@ export default function PipelinesSettingsPage() {
         setFormStages(formStages.filter((_, i) => i !== index));
     }
 
-    function updateStage(index: number, field: keyof Stage, value: any) {
+    function updateStage(index: number, field: keyof Stage, value: Stage[keyof Stage]) {
         const updated = [...formStages];
         updated[index] = { ...updated[index], [field]: value };
         setFormStages(updated);

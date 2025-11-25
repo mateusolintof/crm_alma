@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import type { Pipeline, Deal } from '@/types';
 import { useToast } from '@/stores';
 
@@ -97,11 +97,15 @@ export function usePipelines() {
   });
 }
 
-export function usePipeline(id: string | undefined) {
+export function usePipeline(
+  id: string | undefined,
+  options?: Pick<UseQueryOptions<Pipeline>, 'onSuccess'>
+) {
   return useQuery({
-    queryKey: pipelineKeys.detail(id!),
+    queryKey: id ? pipelineKeys.detail(id) : pipelineKeys.details(),
     queryFn: () => fetchPipeline(id!),
     enabled: !!id,
+    ...options,
   });
 }
 
@@ -185,7 +189,7 @@ export function useMoveDeal() {
   return useMutation({
     mutationFn: updateDeal,
     // Atualização otimista
-    onMutate: async (newData) => {
+    onMutate: async () => {
       // Cancelar queries em andamento
       await queryClient.cancelQueries({ queryKey: pipelineKeys.details() });
       
@@ -209,4 +213,3 @@ export function useMoveDeal() {
     },
   });
 }
-

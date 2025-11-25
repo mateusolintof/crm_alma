@@ -58,7 +58,7 @@
   - Action: Use useState lazy initialization instead of useEffect setState
   - Estimated: 30 min
 
-- [ ] **TASK-009**: Fix setState in useEffect - PipelineBoard.tsx:318
+- [x] **TASK-009**: Fix setState in useEffect - PipelineBoard.tsx:318
   - File: `src/components/pipeline/PipelineBoard.tsx`
   - Line: 318
   - Action: Refactor to avoid cascading renders
@@ -254,29 +254,29 @@
 
 ### Code Duplication Fixes
 
-- [ ] **TASK-043**: Create generic ListPage component
+- [x] **TASK-043**: Create generic ListPage component
   - File: `src/components/common/ListPage.tsx` (new)
   - Action: Extract shared list pattern from ContactList, CompanyList, LeadList
   - Estimated: 2 hours
 
-- [ ] **TASK-044**: Refactor ContactList.tsx to use ListPage
+- [x] **TASK-044**: Refactor ContactList.tsx to use ListPage
   - File: `src/components/contacts/ContactList.tsx`
   - Estimated: 45 min
 
-- [ ] **TASK-045**: Refactor CompanyList.tsx to use ListPage
+- [x] **TASK-045**: Refactor CompanyList.tsx to use ListPage
   - File: `src/components/companies/CompanyList.tsx`
   - Estimated: 45 min
 
-- [ ] **TASK-046**: Refactor LeadList.tsx to use ListPage
+- [x] **TASK-046**: Refactor LeadList.tsx to use ListPage
   - File: `src/components/leads/LeadList.tsx`
   - Estimated: 45 min
 
-- [ ] **TASK-047**: Create generic CRUD hook factory
+- [x] **TASK-047**: Create generic CRUD hook factory
   - File: `src/hooks/createEntityHooks.ts` (new)
   - Action: Replace 5 similar hooks with factory function
   - Estimated: 2 hours
 
-- [ ] **TASK-048**: Create centralized query keys factory
+- [x] **TASK-048**: Create centralized query keys factory
   - File: `src/lib/query-keys.ts` (new)
   - Action: Standardize query key patterns across all hooks
   - Estimated: 1 hour
@@ -307,7 +307,7 @@
   - Line: 42
   - Estimated: 2 min
 
-- [ ] **TASK-053**: Remove unused 'error' variable - Sidebar.tsx
+- [x] **TASK-053**: Remove unused 'error' variable - Sidebar.tsx
   - File: `src/components/layout/Sidebar.tsx`
   - Line: 44
   - Estimated: 2 min
@@ -322,7 +322,7 @@
   - Line: 22
   - Estimated: 2 min
 
-- [ ] **TASK-056**: Run ESLint --fix to auto-remove remaining unused imports
+- [x] **TASK-056**: Run ESLint --fix to auto-remove remaining unused imports
   - Command: `npx eslint . --fix`
   - Estimated: 10 min
 
@@ -348,7 +348,7 @@
 
 ### Import Organization
 
-- [ ] **TASK-060**: Create .prettierrc with import ordering rules
+- [x] **TASK-060**: Create .prettierrc with import ordering rules
   - File: `.prettierrc` (new or update)
   - Action: Configure @trivago/prettier-plugin-sort-imports
   - Estimated: 30 min
@@ -374,7 +374,7 @@
 
 ### Focus State Standardization
 
-- [ ] **TASK-065**: Audit all focus: classes and convert to focus-visible:
+- [x] **TASK-065**: Audit all focus: classes and convert to focus-visible:
   - Files: All interactive components
   - Action: Standardize to focus-visible for keyboard-only focus
   - Estimated: 1 hour
@@ -397,7 +397,7 @@
 
 ### Performance
 
-- [ ] **TASK-OPT-001**: Add React Query devtools for debugging
+- [x] **TASK-OPT-001**: Add React Query devtools for debugging
   - Package: `@tanstack/react-query-devtools`
   - Estimated: 15 min
 
@@ -487,9 +487,9 @@
 
 ## PROGRESS TRACKING
 
-**Completed**: 48/67 (72%)
+**Completed**: 60/67 (89%)
 **In Progress**: 0/67
-**Remaining**: 19/67
+**Remaining**: 7/67
 
 ---
 

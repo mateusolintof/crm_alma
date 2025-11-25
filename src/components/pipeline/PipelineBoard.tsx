@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import dynamic from 'next/dynamic';
-import { DollarSign, Building2, Plus, ChevronDown, Settings, Loader2 } from 'lucide-react';
+import { DollarSign, Building2, Plus, ChevronDown, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { clsx } from 'clsx';
 import { usePipelines, usePipeline, useMoveDeal } from '@/hooks';
@@ -11,11 +11,10 @@ import {
     Card,
     SkeletonKanban,
     ErrorState,
-    EmptyDeals,
     Badge,
     Tooltip,
-    SelectDropdown,
 } from '@/components/ui';
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 
 // Dynamic import do dnd-kit para reduzir bundle inicial
 const DndContext = dynamic(
@@ -26,11 +25,6 @@ const DragOverlay = dynamic(
     () => import('@dnd-kit/core').then((mod) => mod.DragOverlay),
     { ssr: false }
 );
-const SortableContext = dynamic(
-    () => import('@dnd-kit/sortable').then((mod) => mod.SortableContext),
-    { ssr: false }
-);
-
 // Types
 interface DealCardData {
     id: string;
@@ -51,12 +45,6 @@ interface PipelineApiDeal {
     title: string;
     expectedMRR: number | null;
     company: { name: string } | null;
-}
-
-interface PipelineStage {
-    id: string;
-    name: string;
-    deals: PipelineApiDeal[];
 }
 
 // ============================================
@@ -205,7 +193,8 @@ const PipelineSelector = memo(function PipelineSelector({
                 onClick={() => setOpen(!open)}
                 className={clsx(
                     'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
-                    'bg-bg-hover hover:bg-bg-border'
+                    'bg-bg-hover hover:bg-bg-border',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
                 )}
             >
                 <span className="text-lg font-semibold text-text-primary">
@@ -274,33 +263,21 @@ export default function PipelineBoard() {
     const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(null);
     const [columns, setColumns] = useState<ColumnData[]>([]);
     const [activeDeal, setActiveDeal] = useState<DealCardData | null>(null);
-    const [isDndLoaded, setIsDndLoaded] = useState(false);
 
     // Fetch pipelines list
     const { data: pipelines = [], isLoading: isLoadingPipelines } = usePipelines();
 
+    const defaultPipelineId = pipelines[0]?.id ?? null;
+    const effectivePipelineId = selectedPipelineId ?? defaultPipelineId;
+
     // Fetch selected pipeline data
     const {
-        data: pipelineData,
         isLoading: isLoadingPipeline,
         error: pipelineError,
         refetch: refetchPipeline,
-    } = usePipeline(selectedPipelineId || undefined);
-
-    // Move deal mutation
-    const moveDeal = useMoveDeal();
-
-    // Auto-select first pipeline
-    useEffect(() => {
-        if (pipelines.length > 0) {
-            setSelectedPipelineId((prev) => prev ?? pipelines[0].id);
-        }
-    }, [pipelines]);
-
-    // Map pipeline data to columns
-    useEffect(() => {
-        if (pipelineData?.stages) {
-            const mappedColumns = pipelineData.stages.map((stage) => ({
+    } = usePipeline(effectivePipelineId || undefined, {
+        onSuccess: (data) => {
+            const mappedColumns = data.stages.map((stage) => ({
                 id: stage.id,
                 title: stage.name,
                 deals: (stage.deals || []).map((deal) => ({
@@ -314,16 +291,15 @@ export default function PipelineBoard() {
                 })),
             }));
             setColumns(mappedColumns);
-        }
-    }, [pipelineData]);
+        },
+    });
 
-    // Load dnd-kit dynamically
-    useEffect(() => {
-        setIsDndLoaded(true);
-    }, []);
+    // Move deal mutation
+    const moveDeal = useMoveDeal();
 
+    // Auto-select first pipeline
     // Drag handlers
-    const handleDragStart = useCallback((event: any) => {
+    const handleDragStart = useCallback((event: DragStartEvent) => {
         const { active } = event;
         const deal = columns.flatMap((c) => c.deals).find((d) => d.id === active.id);
         if (deal) {
@@ -332,7 +308,7 @@ export default function PipelineBoard() {
     }, [columns]);
 
     const handleDragEnd = useCallback(
-        async (event: any) => {
+        async (event: DragEndEvent) => {
             const { active, over } = event;
             setActiveDeal(null);
 
@@ -374,7 +350,7 @@ export default function PipelineBoard() {
                     id: activeId as string,
                     stageId: targetColumn.id,
                 });
-            } catch (error) {
+            } catch {
                 // Rollback on error - refetch data
                 refetchPipeline();
             }
@@ -400,11 +376,7 @@ export default function PipelineBoard() {
         return (
             <div className="flex flex-col h-screen bg-bg-app">
                 <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center justify-between">
-                    <PipelineSelector
-                        pipelines={pipelines}
-                        selectedId={selectedPipelineId}
-                        onSelect={setSelectedPipelineId}
-                    />
+                    <PipelineSelector pipelines={pipelines} selectedId={effectivePipelineId} onSelect={setSelectedPipelineId} />
                 </div>
                 <div className="flex-1 p-6">
                     <SkeletonKanban columns={4} cardsPerColumn={3} />
@@ -417,11 +389,7 @@ export default function PipelineBoard() {
         return (
             <div className="flex flex-col h-screen bg-bg-app">
                 <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center">
-                    <PipelineSelector
-                        pipelines={pipelines}
-                        selectedId={selectedPipelineId}
-                        onSelect={setSelectedPipelineId}
-                    />
+                    <PipelineSelector pipelines={pipelines} selectedId={effectivePipelineId} onSelect={setSelectedPipelineId} />
                 </div>
                 <div className="flex-1 flex items-center justify-center">
                     <ErrorState
@@ -438,34 +406,22 @@ export default function PipelineBoard() {
         <div className="flex flex-col h-screen bg-bg-app overflow-hidden">
             {/* Header */}
             <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center justify-between flex-shrink-0">
-                <PipelineSelector
-                    pipelines={pipelines}
-                    selectedId={selectedPipelineId}
-                    onSelect={setSelectedPipelineId}
-                />
+                <PipelineSelector pipelines={pipelines} selectedId={effectivePipelineId} onSelect={setSelectedPipelineId} />
                 <Button icon={<Plus size={18} />}>Novo Negócio</Button>
             </div>
 
             {/* Pipeline Board */}
             <div className="flex-1 overflow-x-auto overflow-y-hidden p-6">
-                {isDndLoaded ? (
-                    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                        <div className="flex gap-4 h-full items-start">
-                            {columns.map((col) => (
-                                <PipelineColumn key={col.id} column={col} />
-                            ))}
-                        </div>
-                        <DragOverlay>
-                            {activeDeal ? <DealCard deal={activeDeal} isDragging /> : null}
-                        </DragOverlay>
-                    </DndContext>
-                ) : (
+                <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <div className="flex gap-4 h-full items-start">
                         {columns.map((col) => (
                             <PipelineColumn key={col.id} column={col} />
                         ))}
                     </div>
-                )}
+                    <DragOverlay>
+                        {activeDeal ? <DealCard deal={activeDeal} isDragging /> : null}
+                    </DragOverlay>
+                </DndContext>
             </div>
         </div>
     );
