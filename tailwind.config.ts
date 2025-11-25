@@ -34,6 +34,8 @@ const config: Config = {
         // Semantic Colors
         success: {
           DEFAULT: '#10B981',
+          hover: '#0EA371',
+          active: '#0C8C63',
           bg: '#ECFDF5',
         },
         warning: {
@@ -42,16 +44,28 @@ const config: Config = {
         },
         danger: {
           DEFAULT: '#EF4444',
+          hover: '#DC2626',
+          active: '#B91C1C',
           bg: '#FEF2F2',
         },
         info: {
           DEFAULT: '#3B82F6',
           bg: '#EFF6FF',
         },
+        channels: {
+          whatsapp: { text: '#128C7E', bg: '#E9F8F1', border: '#C7EDE0' },
+          email: { text: '#1D4ED8', bg: '#EFF6FF', border: '#BFDBFE' },
+          instagram: { text: '#C13584', bg: '#FDF1F7', border: '#FAC7E6' },
+          sms: { text: '#7C3AED', bg: '#F4F0FF', border: '#E0D9FF' },
+          web: { text: '#0F172A', bg: '#F8FAFC', border: '#E2E8F0' },
+        },
       },
       fontFamily: {
         sans: ['var(--font-geist-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['var(--font-geist-mono)', 'IBM Plex Mono', 'monospace'],
+      },
+      fontSize: {
+        '2xs': '0.625rem',
       },
       borderRadius: {
         'sm': '4px',
@@ -69,6 +83,9 @@ const config: Config = {
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
+        shimmer: 'shimmer 2s linear infinite',
+        'slide-in-right': 'slideInRight 0.3s ease-out',
+        'slide-in-left': 'slideInLeft 0.3s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -83,6 +100,24 @@ const config: Config = {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
+        shimmer: {
+          '0%': { backgroundPosition: '-1000px 0' },
+          '100%': { backgroundPosition: '1000px 0' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+      },
+      spacing: {
+        120: '120px',
+        260: '260px',
+        320: '320px',
+        400: '400px',
       },
     },
   },

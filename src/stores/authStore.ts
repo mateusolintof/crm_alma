@@ -19,7 +19,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // Estado inicial
       user: null,
       tenant: null,
@@ -110,4 +110,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-

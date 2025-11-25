@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { Mail, Phone, Building2, Plus } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useContacts } from '@/hooks';
@@ -15,19 +15,18 @@ import {
     ErrorState,
 } from '@/components/ui';
 
+const safeParseArray = (value: string | undefined): string[] => {
+    try {
+        const parsed = value ? JSON.parse(value) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+};
+
 export default function ContactList() {
     const { data: contacts = [], isLoading, error, refetch } = useContacts();
     const [searchQuery, setSearchQuery] = useState('');
-
-    // Parse arrays JSON de forma segura
-    const safeParseArray = useCallback((value: string | undefined): string[] => {
-        try {
-            const parsed = value ? JSON.parse(value) : [];
-            return Array.isArray(parsed) ? parsed : [];
-        } catch {
-            return [];
-        }
-    }, []);
 
     // Filtrar contatos com memoização
     const filteredContacts = useMemo(() => {
@@ -47,7 +46,7 @@ export default function ContactList() {
                 phones.includes(query)
             );
         });
-    }, [contacts, searchQuery, safeParseArray]);
+    }, [contacts, searchQuery]);
 
     // Loading state
     if (isLoading) {

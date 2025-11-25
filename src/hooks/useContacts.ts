@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Contact } from '@/types';
+import type { Contact, QueryFilters } from '@/types';
 import { useToast } from '@/stores';
 
 // Keys para cache
 export const contactKeys = {
   all: ['contacts'] as const,
   lists: () => [...contactKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...contactKeys.lists(), filters] as const,
+  list: (filters: QueryFilters) => [...contactKeys.lists(), filters] as const,
   details: () => [...contactKeys.all, 'detail'] as const,
   detail: (id: string) => [...contactKeys.details(), id] as const,
 };
@@ -121,4 +121,3 @@ export function useDeleteContact() {
     },
   });
 }
-

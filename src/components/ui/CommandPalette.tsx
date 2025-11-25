@@ -373,7 +373,7 @@ export function CommandPalette() {
                                                             <kbd
                                                                 key={i}
                                                                 className={clsx(
-                                                                    'px-1.5 py-0.5 text-[10px] rounded',
+                                                                    'px-1.5 py-0.5 text-2xs rounded',
                                                                     isSelected
                                                                         ? 'bg-white/20 text-white'
                                                                         : 'bg-bg-hover text-text-tertiary border border-bg-border'
@@ -423,4 +423,3 @@ export function CommandPalette() {
 }
 
 export default CommandPalette;
-

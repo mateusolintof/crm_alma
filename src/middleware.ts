@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
     if (!hasCsrf) {
         const csrfToken = crypto.randomUUID();
         response.cookies.set('csrf-token', csrfToken, {
-            httpOnly: false, // Precisa ser acessível pelo JavaScript
+            httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             path: '/',

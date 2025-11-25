@@ -13,11 +13,11 @@ const variants = {
   ghost:
     'bg-transparent text-text-secondary hover:bg-bg-hover hover:text-text-primary',
   danger:
-    'bg-danger text-white hover:bg-red-600 active:bg-red-700 shadow-sm hover:shadow-md',
+    'bg-danger text-white hover:bg-danger-hover active:bg-danger-active shadow-sm hover:shadow-md',
   'danger-ghost':
     'bg-transparent text-danger hover:bg-danger-bg',
   success:
-    'bg-success text-white hover:bg-emerald-600 active:bg-emerald-700 shadow-sm hover:shadow-md',
+    'bg-success text-white hover:bg-success-hover active:bg-success-active shadow-sm hover:shadow-md',
 } as const;
 
 // Tamanhos
@@ -100,4 +100,3 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 export default Button;
-

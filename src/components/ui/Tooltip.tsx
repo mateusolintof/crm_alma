@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { clsx } from 'clsx';
 
 export interface TooltipProps {
@@ -39,7 +39,7 @@ export function Tooltip({
     setVisible(false);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (visible && triggerRef.current && tooltipRef.current) {
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
@@ -106,7 +106,7 @@ export function Tooltip({
         <div
           ref={tooltipRef}
           role="tooltip"
-          className={clsx(
+            className={clsx(
             'absolute z-50 px-2.5 py-1.5 text-xs font-medium',
             'bg-slate-900 text-white rounded-md shadow-lg',
             'whitespace-nowrap animate-fade-in',
@@ -151,7 +151,7 @@ export function KeyboardShortcut({ keys, className }: KeyboardShortcutProps) {
           className={clsx(
             'inline-flex items-center justify-center',
             'min-w-[20px] h-5 px-1.5',
-            'text-[10px] font-medium text-text-tertiary',
+            'text-2xs font-medium text-text-tertiary',
             'bg-bg-hover border border-bg-border rounded',
             'font-mono'
           )}
@@ -164,4 +164,3 @@ export function KeyboardShortcut({ keys, className }: KeyboardShortcutProps) {
 }
 
 export default Tooltip;
-

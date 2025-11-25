@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Company } from '@/types';
+import type { Company, QueryFilters } from '@/types';
 import { useToast } from '@/stores';
 
 // Keys para cache
 export const companyKeys = {
   all: ['companies'] as const,
   lists: () => [...companyKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...companyKeys.lists(), filters] as const,
+  list: (filters: QueryFilters) => [...companyKeys.lists(), filters] as const,
   details: () => [...companyKeys.all, 'detail'] as const,
   detail: (id: string) => [...companyKeys.details(), id] as const,
 };
@@ -121,4 +121,3 @@ export function useDeleteCompany() {
     },
   });
 }
-

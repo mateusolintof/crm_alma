@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, Fragment } from 'react';
+import { useState, useRef, useEffect, Fragment, useLayoutEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -40,6 +40,7 @@ export function Dropdown({
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const [menuWidth, setMenuWidth] = useState<number | undefined>();
 
   // Fechar ao clicar fora
   useEffect(() => {
@@ -78,12 +79,19 @@ export function Dropdown({
     setOpen(false);
   };
 
-  const menuWidth =
-    width === 'trigger'
-      ? triggerRef.current?.offsetWidth
-      : width === 'auto'
-      ? undefined
-      : width;
+  useLayoutEffect(() => {
+    if (width === 'auto') {
+      setMenuWidth(undefined);
+      return;
+    }
+
+    if (width === 'trigger') {
+      setMenuWidth(triggerRef.current?.offsetWidth);
+      return;
+    }
+
+    setMenuWidth(typeof width === 'number' ? width : undefined);
+  }, [width, open]);
 
   return (
     <div ref={dropdownRef} className={clsx('relative', className)}>
@@ -283,4 +291,3 @@ export function SelectDropdown({
 }
 
 export default Dropdown;
-

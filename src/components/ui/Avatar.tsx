@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import Image from 'next/image';
 
 const sizes = {
-  xs: 'w-6 h-6 text-[10px]',
+  xs: 'w-6 h-6 text-2xs',
   sm: 'w-8 h-8 text-xs',
   md: 'w-10 h-10 text-sm',
   lg: 'w-12 h-12 text-base',
@@ -28,14 +28,14 @@ export interface AvatarProps {
 // Função para gerar cores baseadas no nome
 function getAvatarColor(name: string): string {
   const colors = [
-    'from-blue-500/20 to-blue-600/10 text-blue-600 border-blue-200',
-    'from-emerald-500/20 to-emerald-600/10 text-emerald-600 border-emerald-200',
-    'from-purple-500/20 to-purple-600/10 text-purple-600 border-purple-200',
-    'from-amber-500/20 to-amber-600/10 text-amber-600 border-amber-200',
-    'from-rose-500/20 to-rose-600/10 text-rose-600 border-rose-200',
-    'from-cyan-500/20 to-cyan-600/10 text-cyan-600 border-cyan-200',
-    'from-indigo-500/20 to-indigo-600/10 text-indigo-600 border-indigo-200',
-    'from-orange-500/20 to-orange-600/10 text-orange-600 border-orange-200',
+    'from-primary/20 to-primary-hover/10 text-primary border-primary-border',
+    'from-success/20 to-success-hover/10 text-success border-success-bg',
+    'from-warning/20 to-warning/10 text-warning border-warning-bg',
+    'from-danger/15 to-danger-hover/10 text-danger border-danger-bg',
+    'from-info/20 to-info/10 text-info border-info-bg',
+    'from-bg-hover to-bg-border text-text-secondary border-bg-border',
+    'from-text-tertiary/10 to-bg-hover text-text-primary border-bg-border',
+    'from-text-primary/5 to-bg-hover text-text-secondary border-bg-border',
   ];
   
   // Gerar índice baseado no nome
@@ -148,4 +148,3 @@ export function AvatarGroup({
 }
 
 export default Avatar;
-

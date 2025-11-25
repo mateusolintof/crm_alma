@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Lead } from '@/types';
+import type { Lead, QueryFilters } from '@/types';
 import { useToast } from '@/stores';
 
 // Keys para cache
 export const leadKeys = {
   all: ['leads'] as const,
   lists: () => [...leadKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...leadKeys.lists(), filters] as const,
+  list: (filters: QueryFilters) => [...leadKeys.lists(), filters] as const,
   details: () => [...leadKeys.all, 'detail'] as const,
   detail: (id: string) => [...leadKeys.details(), id] as const,
 };
@@ -129,4 +129,3 @@ export function useDeleteLead() {
     },
   });
 }
-

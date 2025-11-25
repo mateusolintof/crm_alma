@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { assertCsrf } from '@/lib/csrf';
+import { withTenant } from '@/lib/api-handlers';
 
 export async function PATCH(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    const { id } = await params;
+    const { id } = params;
     const body = await request.json();
     const { stageId } = body;
 
@@ -21,12 +22,22 @@ export async function PATCH(
             return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
         }
 
-        const updatedDeal = await prisma.deal.update({
-            where: { id },
-            data: { stageId },
-        });
+        return withTenant(request, async (tenant) => {
+            const stage = await prisma.pipelineStage.findFirst({
+                where: { id: stageId, pipeline: { tenantId: tenant.id } },
+            });
 
-        return NextResponse.json(updatedDeal);
+            if (!stage) {
+                return NextResponse.json({ error: 'Stage not found for tenant' }, { status: 404 });
+            }
+
+            const updatedDeal = await prisma.deal.update({
+                where: { id, tenantId: tenant.id },
+                data: { stageId },
+            });
+
+            return NextResponse.json(updatedDeal);
+        });
     } catch (error) {
         console.error('Failed to update deal', error);
         return NextResponse.json({ error: 'Failed to update deal' }, { status: 500 });

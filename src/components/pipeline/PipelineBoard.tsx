@@ -16,7 +16,6 @@ import {
     Tooltip,
     SelectDropdown,
 } from '@/components/ui';
-import { useToast } from '@/stores';
 
 // Dynamic import do dnd-kit para reduzir bundle inicial
 const DndContext = dynamic(
@@ -120,7 +119,7 @@ const PipelineColumn = memo(function PipelineColumn({ column, onAddDeal }: Pipel
     }, [column.deals]);
 
     return (
-        <div className="min-w-[320px] w-80 flex flex-col max-h-full bg-bg-app rounded-lg">
+            <div className="min-w-320 w-80 flex flex-col max-h-full bg-bg-app rounded-lg">
             {/* Column Header */}
             <div className="px-3 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -272,7 +271,6 @@ const PipelineSelector = memo(function PipelineSelector({
 // ============================================
 
 export default function PipelineBoard() {
-    const toast = useToast();
     const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(null);
     const [columns, setColumns] = useState<ColumnData[]>([]);
     const [activeDeal, setActiveDeal] = useState<DealCardData | null>(null);
@@ -294,10 +292,10 @@ export default function PipelineBoard() {
 
     // Auto-select first pipeline
     useEffect(() => {
-        if (pipelines.length > 0 && !selectedPipelineId) {
-            setSelectedPipelineId(pipelines[0].id);
+        if (pipelines.length > 0) {
+            setSelectedPipelineId((prev) => prev ?? pipelines[0].id);
         }
-    }, [pipelines, selectedPipelineId]);
+    }, [pipelines]);
 
     // Map pipeline data to columns
     useEffect(() => {

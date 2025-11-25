@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { Building2, Globe, Tag, Users, Calendar, Edit, Trash2 } from 'lucide-react';
+import { Building2, Globe, Tag, Users, Edit, Trash2 } from 'lucide-react';
 import { Sheet, Button, Badge, Card } from '@/components/ui';
 import type { Company } from '@/types';
 
@@ -171,4 +171,3 @@ export const CompanyDetailSheet = memo(function CompanyDetailSheet({
 });
 
 export default CompanyDetailSheet;
-

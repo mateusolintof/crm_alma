@@ -39,10 +39,6 @@ export const ConversationList = memo(function ConversationList({
     filterChannel,
     onFilterChange,
 }: ConversationListProps) {
-    const getContactName = (conv: Conversation) => {
-        return conv.contact?.name || conv.company?.name || 'Sem nome';
-    };
-
     return (
         <div className="w-80 bg-white border-r border-bg-border flex flex-col h-full">
             {/* Header */}
@@ -175,4 +171,3 @@ const ConversationItem = memo(function ConversationItem({
 });
 
 export default ConversationList;
-

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { Loader2 } from 'lucide-react';
 import { useConversations, useSendMessage, useMarkAsRead } from '@/hooks';
 import { SkeletonInbox, ErrorState } from '@/components/ui';
 import { ConversationList } from './ConversationList';
@@ -44,9 +43,7 @@ export default function InboxLayout() {
     }, [conversations, filterChannel, searchQuery]);
 
     // Conversa selecionada
-    const selectedConversation = useMemo(() => {
-        return conversations.find((c) => c.id === selectedId) || null;
-    }, [conversations, selectedId]);
+    const selectedConversation = conversations.find((c) => c.id === selectedId) || null;
 
     // Handlers
     const handleSelectConversation = useCallback((id: string) => {

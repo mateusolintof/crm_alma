@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Conversation, Message } from '@/types';
+import type { Conversation, Message, QueryFilters } from '@/types';
 import { useToast } from '@/stores';
 
 // Keys para cache
 export const conversationKeys = {
   all: ['conversations'] as const,
   lists: () => [...conversationKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...conversationKeys.lists(), filters] as const,
+  list: (filters: QueryFilters) => [...conversationKeys.lists(), filters] as const,
   details: () => [...conversationKeys.all, 'detail'] as const,
   detail: (id: string) => [...conversationKeys.details(), id] as const,
 };
@@ -151,4 +151,3 @@ export function useMarkAsRead() {
     },
   });
 }
-

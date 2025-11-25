@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { clsx } from 'clsx';
 
 // ============================================
@@ -241,7 +242,7 @@ export function SkeletonKanban({
   return (
     <div className={clsx('flex gap-5', className)}>
       {Array.from({ length: columns }).map((_, colIndex) => (
-        <div key={colIndex} className="min-w-[320px] w-80">
+        <div key={colIndex} className="min-w-320 w-80">
           {/* Column Header */}
           <div className="flex items-center justify-between py-3 px-1">
             <Skeleton variant="text" width={120} height={16} />
@@ -277,6 +278,11 @@ export function SkeletonKanban({
 // ============================================
 
 export function SkeletonInbox() {
+  const bubbleWidths = useMemo(
+    () => Array.from({ length: 4 }).map(() => 200 + Math.random() * 100),
+    []
+  );
+
   return (
     <div className="flex h-screen">
       {/* Conversation List */}
@@ -316,7 +322,7 @@ export function SkeletonInbox() {
           </div>
         </div>
         <div className="flex-1 p-6 space-y-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {bubbleWidths.map((width, i) => (
             <div
               key={i}
               className={clsx(
@@ -326,7 +332,7 @@ export function SkeletonInbox() {
             >
               <Skeleton
                 variant="rounded"
-                width={200 + Math.random() * 100}
+                width={width}
                 height={60}
               />
             </div>
@@ -338,4 +344,3 @@ export function SkeletonInbox() {
 }
 
 export default Skeleton;
-

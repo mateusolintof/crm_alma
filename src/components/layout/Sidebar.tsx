@@ -97,7 +97,7 @@ export default function Sidebar() {
                     >
                         <Command size={16} />
                         <span className="flex-1 text-left">Buscar...</span>
-                        <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-text-tertiary">
+                        <kbd className="hidden sm:inline-flex items-center gap-0.5 text-2xs text-text-tertiary">
                             <span className="px-1 py-0.5 bg-white border border-bg-border rounded">⌘</span>
                             <span className="px-1 py-0.5 bg-white border border-bg-border rounded">K</span>
                         </kbd>
@@ -126,7 +126,7 @@ export default function Sidebar() {
             <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
                 {/* Label da seção */}
                 {!sidebarCollapsed && (
-                    <span className="block px-3 py-2 text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">
+                    <span className="block px-3 py-2 text-2xs font-semibold text-text-tertiary uppercase tracking-wider">
                         Menu
                     </span>
                 )}
@@ -153,7 +153,7 @@ export default function Sidebar() {
                                 <>
                                     <span className="flex-1 text-sm">{item.label}</span>
                                     {item.shortcut && (
-                                        <kbd className="hidden lg:flex items-center gap-0.5 text-[10px] opacity-60">
+                                        <kbd className="hidden lg:flex items-center gap-0.5 text-2xs opacity-60">
                                             {item.shortcut.map((key, i) => (
                                                 <span
                                                     key={i}
@@ -188,7 +188,7 @@ export default function Sidebar() {
 
                 {/* Secondary Items */}
                 {!sidebarCollapsed && (
-                    <span className="block px-3 py-2 text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">
+                    <span className="block px-3 py-2 text-2xs font-semibold text-text-tertiary uppercase tracking-wider">
                         Sistema
                     </span>
                 )}

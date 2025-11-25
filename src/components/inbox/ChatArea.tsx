@@ -33,11 +33,12 @@ export const ChatArea = memo(function ChatArea({
     isSending,
 }: ChatAreaProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messageCount = conversation?.messages?.length ?? 0;
 
     // Auto-scroll para última mensagem
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [conversation?.messages]);
+    }, [conversation?.id, messageCount]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
@@ -178,7 +179,7 @@ const MessageBubble = memo(function MessageBubble({ message: msg }: MessageBubbl
                 <div className="flex items-center gap-1 mt-1 justify-end">
                     <span
                         className={clsx(
-                            'text-[10px]',
+                            'text-2xs',
                             isOutbound ? 'text-white/70' : 'text-text-tertiary'
                         )}
                     >
@@ -195,4 +196,3 @@ const MessageBubble = memo(function MessageBubble({ message: msg }: MessageBubbl
 });
 
 export default ChatArea;
-

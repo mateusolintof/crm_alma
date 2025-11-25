@@ -245,13 +245,10 @@ export function Sheet({
         className={clsx(
           'fixed inset-y-0 bg-white shadow-xl w-full flex flex-col',
           sheetWidths[width],
-          side === 'right' ? 'right-0 animate-slide-in-right' : 'left-0 animate-slide-in-left'
+          side === 'right'
+            ? 'right-0 animate-slide-in-right'
+            : 'left-0 animate-slide-in-left'
         )}
-        style={{
-          animation: side === 'right' 
-            ? 'slideInRight 0.3s ease-out' 
-            : 'slideInLeft 0.3s ease-out',
-        }}
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 p-6 border-b border-bg-border">
@@ -281,28 +278,8 @@ export function Sheet({
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes slideInRight {
-          from {
-            transform: translateX(100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-        @keyframes slideInLeft {
-          from {
-            transform: translateX(-100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }
 
 export default Modal;
-

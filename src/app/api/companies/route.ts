@@ -1,17 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getTenantByDomain } from '@/services/tenant.service';
+import { withTenant } from '@/lib/api-handlers';
 
-export async function GET() {
-    const tenant = await getTenantByDomain('alma.agency');
-    if (!tenant) {
-        return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
-    }
+export async function GET(request: NextRequest) {
+    return withTenant(request, async (tenant) => {
+        const companies = await prisma.company.findMany({
+            where: { tenantId: tenant.id },
+            orderBy: { name: 'asc' },
+        });
 
-    const companies = await prisma.company.findMany({
-        where: { tenantId: tenant.id },
-        orderBy: { name: 'asc' },
+        return NextResponse.json(companies);
     });
-
-    return NextResponse.json(companies);
 }

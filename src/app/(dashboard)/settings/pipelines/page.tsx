@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, GripVertical, Check, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, GripVertical, X } from 'lucide-react';
 import Link from 'next/link';
 
 type Stage = {
@@ -231,7 +231,7 @@ export default function PipelinesSettingsPage() {
 
                 {pipelines.length === 0 && (
                     <div className="col-span-3 text-center py-12 text-text-tertiary">
-                        Nenhum pipeline criado. Clique em "Novo Pipeline" para começar.
+                        Nenhum pipeline criado. Clique em &quot;Novo Pipeline&quot; para começar.
                     </div>
                 )}
             </div>

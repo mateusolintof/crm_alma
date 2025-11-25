@@ -14,7 +14,7 @@ const variants = {
 
 // Tamanhos
 const sizes = {
-  sm: 'text-[10px] px-1.5 py-0.5',
+  sm: 'text-2xs px-1.5 py-0.5',
   md: 'text-xs px-2 py-0.5',
   lg: 'text-xs px-2.5 py-1',
 } as const;
@@ -105,11 +105,31 @@ export function StatusBadge({ status, size = 'md', dot = true, className }: Stat
 import { MessageSquare, Mail, Instagram, Phone, Globe } from 'lucide-react';
 
 const channelMap = {
-  WHATSAPP: { icon: MessageSquare, label: 'WhatsApp', color: 'text-green-600 bg-green-50 border-green-200' },
-  EMAIL: { icon: Mail, label: 'Email', color: 'text-blue-600 bg-blue-50 border-blue-200' },
-  INSTAGRAM: { icon: Instagram, label: 'Instagram', color: 'text-pink-600 bg-pink-50 border-pink-200' },
-  SMS: { icon: Phone, label: 'SMS', color: 'text-purple-600 bg-purple-50 border-purple-200' },
-  WEBCHAT: { icon: Globe, label: 'Web', color: 'text-slate-600 bg-slate-50 border-slate-200' },
+  WHATSAPP: {
+    icon: MessageSquare,
+    label: 'WhatsApp',
+    color: 'text-channels-whatsapp-text bg-channels-whatsapp-bg border-channels-whatsapp-border',
+  },
+  EMAIL: {
+    icon: Mail,
+    label: 'Email',
+    color: 'text-channels-email-text bg-channels-email-bg border-channels-email-border',
+  },
+  INSTAGRAM: {
+    icon: Instagram,
+    label: 'Instagram',
+    color: 'text-channels-instagram-text bg-channels-instagram-bg border-channels-instagram-border',
+  },
+  SMS: {
+    icon: Phone,
+    label: 'SMS',
+    color: 'text-channels-sms-text bg-channels-sms-bg border-channels-sms-border',
+  },
+  WEBCHAT: {
+    icon: Globe,
+    label: 'Web',
+    color: 'text-channels-web-text bg-channels-web-bg border-channels-web-border',
+  },
 } as const;
 
 export interface ChannelBadgeProps {
@@ -146,4 +166,3 @@ export function ChannelBadge({
 }
 
 export default Badge;
-

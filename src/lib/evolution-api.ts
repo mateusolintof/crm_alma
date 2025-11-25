@@ -33,7 +33,7 @@ interface EvolutionAPIResponse {
         fromMe: boolean;
         id: string;
     };
-    message: any;
+    message: Record<string, unknown>;
     messageTimestamp: number;
     status: string;
 }
@@ -74,11 +74,7 @@ export async function sendWhatsAppMediaMessage(params: SendMediaMessageParams): 
         throw new Error('Evolution API not configured');
     }
 
-    const endpoint = params.mediaType === 'image'
-        ? 'sendMedia'
-        : params.mediaType === 'video'
-        ? 'sendMedia'
-        : 'sendMedia';
+    const endpoint = 'sendMedia';
 
     const response = await fetch(`${EVOLUTION_API_URL}/message/${endpoint}/${INSTANCE_NAME}`, {
         method: 'POST',

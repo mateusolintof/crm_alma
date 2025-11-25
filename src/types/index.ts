@@ -2,6 +2,8 @@
 // TIPOS CENTRALIZADOS - ALMA CRM
 // ============================================
 
+import type React from 'react';
+
 // --- Entidades Base ---
 
 export interface User {
@@ -175,11 +177,13 @@ export interface Toast {
 
 export interface ModalConfig {
   id: string;
-  component: React.ComponentType<any>;
-  props?: Record<string, any>;
+  component: React.ComponentType<Record<string, unknown>>;
+  props?: Record<string, unknown>;
 }
 
 // --- Filtros ---
+
+export type QueryFilters = Record<string, string | number | boolean | null | undefined>;
 
 export interface InboxFilters {
   channel?: ChannelType;
@@ -214,4 +218,3 @@ export interface ApiError {
   message?: string;
   statusCode: number;
 }
-
