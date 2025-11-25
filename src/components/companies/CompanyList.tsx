@@ -1,48 +1,103 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Building2, Globe, Tag, Plus } from 'lucide-react';
-
-type Company = {
-    id: string;
-    name: string;
-    segment?: string;
-    website?: string;
-};
+import { useState, useMemo } from 'react';
+import { Building2, Globe, Tag, Plus, Users } from 'lucide-react';
+import { useCompanies } from '@/hooks';
+import {
+    Button,
+    Avatar,
+    Card,
+    SearchInput,
+    EmptyCompanies,
+    EmptySearch,
+    ErrorState,
+    Badge,
+} from '@/components/ui';
 
 export default function CompanyList() {
-    const [companies, setCompanies] = useState<Company[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: companies = [], isLoading, error, refetch } = useCompanies();
+    const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        async function fetchCompanies() {
-            try {
-                const res = await fetch('/api/companies');
-                const data = await res.json();
-                setCompanies(data);
-            } catch (error) {
-                console.error('Failed to fetch companies', error);
-                setError('Erro ao carregar empresas.');
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchCompanies();
-    }, []);
+    // Filtrar empresas com memoização
+    const filteredCompanies = useMemo(() => {
+        if (!searchQuery.trim()) return companies;
 
-    if (loading) {
+        const query = searchQuery.toLowerCase();
+        return companies.filter((company) => {
+            const name = company.name?.toLowerCase() || '';
+            const segment = company.segment?.toLowerCase() || '';
+            const website = company.website?.toLowerCase() || '';
+
+            return (
+                name.includes(query) ||
+                segment.includes(query) ||
+                website.includes(query)
+            );
+        });
+    }, [companies, searchQuery]);
+
+    // Loading state
+    if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-full p-6">
-                <div className="text-text-secondary">Carregando empresas...</div>
+            <div className="p-6 max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <div className="space-y-1">
+                        <div className="h-8 w-32 bg-bg-border rounded animate-pulse" />
+                        <div className="h-4 w-48 bg-bg-border rounded animate-pulse" />
+                    </div>
+                    <div className="h-9 w-36 bg-bg-border rounded animate-pulse" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <Card key={i} className="p-5">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-12 h-12 rounded-lg bg-bg-border animate-pulse" />
+                                <div className="flex-1 space-y-2">
+                                    <div className="h-4 w-3/4 bg-bg-border rounded animate-pulse" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="h-4 w-full bg-bg-border rounded animate-pulse" />
+                                <div className="h-4 w-2/3 bg-bg-border rounded animate-pulse" />
+                            </div>
+                        </Card>
+                    ))}
+                </div>
             </div>
         );
     }
 
+    // Error state
     if (error) {
         return (
-            <div className="flex items-center justify-center h-full p-6">
-                <div className="text-danger">{error}</div>
+            <div className="p-6 max-w-7xl mx-auto">
+                <ErrorState
+                    title="Erro ao carregar empresas"
+                    description="Não foi possível carregar a lista de empresas."
+                    onRetry={() => refetch()}
+                />
+            </div>
+        );
+    }
+
+    // Empty state
+    if (!companies.length) {
+        return (
+            <div className="p-6 max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 className="text-2xl font-semibold text-text-primary">Empresas</h1>
+                        <p className="text-sm text-text-secondary mt-1">
+                            Gerencie as empresas dos seus clientes
+                        </p>
+                    </div>
+                    <Button icon={<Plus size={18} />}>
+                        Nova Empresa
+                    </Button>
+                </div>
+                <Card>
+                    <EmptyCompanies onAdd={() => {}} />
+                </Card>
             </div>
         );
     }
@@ -50,57 +105,90 @@ export default function CompanyList() {
     return (
         <div className="p-6 max-w-7xl mx-auto animate-fade-in">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold text-text-primary">Empresas</h1>
-                <button className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md font-medium transition-all duration-150 hover:-translate-y-0.5 shadow-sm hover:shadow-md">
-                    <Plus size={18} />
-                    Nova Empresa
-                </button>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-semibold text-text-primary">Empresas</h1>
+                    <p className="text-sm text-text-secondary mt-1">
+                        {companies.length} {companies.length === 1 ? 'empresa' : 'empresas'}
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <SearchInput
+                        placeholder="Buscar empresas..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onClear={() => setSearchQuery('')}
+                        className="w-64"
+                    />
+                    <Button icon={<Plus size={18} />}>
+                        Nova Empresa
+                    </Button>
+                </div>
             </div>
 
-            {/* Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {companies.map(company => (
-                    <div
-                        key={company.id}
-                        className="bg-white border border-bg-border rounded-lg p-5 hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer group"
-                    >
-                        {/* Company Icon + Name */}
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-primary font-semibold text-lg border border-primary/20">
-                                <Building2 size={24} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-text-primary truncate group-hover:text-primary transition-colors">
-                                    {company.name}
-                                </h3>
-                            </div>
-                        </div>
-
-                        {/* Company Info */}
-                        <div className="space-y-2 text-sm">
-                            <div className="flex items-center gap-2 text-text-secondary">
-                                <Tag size={16} className="text-text-tertiary flex-shrink-0" />
-                                <span className="truncate">{company.segment || 'Sem segmento'}</span>
-                            </div>
-                            {company.website && (
-                                <div className="flex items-center gap-2 text-text-secondary">
-                                    <Globe size={16} className="text-text-tertiary flex-shrink-0" />
-                                    <a
-                                        href={company.website}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-primary hover:underline truncate"
-                                        onClick={e => e.stopPropagation()}
-                                    >
-                                        {company.website.replace(/^https?:\/\//, '')}
-                                    </a>
+            {/* Empty search result */}
+            {searchQuery && filteredCompanies.length === 0 ? (
+                <Card>
+                    <EmptySearch query={searchQuery} />
+                </Card>
+            ) : (
+                /* Cards Grid */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredCompanies.map((company) => (
+                        <Card
+                            key={company.id}
+                            hoverable
+                            className="group"
+                        >
+                            {/* Company Icon + Name */}
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                                    <Building2 size={24} />
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-semibold text-text-primary truncate group-hover:text-primary transition-colors">
+                                        {company.name}
+                                    </h3>
+                                    {company._count?.contacts !== undefined && (
+                                        <p className="text-xs text-text-tertiary flex items-center gap-1">
+                                            <Users size={12} />
+                                            {company._count.contacts} contatos
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Company Info */}
+                            <div className="space-y-2 text-sm">
+                                <div className="flex items-center gap-2 text-text-secondary">
+                                    <Tag size={16} className="text-text-tertiary flex-shrink-0" />
+                                    {company.segment ? (
+                                        <Badge variant="default" size="sm">
+                                            {company.segment}
+                                        </Badge>
+                                    ) : (
+                                        <span className="text-text-tertiary">Sem segmento</span>
+                                    )}
+                                </div>
+                                {company.website && (
+                                    <div className="flex items-center gap-2 text-text-secondary">
+                                        <Globe size={16} className="text-text-tertiary flex-shrink-0" />
+                                        <a
+                                            href={company.website}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-primary hover:underline truncate"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {company.website.replace(/^https?:\/\//, '')}
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

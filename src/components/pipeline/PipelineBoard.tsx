@@ -1,87 +1,84 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import {
-    DndContext,
-    DragOverlay,
-    closestCorners,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    DragStartEvent,
-    DragOverEvent,
-    DragEndEvent,
-} from '@dnd-kit/core';
-import {
-    SortableContext,
-    sortableKeyboardCoordinates,
-    verticalListSortingStrategy,
-    useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { DollarSign, Building2, Plus, ChevronDown, Settings } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
+import dynamic from 'next/dynamic';
+import { DollarSign, Building2, Plus, ChevronDown, Settings, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { clsx } from 'clsx';
+import { usePipelines, usePipeline, useMoveDeal } from '@/hooks';
+import {
+    Button,
+    Card,
+    SkeletonKanban,
+    ErrorState,
+    EmptyDeals,
+    Badge,
+    Tooltip,
+    SelectDropdown,
+} from '@/components/ui';
+import { useToast } from '@/stores';
+
+// Dynamic import do dnd-kit para reduzir bundle inicial
+const DndContext = dynamic(
+    () => import('@dnd-kit/core').then((mod) => mod.DndContext),
+    { ssr: false }
+);
+const DragOverlay = dynamic(
+    () => import('@dnd-kit/core').then((mod) => mod.DragOverlay),
+    { ssr: false }
+);
+const SortableContext = dynamic(
+    () => import('@dnd-kit/sortable').then((mod) => mod.SortableContext),
+    { ssr: false }
+);
 
 // Types
-type Deal = {
+interface DealCardData {
     id: string;
     title: string;
     value: string;
     company: string;
     tags: string[];
-};
+}
 
-type Column = {
+interface ColumnData {
     id: string;
     title: string;
-    deals: Deal[];
-};
+    deals: DealCardData[];
+}
 
-type PipelineApiDeal = {
+interface PipelineApiDeal {
     id: string;
     title: string;
     expectedMRR: number | null;
     company: { name: string } | null;
-};
+}
 
-type PipelineStage = {
+interface PipelineStage {
     id: string;
     name: string;
     deals: PipelineApiDeal[];
-};
+}
 
-// --- Components ---
+// ============================================
+// Deal Card Component (Memoizado)
+// ============================================
 
-function DealCard({ deal, isOverlay }: { deal: Deal; isOverlay?: boolean }) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-    } = useSortable({ id: deal.id, data: { type: 'Deal', deal } });
+interface DealCardProps {
+    deal: DealCardData;
+    isDragging?: boolean;
+}
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
-
+const DealCard = memo(function DealCard({ deal, isDragging }: DealCardProps) {
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            {...listeners}
-            className={`
-                bg-white border border-bg-border rounded-lg p-4 cursor-grab
-                transition-all duration-150
-                hover:shadow-md hover:border-primary hover:-translate-y-0.5
-                ${(isDragging || isOverlay) ? 'opacity-80 cursor-grabbing shadow-lg scale-105' : ''}
-            `}
+        <Card
+            hoverable={!isDragging}
+            className={clsx(
+                'cursor-grab active:cursor-grabbing',
+                isDragging && 'opacity-90 shadow-lg scale-[1.02]'
+            )}
         >
-            <h4 className="font-semibold text-text-primary mb-2">{deal.title}</h4>
+            <h4 className="font-semibold text-text-primary mb-2 line-clamp-2">{deal.title}</h4>
             <div className="flex items-center gap-1.5 text-sm text-text-secondary font-medium mb-3">
                 <DollarSign size={16} className="text-success" />
                 {deal.value}
@@ -89,232 +86,352 @@ function DealCard({ deal, isOverlay }: { deal: Deal; isOverlay?: boolean }) {
             <div className="flex items-center justify-between text-xs border-t border-bg-border pt-2.5">
                 <div className="flex items-center gap-1.5 text-text-tertiary">
                     <Building2 size={14} />
-                    <span className="truncate">{deal.company}</span>
+                    <span className="truncate max-w-[120px]">{deal.company}</span>
                 </div>
                 {deal.tags.length > 0 && (
                     <div className="flex gap-1">
-                        {deal.tags.map(tag => (
-                            <span key={tag} className="px-2 py-0.5 bg-bg-surface-hover text-text-secondary rounded text-xs">
+                        {deal.tags.slice(0, 2).map((tag) => (
+                            <Badge key={tag} variant="default" size="sm">
                                 {tag}
-                            </span>
+                            </Badge>
                         ))}
                     </div>
                 )}
             </div>
-        </div>
+        </Card>
     );
+});
+
+// ============================================
+// Pipeline Column Component (Memoizado)
+// ============================================
+
+interface PipelineColumnProps {
+    column: ColumnData;
+    onAddDeal?: () => void;
 }
 
-function PipelineColumn({ column }: { column: Column }) {
-    const { setNodeRef } = useSortable({
-        id: column.id,
-        data: { type: 'Column', column },
-    });
+const PipelineColumn = memo(function PipelineColumn({ column, onAddDeal }: PipelineColumnProps) {
+    const totalValue = useMemo(() => {
+        return column.deals.reduce((acc, deal) => {
+            const value = parseFloat(deal.value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+            return acc + value;
+        }, 0);
+    }, [column.deals]);
 
     return (
-        <div ref={setNodeRef} className="min-w-[320px] w-80 flex flex-col max-h-full">
+        <div className="min-w-[320px] w-80 flex flex-col max-h-full bg-bg-app rounded-lg">
             {/* Column Header */}
-            <div className="px-1 py-3 flex items-center justify-between">
-                <h3 className="font-semibold text-sm text-text-secondary uppercase tracking-wide">
-                    {column.title}
-                </h3>
-                <span className="text-xs text-text-tertiary bg-bg-surface-hover px-2 py-1 rounded-full">
-                    {column.deals.length}
-                </span>
+            <div className="px-3 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm text-text-primary">{column.title}</h3>
+                    <Badge variant="default" size="sm">
+                        {column.deals.length}
+                    </Badge>
+                </div>
+                <Tooltip content="Adicionar negócio">
+                    <button
+                        onClick={onAddDeal}
+                        className="p-1 rounded hover:bg-bg-hover transition-colors text-text-tertiary hover:text-text-primary"
+                    >
+                        <Plus size={16} />
+                    </button>
+                </Tooltip>
             </div>
 
+            {/* Value Summary */}
+            {totalValue > 0 && (
+                <div className="px-3 pb-2">
+                    <p className="text-xs text-text-tertiary">
+                        Total:{' '}
+                        <span className="font-medium text-success">
+                            R$ {totalValue.toLocaleString('pt-BR')}
+                        </span>
+                    </p>
+                </div>
+            )}
+
             {/* Column Content */}
-            <div className="flex-1 overflow-y-auto py-1 flex flex-col gap-3">
-                <SortableContext items={column.deals.map(d => d.id)} strategy={verticalListSortingStrategy}>
-                    {column.deals.map(deal => (
-                        <DealCard key={deal.id} deal={deal} />
-                    ))}
-                </SortableContext>
+            <div className="flex-1 overflow-y-auto px-2 pb-2 flex flex-col gap-2">
+                {column.deals.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center py-8">
+                        <p className="text-xs text-text-tertiary text-center">
+                            Arraste negócios para cá
+                        </p>
+                    </div>
+                ) : (
+                    column.deals.map((deal) => <DealCard key={deal.id} deal={deal} />)
+                )}
             </div>
         </div>
     );
+});
+
+// ============================================
+// Pipeline Selector Component
+// ============================================
+
+interface PipelineSelectorProps {
+    pipelines: Array<{ id: string; name: string; type: string }>;
+    selectedId: string | null;
+    onSelect: (id: string) => void;
 }
 
-type Pipeline = {
-    id: string;
-    name: string;
-    type: string;
-};
-
-export default function PipelineBoard() {
-    const [columns, setColumns] = useState<Column[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
-    const [snapshotColumns, setSnapshotColumns] = useState<Column[]>([]);
-    const [pipelines, setPipelines] = useState<Pipeline[]>([]);
-    const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(null);
-    const [showPipelineDropdown, setShowPipelineDropdown] = useState(false);
+const PipelineSelector = memo(function PipelineSelector({
+    pipelines,
+    selectedId,
+    onSelect,
+}: PipelineSelectorProps) {
+    const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setShowPipelineDropdown(false);
+                setOpen(false);
             }
         }
 
-        if (showPipelineDropdown) {
+        if (open) {
             document.addEventListener('mousedown', handleClickOutside);
             return () => document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [showPipelineDropdown]);
+    }, [open]);
 
-    // Fetch available pipelines
+    const selectedPipeline = pipelines.find((p) => p.id === selectedId);
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button
+                onClick={() => setOpen(!open)}
+                className={clsx(
+                    'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
+                    'bg-bg-hover hover:bg-bg-border'
+                )}
+            >
+                <span className="text-lg font-semibold text-text-primary">
+                    {selectedPipeline?.name || 'Selecione Pipeline'}
+                </span>
+                <ChevronDown
+                    size={18}
+                    className={clsx(
+                        'text-text-secondary transition-transform',
+                        open && 'rotate-180'
+                    )}
+                />
+            </button>
+
+            {open && (
+                <div className="absolute top-full mt-2 left-0 bg-white border border-bg-border rounded-lg shadow-lg min-w-[260px] z-50 animate-scale-in">
+                    <div className="py-1">
+                        {pipelines.map((pipeline) => (
+                            <button
+                                key={pipeline.id}
+                                onClick={() => {
+                                    onSelect(pipeline.id);
+                                    setOpen(false);
+                                }}
+                                className={clsx(
+                                    'w-full px-4 py-2.5 text-left hover:bg-bg-hover transition-colors',
+                                    'flex items-center justify-between',
+                                    selectedId === pipeline.id && 'bg-bg-hover'
+                                )}
+                            >
+                                <div>
+                                    <div className="font-medium text-text-primary">
+                                        {pipeline.name}
+                                    </div>
+                                    <div className="text-xs text-text-tertiary">{pipeline.type}</div>
+                                </div>
+                                {selectedId === pipeline.id && (
+                                    <div className="w-2 h-2 rounded-full bg-primary" />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="border-t border-bg-border py-1">
+                        <Link
+                            href="/settings/pipelines"
+                            className={clsx(
+                                'w-full px-4 py-2.5 text-left hover:bg-bg-hover transition-colors',
+                                'flex items-center gap-2 text-text-secondary'
+                            )}
+                        >
+                            <Settings size={16} />
+                            Gerenciar Pipelines
+                        </Link>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+});
+
+// ============================================
+// Main Pipeline Board Component
+// ============================================
+
+export default function PipelineBoard() {
+    const toast = useToast();
+    const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(null);
+    const [columns, setColumns] = useState<ColumnData[]>([]);
+    const [activeDeal, setActiveDeal] = useState<DealCardData | null>(null);
+    const [isDndLoaded, setIsDndLoaded] = useState(false);
+
+    // Fetch pipelines list
+    const { data: pipelines = [], isLoading: isLoadingPipelines } = usePipelines();
+
+    // Fetch selected pipeline data
+    const {
+        data: pipelineData,
+        isLoading: isLoadingPipeline,
+        error: pipelineError,
+        refetch: refetchPipeline,
+    } = usePipeline(selectedPipelineId || undefined);
+
+    // Move deal mutation
+    const moveDeal = useMoveDeal();
+
+    // Auto-select first pipeline
     useEffect(() => {
-        async function fetchPipelines() {
-            try {
-                const res = await fetch('/api/pipelines');
-                const data = await res.json();
-                setPipelines(data);
-                if (data.length > 0 && !selectedPipelineId) {
-                    setSelectedPipelineId(data[0].id);
-                }
-            } catch (error) {
-                console.error('Failed to fetch pipelines', error);
-            }
+        if (pipelines.length > 0 && !selectedPipelineId) {
+            setSelectedPipelineId(pipelines[0].id);
         }
-        fetchPipelines();
+    }, [pipelines, selectedPipelineId]);
+
+    // Map pipeline data to columns
+    useEffect(() => {
+        if (pipelineData?.stages) {
+            const mappedColumns = pipelineData.stages.map((stage) => ({
+                id: stage.id,
+                title: stage.name,
+                deals: (stage.deals || []).map((deal) => ({
+                    id: deal.id,
+                    title: deal.title,
+                    value: deal.expectedMRR
+                        ? `R$ ${Number(deal.expectedMRR).toLocaleString('pt-BR')}/mês`
+                        : 'R$ 0',
+                    company: (deal as PipelineApiDeal).company?.name || 'Sem empresa',
+                    tags: [] as string[],
+                })),
+            }));
+            setColumns(mappedColumns);
+        }
+    }, [pipelineData]);
+
+    // Load dnd-kit dynamically
+    useEffect(() => {
+        setIsDndLoaded(true);
     }, []);
 
-    // Fetch pipeline data when selected pipeline changes
-    useEffect(() => {
-        if (!selectedPipelineId) return;
-
-        async function fetchPipeline() {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/pipelines/${selectedPipelineId}`);
-                const data = await res.json();
-
-                if (data.stages) {
-                    const mappedColumns = data.stages.map((stage: PipelineStage) => ({
-                        id: stage.id,
-                        title: stage.name,
-                        deals: stage.deals.map((deal: PipelineApiDeal) => ({
-                            id: deal.id,
-                            title: deal.title,
-                            value: deal.expectedMRR ? `R$ ${deal.expectedMRR}/mês` : 'R$ 0',
-                            company: deal.company?.name || 'Sem empresa',
-                            tags: [],
-                        })),
-                    }));
-                    setColumns(mappedColumns);
-                }
-            } catch (error) {
-                console.error('Failed to fetch pipeline', error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchPipeline();
-    }, [selectedPipelineId]);
-
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
-    );
-
-    const handleDragStart = (event: DragStartEvent) => {
+    // Drag handlers
+    const handleDragStart = useCallback((event: any) => {
         const { active } = event;
-        const deal = active.data.current?.deal as Deal;
+        const deal = columns.flatMap((c) => c.deals).find((d) => d.id === active.id);
         if (deal) {
-            setSnapshotColumns(columns);
             setActiveDeal(deal);
         }
-    };
+    }, [columns]);
 
-    const handleDragOver = (event: DragOverEvent) => {
-        const { active, over } = event;
-        if (!over) return;
+    const handleDragEnd = useCallback(
+        async (event: any) => {
+            const { active, over } = event;
+            setActiveDeal(null);
 
-        const activeId = active.id;
-        const overId = over.id;
+            if (!over) return;
 
-        const activeColumn = columns.find(col => col.deals.some(d => d.id === activeId));
-        const overColumn = columns.find(col => col.id === overId || col.deals.some(d => d.id === overId));
+            const activeId = active.id;
+            const overId = over.id;
 
-        if (!activeColumn || !overColumn || activeColumn === overColumn) {
-            return;
-        }
+            // Find source and target columns
+            const sourceColumn = columns.find((col) =>
+                col.deals.some((d) => d.id === activeId)
+            );
+            const targetColumn = columns.find(
+                (col) => col.id === overId || col.deals.some((d) => d.id === overId)
+            );
 
-        setColumns(prev => {
-            const activeItems = activeColumn.deals;
-            const overItems = overColumn.deals;
-            const activeIndex = activeItems.findIndex(d => d.id === activeId);
-            const overIndex = overItems.findIndex(d => d.id === overId);
+            if (!sourceColumn || !targetColumn) return;
+            if (sourceColumn.id === targetColumn.id) return; // Same column, no move needed
 
-            let newIndex;
-            if (overId === overColumn.id) {
-                newIndex = overItems.length + 1;
-            } else {
-                const isBelowOverItem =
-                    over &&
-                    active.rect.current.translated &&
-                    active.rect.current.translated.top > over.rect.top + over.rect.height;
+            // Optimistic update
+            const deal = sourceColumn.deals.find((d) => d.id === activeId);
+            if (!deal) return;
 
-                const modifier = isBelowOverItem ? 1 : 0;
-                newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-            }
-
-            return prev.map(c => {
-                if (c.id === activeColumn.id) {
-                    return { ...c, deals: c.deals.filter(d => d.id !== activeId) };
-                } else if (c.id === overColumn.id) {
-                    const newDeals = [...c.deals];
-                    const item = activeItems[activeIndex];
-
-                    if (!newDeals.find(d => d.id === item.id)) {
-                        if (overIndex === -1) {
-                            newDeals.push(item);
-                        } else {
-                            newDeals.splice(newIndex, 0, item);
-                        }
+            setColumns((prev) =>
+                prev.map((col) => {
+                    if (col.id === sourceColumn.id) {
+                        return { ...col, deals: col.deals.filter((d) => d.id !== activeId) };
                     }
-                    return { ...c, deals: newDeals };
-                }
-                return c;
-            });
-        });
-    };
+                    if (col.id === targetColumn.id) {
+                        return { ...col, deals: [...col.deals, deal] };
+                    }
+                    return col;
+                })
+            );
 
-    const handleDragEnd = async (event: DragEndEvent) => {
-        const { active, over } = event;
-        setActiveDeal(null);
-
-        if (!over) return;
-
-        const activeId = active.id;
-        const overId = over.id;
-
-        const overColumn = columns.find(col => col.id === overId || col.deals.some(d => d.id === overId));
-
-        if (overColumn) {
+            // Persist to API
             try {
-                await fetch(`/api/deals/${activeId}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stageId: overColumn.id }),
+                await moveDeal.mutateAsync({
+                    id: activeId as string,
+                    stageId: targetColumn.id,
                 });
-                console.log(`Moved deal ${activeId} to stage ${overColumn.title}`);
             } catch (error) {
-                console.error('Failed to persist deal move', error);
-                setColumns(snapshotColumns);
+                // Rollback on error - refetch data
+                refetchPipeline();
             }
-        }
-    };
+        },
+        [columns, moveDeal, refetchPipeline]
+    );
 
-    if (loading) {
+    // Loading states
+    if (isLoadingPipelines) {
         return (
-            <div className="flex items-center justify-center h-full p-6">
-                <div className="text-text-secondary">Carregando pipeline...</div>
+            <div className="flex flex-col h-screen bg-bg-app">
+                <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center">
+                    <div className="h-8 w-48 bg-bg-border rounded animate-pulse" />
+                </div>
+                <div className="flex-1 p-6">
+                    <SkeletonKanban columns={4} cardsPerColumn={3} />
+                </div>
+            </div>
+        );
+    }
+
+    if (isLoadingPipeline) {
+        return (
+            <div className="flex flex-col h-screen bg-bg-app">
+                <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center justify-between">
+                    <PipelineSelector
+                        pipelines={pipelines}
+                        selectedId={selectedPipelineId}
+                        onSelect={setSelectedPipelineId}
+                    />
+                </div>
+                <div className="flex-1 p-6">
+                    <SkeletonKanban columns={4} cardsPerColumn={3} />
+                </div>
+            </div>
+        );
+    }
+
+    if (pipelineError) {
+        return (
+            <div className="flex flex-col h-screen bg-bg-app">
+                <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center">
+                    <PipelineSelector
+                        pipelines={pipelines}
+                        selectedId={selectedPipelineId}
+                        onSelect={setSelectedPipelineId}
+                    />
+                </div>
+                <div className="flex-1 flex items-center justify-center">
+                    <ErrorState
+                        title="Erro ao carregar pipeline"
+                        description="Não foi possível carregar os dados do pipeline."
+                        onRetry={() => refetchPipeline()}
+                    />
+                </div>
             </div>
         );
     }
@@ -322,83 +439,35 @@ export default function PipelineBoard() {
     return (
         <div className="flex flex-col h-screen bg-bg-app overflow-hidden">
             {/* Header */}
-            <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    {/* Pipeline Selector Dropdown */}
-                    <div className="relative" ref={dropdownRef}>
-                        <button
-                            onClick={() => setShowPipelineDropdown(!showPipelineDropdown)}
-                            className="flex items-center gap-2 px-4 py-2 bg-bg-surface-hover hover:bg-bg-border rounded-md transition-colors"
-                        >
-                            <span className="text-lg font-semibold text-text-primary">
-                                {pipelines.find(p => p.id === selectedPipelineId)?.name || 'Selecione Pipeline'}
-                            </span>
-                            <ChevronDown size={18} className={`text-text-secondary transition-transform ${showPipelineDropdown ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        {/* Dropdown Menu */}
-                        {showPipelineDropdown && (
-                            <div className="absolute top-full mt-2 left-0 bg-white border border-bg-border rounded-lg shadow-lg min-w-[240px] z-50">
-                                <div className="py-1">
-                                    {pipelines.map(pipeline => (
-                                        <button
-                                            key={pipeline.id}
-                                            onClick={() => {
-                                                setSelectedPipelineId(pipeline.id);
-                                                setShowPipelineDropdown(false);
-                                            }}
-                                            className={`w-full px-4 py-2.5 text-left hover:bg-bg-surface-hover transition-colors flex items-center justify-between ${
-                                                selectedPipelineId === pipeline.id ? 'bg-bg-surface-hover' : ''
-                                            }`}
-                                        >
-                                            <div>
-                                                <div className="font-medium text-text-primary">{pipeline.name}</div>
-                                                <div className="text-xs text-text-tertiary">{pipeline.type}</div>
-                                            </div>
-                                            {selectedPipelineId === pipeline.id && (
-                                                <div className="w-2 h-2 rounded-full bg-primary"></div>
-                                            )}
-                                        </button>
-                                    ))}
-                                </div>
-                                <div className="border-t border-bg-border py-1">
-                                    <Link
-                                        href="/settings/pipelines"
-                                        className="w-full px-4 py-2.5 text-left hover:bg-bg-surface-hover transition-colors flex items-center gap-2 text-text-secondary"
-                                    >
-                                        <Settings size={16} />
-                                        Gerenciar Pipelines
-                                    </Link>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <button className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md font-medium transition-all duration-150 hover:-translate-y-0.5 shadow-sm hover:shadow-md">
-                    <Plus size={18} />
-                    Novo Negócio
-                </button>
+            <div className="px-6 h-16 border-b border-bg-border bg-white flex items-center justify-between flex-shrink-0">
+                <PipelineSelector
+                    pipelines={pipelines}
+                    selectedId={selectedPipelineId}
+                    onSelect={setSelectedPipelineId}
+                />
+                <Button icon={<Plus size={18} />}>Novo Negócio</Button>
             </div>
 
             {/* Pipeline Board */}
             <div className="flex-1 overflow-x-auto overflow-y-hidden p-6">
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCorners}
-                    onDragStart={handleDragStart}
-                    onDragOver={handleDragOver}
-                    onDragEnd={handleDragEnd}
-                >
-                    <div className="flex gap-5 h-full items-start">
-                        {columns.map(col => (
+                {isDndLoaded ? (
+                    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                        <div className="flex gap-4 h-full items-start">
+                            {columns.map((col) => (
+                                <PipelineColumn key={col.id} column={col} />
+                            ))}
+                        </div>
+                        <DragOverlay>
+                            {activeDeal ? <DealCard deal={activeDeal} isDragging /> : null}
+                        </DragOverlay>
+                    </DndContext>
+                ) : (
+                    <div className="flex gap-4 h-full items-start">
+                        {columns.map((col) => (
                             <PipelineColumn key={col.id} column={col} />
                         ))}
                     </div>
-                    <DragOverlay>
-                        {activeDeal ? <DealCard deal={activeDeal} isOverlay /> : null}
-                    </DragOverlay>
-                </DndContext>
+                )}
             </div>
         </div>
     );

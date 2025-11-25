@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-type Params = {
-    params: {
-        id: string;
-    };
+type RouteParams = {
+    params: Promise<{ id: string }>;
 };
 
 // GET single pipeline
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(request: NextRequest, { params }: RouteParams) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const pipeline = await prisma.pipeline.findUnique({
             where: { id },
@@ -41,14 +39,14 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 // PATCH update pipeline
-export async function PATCH(request: NextRequest, { params }: Params) {
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
         const { name, type, stages } = body;
 
         // Update pipeline basic info
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
         if (name) updateData.name = name;
         if (type) updateData.type = type;
 
@@ -65,7 +63,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         // Update stages if provided
         if (stages && Array.isArray(stages)) {
             // Delete removed stages
-            const stageIds = stages.filter(s => s.id).map(s => s.id);
+            const stageIds = stages.filter((s: { id?: string }) => s.id).map((s: { id: string }) => s.id);
             await prisma.stage.deleteMany({
                 where: {
                     pipelineId: id,
@@ -75,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
             // Update or create stages
             for (let i = 0; i < stages.length; i++) {
-                const stage = stages[i];
+                const stage = stages[i] as { id?: string; name: string; defaultProbability?: number };
                 if (stage.id) {
                     // Update existing
                     await prisma.stage.update({
@@ -108,9 +106,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 }
 
 // DELETE pipeline
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Check if pipeline has deals
         const dealsCount = await prisma.deal.count({
